@@ -18,7 +18,7 @@ export default function Login() {
   
   // const apiBaseUrl = "http://localhost:5001" ;
 
-  const apiBaseUrl = "http://192.168.5.62:8080/"
+  const apiBaseUrl = "http://192.168.5.62:8080"
 
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
