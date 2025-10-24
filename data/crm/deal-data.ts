@@ -2,9 +2,9 @@ import { IDeal } from "@/interface/table.interface";
 
 // const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-// const apiUrl = "https://erp-server-r9wh.onrender.com";
+const apiUrl = "https://kalash.app";
 
-const apiUrl = "http://localhost:5001";
+// const apiUrl = "http://localhost:4001";
 
 // Function to fetch orders from the server
 export const fetchDealData = async (): Promise<IDeal[]> => {

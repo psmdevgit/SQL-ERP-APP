@@ -42,7 +42,11 @@ export default function TaggingDetailsPage() {
   const [error, setError] = useState<string | null>(null);
 
   
-  const API_BASE_URL = "https://erp-server-r9wh.onrender.com" ;
+  // const API_BASE_URL = "https://erp-server-r9wh.onrender.com" ;
+  
+  // const API_BASE_URL = "http://192.168.5.62:8080" ;
+  
+  const API_BASE_URL = "http://localhost:4001" ;
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -107,7 +111,7 @@ export default function TaggingDetailsPage() {
           <div className="flex gap-2 mb-4">
             {details.tagging.pdfUrl && (
               <a 
-                href={details.tagging.pdfUrl} 
+                href={`${API_BASE_URL}${details.tagging.pdfUrl}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
@@ -118,7 +122,7 @@ export default function TaggingDetailsPage() {
             )}
             {details.tagging.excelUrl && (
               <a 
-                href={details.tagging.excelUrl} 
+                href={`${API_BASE_URL}${details.tagging.excelUrl}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
@@ -172,6 +176,10 @@ export default function TaggingDetailsPage() {
                 // Calculate stone charges: (stone weight * 600)
                 const calculatedStoneCharge = (item.stoneWeight * 600);
                 
+                const fileUrl = `${API_BASE_URL}/Upload/Model/${item.pdfUrl}.png`; // ✅ Proper path
+
+                console.log(fileUrl)
+
                 return (
                   <tr key={item.id}>
                     <td className="px-4 py-2 whitespace-nowrap">{item.name || 'N/A'}</td>
@@ -183,7 +191,7 @@ export default function TaggingDetailsPage() {
                     <td className="px-4 py-2 whitespace-nowrap">
                       {item.pdfUrl && (
                         <a 
-                          href={item.pdfUrl} 
+                          href={fileUrl} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="text-red-600 hover:text-red-800"

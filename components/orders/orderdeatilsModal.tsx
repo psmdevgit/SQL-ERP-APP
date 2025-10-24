@@ -4,7 +4,12 @@ import { Dialog, DialogTitle, DialogContent } from "@mui/material";
 import { useSearchParams } from 'next/navigation';
 import { IDeal } from '@/interface/table.interface';
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; // Ensure this is set correctly
+const apiBaseUrl = "https://kalash.app"; 
+
+
+
+// const apiBaseUrl = "http://localhost:4001"; 
+
 
 interface OrderDetails {
   orderId: string;

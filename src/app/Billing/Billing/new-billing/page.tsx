@@ -112,7 +112,10 @@ export default function InvoiceGenerator() {
   const [customPercentages, setCustomPercentages] = useState<{ [key: string]: number }>({});
 
   
-  const API_BASE_URL = "https://erp-server-r9wh.onrender.com" ;
+  // const API_BASE_URL = "https://erp-server-r9wh.onrender.com" ;
+
+  
+  const API_BASE_URL = "http://localhost:4001" ;
 
   // Fetch all tagging IDs on component mount
   useEffect(() => {
@@ -546,7 +549,7 @@ export default function InvoiceGenerator() {
           item.stoneWeight.toFixed(3),
           '0.000', // Other weight
           item.netWeight.toFixed(3),
-          item.stoneCharge.toFixed(2),
+          item.stoneCharge,
           '0.00', // Other amount
           purity.toFixed(2), // Purity
           rateText,
@@ -1123,7 +1126,7 @@ export default function InvoiceGenerator() {
       100,         // Stone weight
       110          // Approx value
     ];
-
+ 
     let xPos = margin;
 
     // Draw header cells in a single row
@@ -1354,11 +1357,13 @@ export default function InvoiceGenerator() {
       const result = await response.json();
       console.log('Server response:', result);
       
-      toast.success(`Billing ${billingId} created successfully`);
+      // toast.success(`Billing ${billingId} created successfully`);
+      alert(`Billing ${billingId} created successfully`);
       
     } catch (error) {
       console.error('Error in submitBilling:', error);
       toast.error(error.message || "Failed to submit billing");
+      alert("Failed to submit billing");
     } finally {
       setLoading(false);
     }
@@ -1712,7 +1717,11 @@ export default function InvoiceGenerator() {
                         <td className="px-4 py-2 text-right">{item.grossWeight.toFixed(3)}</td>
                         <td className="px-4 py-2 text-right">{item.netWeight.toFixed(3)}</td>
                         <td className="px-4 py-2 text-right">{item.stoneWeight.toFixed(3)}</td>
-                        <td className="px-4 py-2 text-right">₹ {(item.stoneCharge || 0).toFixed(2)}</td>
+                        {/* <td className="px-4 py-2 text-right">₹ {(item.stoneCharge || 0).toFixed(2)}</td> */}
+
+                        
+                        <td className="px-4 py-2 text-right">₹ {item.stoneCharge || 0}</td>
+
                         <td className="px-4 py-2 text-right">{fineWeight.toFixed(4)}</td>
                         <td className="px-4 py-2 text-right">₹ {makingCharges.toFixed(2)}</td>
                       </tr>
