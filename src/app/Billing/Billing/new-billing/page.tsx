@@ -112,10 +112,10 @@ export default function InvoiceGenerator() {
   const [customPercentages, setCustomPercentages] = useState<{ [key: string]: number }>({});
 
   
-  // const API_BASE_URL = "https://erp-server-r9wh.onrender.com" ;
+  const API_BASE_URL = "https://kalash.app" ;
 
   
-  const API_BASE_URL = "http://localhost:4001" ;
+  // const API_BASE_URL = "http://localhost:4001" ;
 
   // Fetch all tagging IDs on component mount
   useEffect(() => {
