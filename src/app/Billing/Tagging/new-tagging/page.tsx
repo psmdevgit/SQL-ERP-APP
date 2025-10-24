@@ -88,12 +88,12 @@ const NewTagging = () => {
 const [previewData, setPreviewData] = useState<{ modelIndex: number; pcIndex: number } | null>(null);
 
 
-  // const apiBaseUrl = "https://erp-server-r9wh.onrender.com" ;
+  const apiBaseUrl = "https://kalash.app" ;
 
   
   // const apiBaseUrl = "http://192.168.5.62:8080" ;
   
-  const apiBaseUrl = "http://localhost:4001" ;
+  // const apiBaseUrl = "http://localhost:4001" ;
 
   // Add this helper function at the top of your component
   const getInitialTaggingNumber = () => {
