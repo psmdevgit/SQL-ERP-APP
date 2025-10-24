@@ -44,9 +44,9 @@ export default function TaggingDetailsPage() {
   
   // const API_BASE_URL = "https://erp-server-r9wh.onrender.com" ;
   
-  // const API_BASE_URL = "http://192.168.5.62:8080" ;
+  const API_BASE_URL = "https://kalash.app" ;
   
-  const API_BASE_URL = "http://localhost:4001" ;
+  // const API_BASE_URL = "http://localhost:4001" ;
 
   useEffect(() => {
     const fetchDetails = async () => {
