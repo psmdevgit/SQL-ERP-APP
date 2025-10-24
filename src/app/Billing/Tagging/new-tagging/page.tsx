@@ -88,7 +88,12 @@ const NewTagging = () => {
 const [previewData, setPreviewData] = useState<{ modelIndex: number; pcIndex: number } | null>(null);
 
 
-  const apiBaseUrl = "https://erp-server-r9wh.onrender.com" ;
+  // const apiBaseUrl = "https://erp-server-r9wh.onrender.com" ;
+
+  
+  // const apiBaseUrl = "http://192.168.5.62:8080" ;
+  
+  const apiBaseUrl = "http://localhost:4001" ;
 
   // Add this helper function at the top of your component
   const getInitialTaggingNumber = () => {
@@ -224,7 +229,16 @@ const handlePreviewPDFOne = async () => {
 
   try {
     // Convert the div to canvas
-    const canvas = await html2canvas(element, { scale: 2 });
+    // const canvas = await html2canvas(element, { scale: 2 });
+
+    const canvas = await html2canvas(element, {
+  scale: 2,
+  useCORS: true,        // allow cross-origin images
+  allowTaint: false,    // prevent tainted canvas
+  logging: false
+});
+
+
     const imgData = canvas.toDataURL("image/png");
 
     // Create PDF
@@ -266,11 +280,11 @@ const handlePreviewPDFOne = async () => {
 
         if (result.success && Array.isArray(result.data)) {
           const formattedData = result.data
-            .filter(party => party.Id && party.Party_Code__c)
+            .filter(party => party.Id && party.Party_Code_c)
             .map(party => ({
               id: party.Id,
-              name: party.Party_Code__c,
-              code: party.Party_Code__c
+              name: party.Party_Code_c,
+              code: party.Party_Code_c
             }));
           console.log('Formatted Party Data:', formattedData);
           setPartyLedgers(formattedData);
@@ -362,6 +376,7 @@ const handlePreviewPDFOne = async () => {
                 
                 const imageData = await imageResponse.json();
                 
+                console.log("imageData",imageData);
                 return {
                   id: modelCode,
                   modelName: modelCode,
@@ -802,7 +817,7 @@ const handleSubmitModels = async () => {
     alert("Models submitted successfully!");
   } catch (error: any) {
     console.error("Error in handleSubmitModels:", error);
-    alert(`Error submitting models: ${error?.message ?? "Unknown error"}`);
+    alert(`Error submitting models: Unknown error`);
   } finally {
     setIsSubmittingModels(false);
   }
@@ -1272,7 +1287,7 @@ const generateExcel = (models: TaggingModel[]): Blob => {
         'Stone Weight': p.stoneWeight.toFixed(3),
         'Gross Weight': p.grossWeight.toFixed(3),
         'Stone Charges': p.stoneCharges.toFixed(2),
-        'PDF URL': model.imageUrl || ''
+        'PDF URL': `${apiBaseUrl}${model.imageUrl}` || ''
       });
     });
   });
@@ -1388,7 +1403,7 @@ const generateExcel = (models: TaggingModel[]): Blob => {
             <SelectTrigger className="w-full bg-white border border-gray-200">
               <SelectValue placeholder={isLoadingOrders ? 'Loading Orders...' : 'Select Order'} />
             </SelectTrigger>
-            <SelectContent className="bg-white max-h-[200px] overflow-y-auto">
+            <SelectContent className="bg-white max-h-[200px] overflow-y-auo">
               {orders.length > 0 ? (
                 orders.map((order) => (
                   <SelectItem key={`${order.id}-${order.orderNo}`} value={order.id}>
@@ -1851,16 +1866,18 @@ const generateExcel = (models: TaggingModel[]): Blob => {
         {(() => {
           const model = selectedModels[previewData.modelIndex];
           const pc = model?.pcs?.[previewData.pcIndex];
+          console.log(`${apiBaseUrl}${model.imageUrl}`);
           if (!model || !pc) return <p>No data</p>;
 
           return (
             <>
               {/* Image */}
               <div className="aspect-square w-full relative rounded-lg overflow-hidden border border-gray-200">
-                {model.imageData ? (
+                {model.imageUrl ? (
                   <img
-                    src={model.imageData}
+                    src={`${apiBaseUrl}${model.imageUrl}`}
                     alt={`Model ${model.modelName}`}
+                    crossOrigin="anonymous"    // 👈 Add this
                     className="w-full h-full object-contain"
                     onError={(e) => (e.currentTarget.src = "/placeholder.png")}
                   />

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 
+import noimage from "../../../../assets/no.png"; // remove {}
 
 
 import { degrees, PDFDocument, PDFImage, PDFPage, rgb,StandardFonts } from "pdf-lib";
@@ -154,10 +155,13 @@ const OrderFormModal = ({ open, setOpen }: OrderFormModalProps) => {
   });
 
   /* ---------------------- API ---------------------- */
-  // const apiBaseUrl = "https://erp-server-r9wh.onrender.com" ;
+
+  const apiBaseUrl = "https://kalash.app" ;
 
   
-  const apiBaseUrl = "http://localhost:5001" ;
+  const imageapi = "https://psmport.pothysswarnamahalapp.com/FactoryModels/" ;
+  
+  // const apiBaseUrl = "http://localhost:4001" ;
 
 
   interface Category {
@@ -333,6 +337,18 @@ const handleModelSelect = (modelId) => {
     );
   };
 
+  const getImageUrl = (name: string, baseUrl: string) => {
+  if (!name) return null;
+  const exts = ["png", "jpg", "jpeg"];
+  for (const ext of exts) {
+    if (name.toLowerCase().endsWith(`.${ext}`)) {
+      return `${baseUrl.replace(/\/$/, "")}/${name}`;
+    }
+  }
+  return null;
+};
+
+
   const handleSaveOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('=== Save Order Started ===');
@@ -392,7 +408,7 @@ const handleModelSelect = (modelId) => {
         message: error.message,
         stack: error.stack
       });
-      alert("Check the fileds and save / Error in saving....");
+      alert("Check the fileds and save ....");
     }
   };
 
@@ -578,8 +594,8 @@ const generateOrderPDF = async (pdfDoc: PDFDocument) => {
     const lineHeight = 20;
 
     // === Company Header ===
-    page.drawText("PSM GOLD CRAFTS", {
-      x: (page.getWidth() - boldFont.widthOfTextAtSize("PSM GOLD CRAFTS", 16)) / 2,
+    page.drawText("Kalash jewellers Pvd Ltd", {
+      x: (page.getWidth() - boldFont.widthOfTextAtSize("Kalash jewellers Pvd Ltd", 16)) / 2,
       y,
       size: 16,
       font: boldFont,
@@ -1049,10 +1065,36 @@ const generateImagesOnlyPDF = async (pdfDoc) => {
             font: boldFont
           });
 
-          // Fetch image via proxy
-          const proxyUrl = `${apiBaseUrl}${model.designImage}`;
-          const response = await fetch(proxyUrl);
-          const imageBytes = await response.arrayBuffer();
+          // // Fetch image via proxy
+          // const proxyUrl = `${apiBaseUrl}${model.modelName}`;
+          // const response = await fetch(proxyUrl);
+          // const imageBytes = await response.arrayBuffer();
+
+          
+    // Prepare image URL
+            let imageBytes: ArrayBuffer | null = null;
+
+            if (model.designImage) {
+              const extensions = [".png", ".jpg", ".jpeg"];
+              for (const ext of extensions) {
+                try {
+                  const response = await fetch(`${apiBaseUrl}${model.modelName}${ext}`);
+                  if (response.ok) {
+                    imageBytes = await response.arrayBuffer();
+                    break; // found valid image
+                  }
+                } catch (err) {
+                  // continue trying next extension
+                }
+              }
+            }
+
+
+             // Fallback to noimage if no valid image found
+          if (!imageBytes) {
+            const resp = await fetch(noimage.src); // Static image import
+            imageBytes = await resp.arrayBuffer();
+          }
 
           let embeddedImage;
           try {
@@ -1448,7 +1490,7 @@ function drawWrappedText(
   // Watermark
   function drawWatermark(page: PDFPage, logo?: PDFImage) {
     const { width, height } = page.getSize();
-    const watermarkText = "PSM GOLD CRAFTS";
+    const watermarkText = "Kalash jewellers Pvd Ltd";
     const watermarkFontSize = 60;
 
     page.drawText(watermarkText, {
@@ -1492,7 +1534,7 @@ function drawWrappedText(
     width: logoWidth,
     height: logoHeight,
   });
-  page.drawText("PSM Gold Crafts Order Invoice", {
+  page.drawText("Kalash jewellers Pvd Ltd Order Invoice", {
     x: margin + logoWidth + 10,
     y,
     size: 16,
@@ -1737,7 +1779,7 @@ function drawWrappedText(
       const { width, height } = page.getSize();
   
       // Draw text watermark
-      const watermarkText = "PSM GOLD CRAFTS";
+      const watermarkText = "Kalash jewellers Pvd Ltd";
       const watermarkFontSize = 60;
   
       page.drawText(watermarkText, {
@@ -1785,7 +1827,7 @@ function drawWrappedText(
       height: logoHeight,
     });
   
-    page.drawText("PSM Gold Crafts Order Invoice", {
+    page.drawText("Kalash jewellers Pvd Ltd Order Invoice", {
       x: margin + logoWidth + 10,
       y,
       size: 16,
@@ -2363,9 +2405,20 @@ function drawWrappedText(
       >
         <img
           // src={model.Image_URL__c}
-               src={`${apiBaseUrl}${model.Image_URL_c}`}
+               src={`${imageapi}${model.Name}.png`}
           alt={model.Name}
           className="w-50 h-50 object-contain mx-auto"
+            onError={(e) => {
+                        const target = e.currentTarget;
+                        if (target.src.endsWith(".png")) {
+                          target.src = `${imageapi}${model.Name}.jpg`;
+                        } else if (target.src.endsWith(".jpg")) {
+                          target.src = `${imageapi}${model.Name}.jpeg`;
+                        } else {
+                          target.src = noimage.src ;
+                          
+                        }
+                      }}
         />
         <p className="mt-2 text-sm font-medium">{model.Name}</p>
       </div>
@@ -2558,14 +2611,30 @@ function drawWrappedText(
                           {item.designImage && (
                             <div className="relative w-20 h-20">
                               <Image
-                                src={ apiBaseUrl+item.designImage}
+                                // src={ imageapi+item.modelName}
+                                  src={`${imageapi}${item.modelName}.png`}
                                 alt="Design"
                                 fill
                                 className="object-contain rounded-md"
+                                 onError={(e) => {
+
+                                    const target = e.currentTarget;
+                                    if (target.src.endsWith(".png")) {
+                                      target.src = `${imageapi}${item.modelName}.jpg`;
+                                    } else if (target.src.endsWith(".jpg")) {
+                                      target.src = `${imageapi}${item.modelName}.jpeg`;
+                                    } else {
+                                      target.src = noimage.src ;
+                                      
+                                    }
+                                  }}
                               />
                             </div>
                           )}
                         </td>
+                         
+
+
 
                         <td className="px-4 py-2">{item.modelName}</td>
                         <td className="px-4 py-2">{item.category}</td>                        

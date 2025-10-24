@@ -144,9 +144,11 @@ const StoneDetailsModal = ({
 // Main Component
 const AddJewelryModel = () => {
 
-  // const apiBaseUrl = "https://erp-server-r9wh.onrender.com" ;
+  const apiBaseUrl = "https://kalash.app" ;
   
-  const apiBaseUrl = "http://localhost:5001" ;
+  
+
+  // const apiBaseUrl = "http://localhost:4001" ;
 
   const router = useRouter();
 

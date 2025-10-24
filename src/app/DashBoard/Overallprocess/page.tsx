@@ -130,10 +130,10 @@ export default function SummaryPage() {
   const [detailData, setDetailData] = useState<ProcessDetailRow[]>([]);
   const [detailLoading, setDetailLoading] = useState(false);
 
-  const API_URL = "https://erp-server-r9wh.onrender.com";
+  const API_URL = "https://kalash.app";
 
   
-  // const API_URL = "http://localhost:5001";
+  // const API_URL = "http://localhost:4001";
 
 
   // Fetch summary

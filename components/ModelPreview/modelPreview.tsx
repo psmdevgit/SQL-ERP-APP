@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 
+import noimage from "../../assets/no.png"
+
 interface Category {
   Id: string;
   Name: string;
@@ -19,10 +21,13 @@ export default function ImageShowPage() {
   const [selectedModel, setSelectedModel] = useState("");
   const [imageUrl, setImageUrl] = useState("");
 
-    // const apiBaseUrl = "https://erp-server-r9wh.onrender.com" ;
+    const apiBaseUrl = "https://kalash.app" ;
+    
+    const imageapi = "https://psmport.pothysswarnamahalapp.com/FactoryModels/";
+
 
   
-  const apiBaseUrl = "http://localhost:5001" ;
+  // const apiBaseUrl = "http://localhost:4001" ;
 
     useEffect(() => {
       fetchCategories();
@@ -98,8 +103,8 @@ export default function ImageShowPage() {
 
     const model = models.find((m) => m.Name === selectedModel);
     if (model && model.Image_URL_c) {
-      setImageUrl(model.Image_URL_c);
-      console.log("image url", model.Image_URL_c);
+      setImageUrl(model.Name);
+      console.log("image url", model.Name);
     } else {
       setImageUrl("");
     }
@@ -156,10 +161,21 @@ export default function ImageShowPage() {
         <div style={{ marginTop: "20px" }}>
           <img
             // src={"D:/Kalash Sql/Needha_ERP_server-main" +imageUrl}
-            src={`${apiBaseUrl}${imageUrl}`}
+            src={`${imageapi}${imageUrl}.png`}
 
             alt="Model Preview"
             style={{ width: "350px", border: "1px solid #ccc" }}
+              onError={(e) => {
+                        const target = e.currentTarget;
+                        if (target.src.endsWith(".png")) {
+                          target.src = `${imageapi}${imageUrl}.jpg`;
+                        } else if (target.src.endsWith(".jpg")) {
+                          target.src = `${imageapi}${imageUrl}.jpeg`;
+                        } else {
+                          target.src = noimage.src ;
+                          
+                        }
+                      }}
           />
         </div>
       )}

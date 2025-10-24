@@ -38,7 +38,10 @@ const [formData, setFormData] = useState<Vendor>({
 
   
   
-  const apiBaseUrl = "http://localhost:5001";
+  const apiBaseUrl = "https://kalash.app";
+  
+  
+  // const apiBaseUrl = "http://localhost:4001";
 
   // Fetch vendors (GET API)
   useEffect(() => {

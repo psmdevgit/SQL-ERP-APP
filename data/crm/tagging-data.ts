@@ -1,6 +1,9 @@
 import { ITagging } from "@/interface/table.interface";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiUrl = "http://kalash.app";
+
+
+// const apiUrl = "http://localhost:4001";
 
 // Function to fetch casting data from the server
 export const fetchTaggingData = async (): Promise<ITagging[]> => {
