@@ -857,7 +857,7 @@ const rowHeight = Math.max(textRowHeight, imageRowHeight);
 
     // 🔁 Try each extension until a valid one is found
     for (const ext of extensions) {
-      const imageUrl = `${apiBaseUrl}${item.modelName}${ext}`;
+      const imageUrl = `${imageapi}${item.modelName}${ext}`;
       try {
         const response = await fetch(imageUrl);
         if (response.ok) {
@@ -873,7 +873,7 @@ const rowHeight = Math.max(textRowHeight, imageRowHeight);
     // ⚠️ Fallback — use item.designImage if available and not in above loop
     if (!imgBytes && item.designImage) {
       try {
-        const fallbackUrl = `${apiBaseUrl}${item.designImage}`;
+        const fallbackUrl = `${imageUrl}`;
         const fallbackRes = await fetch(fallbackUrl);
         if (fallbackRes.ok) {
           console.log(`⚠️ Using fallback image: ${fallbackUrl}`);
