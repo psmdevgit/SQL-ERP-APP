@@ -808,44 +808,111 @@ const rowHeight = Math.max(textRowHeight, imageRowHeight);
         borderWidth: 0.5,
       });
 
-      if (item.designImage) {
-        try {
-          const proxyUrl = `${apiBaseUrl}${item.designImage}`;
-          const imgRes = await fetch(proxyUrl);
-          const imgBytes = await imgRes.arrayBuffer();
+      // if (item.modelName) {
+      //   try {
+      //     const proxyUrl = `${apiBaseUrl}${item.designImage}`;
+      //     const imgRes = await fetch(proxyUrl);
+      //     const imgBytes = await imgRes.arrayBuffer();
 
-          let embeddedImage;
-          try {
-            embeddedImage = await pdfDoc.embedPng(new Uint8Array(imgBytes));
-          } catch {
-            embeddedImage = await pdfDoc.embedJpg(new Uint8Array(imgBytes));
-          }
+      //     let embeddedImage;
+      //     try {
+      //       embeddedImage = await pdfDoc.embedPng(new Uint8Array(imgBytes));
+      //     } catch {
+      //       embeddedImage = await pdfDoc.embedJpg(new Uint8Array(imgBytes));
+      //     }
 
-          if (embeddedImage) {
-              const imgWidth = 80;
-              const imgHeight = 80;
+      //     if (embeddedImage) {
+      //         const imgWidth = 80;
+      //         const imgHeight = 80;
 
-            // const padding = 5;
-            // const maxImgWidth = imageCellWidth - padding * 2;
-            // const maxImgHeight = rowHeight - padding * 2;
-            // const scale = Math.min(maxImgWidth / embeddedImage.width, maxImgHeight / embeddedImage.height, 1);
-            // const imgWidth = embeddedImage.width * scale;
-            // const imgHeight = embeddedImage.height * scale;
+      //       // const padding = 5;
+      //       // const maxImgWidth = imageCellWidth - padding * 2;
+      //       // const maxImgHeight = rowHeight - padding * 2;
+      //       // const scale = Math.min(maxImgWidth / embeddedImage.width, maxImgHeight / embeddedImage.height, 1);
+      //       // const imgWidth = embeddedImage.width * scale;
+      //       // const imgHeight = embeddedImage.height * scale;
 
-            const imgX = imgCellX + (imageCellWidth - imgWidth) / 2;
-            const imgY = y - rowHeight + (rowHeight - imgHeight) / 2;
+      //       const imgX = imgCellX + (imageCellWidth - imgWidth) / 2;
+      //       const imgY = y - rowHeight + (rowHeight - imgHeight) / 2;
 
-            page.drawImage(embeddedImage, {
-              x: imgX,
-              y: imgY,
-              width: imgWidth,
-              height: imgHeight,
-            });
-          }
-        } catch (err) {
-          console.error("Image load failed:", err);
+      //       page.drawImage(embeddedImage, {
+      //         x: imgX,
+      //         y: imgY,
+      //         width: imgWidth,
+      //         height: imgHeight,
+      //       });
+      //     }
+      //   } catch (err) {
+      //     console.error("Image load failed:", err);
+      //   }
+      // }
+
+      if (item.modelName) {
+  try {
+    let imgBytes = null;
+    let embeddedImage = null;
+
+    // List of extensions to check
+    const extensions = [".png", ".jpg", ".jpeg"];
+
+    // 🔁 Try each extension until a valid one is found
+    for (const ext of extensions) {
+      const imageUrl = `${apiBaseUrl}${item.modelName}${ext}`;
+      try {
+        const response = await fetch(imageUrl);
+        if (response.ok) {
+          console.log(`✅ Found image: ${imageUrl}`);
+          imgBytes = await response.arrayBuffer();
+          break; // Stop once found
         }
+      } catch (err) {
+        console.warn(`❌ Failed to fetch ${imageUrl}:`, err);
       }
+    }
+
+    // ⚠️ Fallback — use item.designImage if available and not in above loop
+    if (!imgBytes && item.designImage) {
+      try {
+        const fallbackUrl = `${apiBaseUrl}${item.designImage}`;
+        const fallbackRes = await fetch(fallbackUrl);
+        if (fallbackRes.ok) {
+          console.log(`⚠️ Using fallback image: ${fallbackUrl}`);
+          imgBytes = await fallbackRes.arrayBuffer();
+        }
+      } catch (err) {
+        console.warn("❌ Fallback image failed:", err);
+      }
+    }
+
+    // 🖼️ Embed the found image
+    if (imgBytes) {
+      try {
+        embeddedImage = await pdfDoc.embedPng(new Uint8Array(imgBytes));
+      } catch {
+        embeddedImage = await pdfDoc.embedJpg(new Uint8Array(imgBytes));
+      }
+
+      if (embeddedImage) {
+        const imgWidth = 80;
+        const imgHeight = 80;
+
+        const imgX = imgCellX + (imageCellWidth - imgWidth) / 2;
+        const imgY = y - rowHeight + (rowHeight - imgHeight) / 2;
+
+        page.drawImage(embeddedImage, {
+          x: imgX,
+          y: imgY,
+          width: imgWidth,
+          height: imgHeight,
+        });
+      }
+    } else {
+      console.warn(`⚠️ No valid image found for ${item.modelName}`);
+    }
+  } catch (err) {
+    console.error("❌ Image load failed:", err);
+  }
+}
 
       y -= rowHeight;
 
@@ -1047,102 +1114,98 @@ const generateImagesOnlyPDF = async (pdfDoc) => {
 
     // Process each model
     for (const model of orderSelectedItems) {
-      if (model.designImage) {
-        try {
-          // Create a new page for each image (A4 Portrait)
-          const page = pdfDoc.addPage([595.28, 841.89]);
-          const { width, height } = page.getSize();
-          const margin = 50;
+      if (!model.modelName) continue;
 
-          // Draw caption
-          const caption = `${model.category} - ${model.modelName}`;
-          const fontSize = 12;
-          const textWidth = boldFont.widthOfTextAtSize(caption, fontSize);
-          page.drawText(caption, {
-            x: (width - textWidth) / 2,
-            y: height - margin,
-            size: fontSize,
-            font: boldFont
+      try {
+        // Create a new page for each image (A4 Portrait)
+        const page = pdfDoc.addPage([595.28, 841.89]);
+        const { width, height } = page.getSize();
+        const margin = 50;
+
+        // Draw caption
+        const caption = `${model.category || ''} - ${model.modelName}`;
+        const fontSize = 12;
+        const textWidth = boldFont.widthOfTextAtSize(caption, fontSize);
+        page.drawText(caption, {
+          x: (width - textWidth) / 2,
+          y: height - margin,
+          size: fontSize,
+          font: boldFont
+        });
+
+        // Prepare image URL and fetch the correct file
+        let imageBytes = null;
+        const extensions = [".png", ".jpg", ".jpeg"];
+
+        for (const ext of extensions) {
+          try {
+            const url = `${imageapi}${model.modelName}${ext}`;
+            const response = await fetch(url);
+            if (response.ok) {
+              imageBytes = await response.arrayBuffer();
+              console.log(`✅ Found image for ${model.modelName}: ${url}`);
+              break;
+            }
+          } catch (err) {
+            console.warn(`❌ Error fetching ${model.modelName}${ext}:`, err);
+          }
+        }
+
+        // Fallback to "noimage" if none exist
+        if (!imageBytes) {
+          console.warn(`⚠️ No valid image found for ${model.modelName}. Using fallback.`);
+          const resp = await fetch(noimage.src);
+          imageBytes = await resp.arrayBuffer();
+        }
+
+        // Try embedding image
+        let embeddedImage;
+        try {
+          embeddedImage = await pdfDoc.embedPng(new Uint8Array(imageBytes));
+        } catch {
+          embeddedImage = await pdfDoc.embedJpg(new Uint8Array(imageBytes));
+        }
+
+        if (embeddedImage) {
+          // 🔥 Fixed image size (adjust as needed)
+          const imgWidth = 300;
+          const imgHeight = 300;
+
+          // Center image
+          const xOffset = (width - imgWidth) / 2;
+          const yOffset = (height - imgHeight) / 2 + 40;
+
+          // Draw image
+          page.drawImage(embeddedImage, {
+            x: xOffset,
+            y: yOffset,
+            width: imgWidth,
+            height: imgHeight
           });
 
-          // // Fetch image via proxy
-          // const proxyUrl = `${apiBaseUrl}${model.modelName}`;
-          // const response = await fetch(proxyUrl);
-          // const imageBytes = await response.arrayBuffer();
+          // Draw details below image
+          const details = [
+            `Model: ${model.modelName || '-'}`,
+            `Size: ${model.size || '-'}`,
+            `Net Weight: ${model.netWeight || '-'}`,
+            `Stone Weight: ${model.stoneWeight || '-'}`,
+            `Gross Weight: ${model.grossWeight || '-'}`
+          ];
 
-          
-    // Prepare image URL
-            let imageBytes: ArrayBuffer | null = null;
-
-            if (model.designImage) {
-              const extensions = [".png", ".jpg", ".jpeg"];
-              for (const ext of extensions) {
-                try {
-                  const response = await fetch(`${apiBaseUrl}${model.modelName}${ext}`);
-                  if (response.ok) {
-                    imageBytes = await response.arrayBuffer();
-                    break; // found valid image
-                  }
-                } catch (err) {
-                  // continue trying next extension
-                }
-              }
-            }
-
-
-             // Fallback to noimage if no valid image found
-          if (!imageBytes) {
-            const resp = await fetch(noimage.src); // Static image import
-            imageBytes = await resp.arrayBuffer();
-          }
-
-          let embeddedImage;
-          try {
-            embeddedImage = await pdfDoc.embedPng(new Uint8Array(imageBytes));
-          } catch {
-            embeddedImage = await pdfDoc.embedJpg(new Uint8Array(imageBytes));
-          }
-
-          if (embeddedImage) {
-            // 🔥 Fixed image size
-            const imgWidth = 300;
-            const imgHeight = 300;
-
-            // Center image
-            const xOffset = (width - imgWidth) / 2;
-            const yOffset = (height - imgHeight) / 2 + 40; // shift up a bit
-
-            page.drawImage(embeddedImage, {
-              x: xOffset,
-              y: yOffset,
-              width: imgWidth,
-              height: imgHeight
+          let detailY = yOffset - 40;
+          details.forEach(detail => {
+            const detailWidth = font.widthOfTextAtSize(detail, 10);
+            page.drawText(detail, {
+              x: (width - detailWidth) / 2,
+              y: detailY,
+              size: 10,
+              font
             });
-
-            // Draw details below image
-            const details = [
-              `Model: ${model.modelName || '-'}`,
-              `Size: ${model.size || '-'}`,
-              `Net Weight: ${model.netWeight || '-'}`,
-              `Stone Weight: ${model.stoneWeight || '-'}`,
-              `Gross Weight: ${model.grossWeight || '-'}`
-            ];
-
-            let detailY = yOffset - 40; // place details below image
-            details.forEach(detail => {
-              const detailWidth = font.widthOfTextAtSize(detail, 10);
-              page.drawText(detail, {
-                x: (width - detailWidth) / 2,
-                y: detailY,
-                size: 10,
-                font
-              });
-              detailY -= 20;
-            });
-          }
-        } catch (error) {
-          console.error('Error processing image:', error);
+            detailY -= 20;
+          });
         }
+      } catch (error) {
+        console.error('❌ Error processing model:', model.modelName, error);
       }
     }
 
@@ -1161,7 +1224,7 @@ const generateImagesOnlyPDF = async (pdfDoc) => {
 
     return pdfDoc;
   } catch (error) {
-    console.error('Error generating images PDF:', error);
+    console.error('❌ Error generating images PDF:', error);
     return pdfDoc;
   }
 };
@@ -1594,45 +1657,105 @@ function drawWrappedText(
     drawTableCell(currentX, y, columnWidths[0], rowHeight, "", page);
 
     // Only embed image if exists
-     if (item.designImage) {
-    try {
+  //    if (item.modelName) {
+  //   try {
 
-      console.log(item.designImage);
+  //     console.log(item.designImage);
 
-      // const proxyUrl = `${apiBaseUrl}/getimage?fileUrl=${encodeURIComponent(item.designImage)}`;
-      const proxyUrl = `${apiBaseUrl}${item.designImage}`;
-      console.log(proxyUrl);
-      const response = await fetch(proxyUrl);
-      const imageBytes = await response.arrayBuffer();
+  //     // const proxyUrl = `${apiBaseUrl}/getimage?fileUrl=${encodeURIComponent(item.designImage)}`;
+  //     const proxyUrl = `${imageapi}${item.modelName}`;
+  //     console.log(proxyUrl);
+  //     const response = await fetch(proxyUrl);
+  //     const imageBytes = await response.arrayBuffer();
 
-      let embeddedImage;
+  //     let embeddedImage;
+  //     try {
+  //       embeddedImage = await pdfDoc.embedPng(new Uint8Array(imageBytes));
+  //     } catch {
+  //       embeddedImage = await pdfDoc.embedJpg(new Uint8Array(imageBytes));
+  //     }
+
+  //     if (embeddedImage) {
+  //       const maxWidth = columnWidths[0] - 10;
+  //       const maxHeight = rowHeight - 10;
+  //       const scale = Math.min(maxWidth / embeddedImage.width, maxHeight / embeddedImage.height);
+  //       const imgWidth = embeddedImage.width * scale;
+  //       const imgHeight = embeddedImage.height * scale;
+
+  //       const xOffset = margin + (columnWidths[0] - imgWidth) / 2;
+  //       const yOffset = y - rowHeight + (rowHeight - imgHeight) / 2;
+
+  //       page.drawImage(embeddedImage, {
+  //         x: xOffset,
+  //         y: yOffset,
+  //         width: imgWidth,
+  //         height: imgHeight,
+  //       });
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching or embedding image:", err);
+  //   }
+  // }
+  if (item.modelName) {
+  try {
+    const extensions = [".png", ".jpg", ".jpeg"];
+    let imageBytes = null;
+    let embeddedImage = null;
+
+    // 🔁 Try each extension until one works
+    for (const ext of extensions) {
+      const imageUrl = `${imageapi}${item.modelName}${ext}`;
+      console.log("Trying:", imageUrl);
+
       try {
-        embeddedImage = await pdfDoc.embedPng(new Uint8Array(imageBytes));
-      } catch {
-        embeddedImage = await pdfDoc.embedJpg(new Uint8Array(imageBytes));
+        const response = await fetch(imageUrl);
+        if (response.ok) {
+          imageBytes = await response.arrayBuffer();
+
+          try {
+            // Try to embed as PNG
+            embeddedImage = await pdfDoc.embedPng(new Uint8Array(imageBytes));
+          } catch {
+            // Fallback to JPG
+            embeddedImage = await pdfDoc.embedJpg(new Uint8Array(imageBytes));
+          }
+
+          console.log(`✅ Found and embedded: ${imageUrl}`);
+          break; // Stop after successful fetch
+        }
+      } catch (err) {
+        console.warn(`❌ Failed to load ${imageUrl}:`, err);
       }
-
-      if (embeddedImage) {
-        const maxWidth = columnWidths[0] - 10;
-        const maxHeight = rowHeight - 10;
-        const scale = Math.min(maxWidth / embeddedImage.width, maxHeight / embeddedImage.height);
-        const imgWidth = embeddedImage.width * scale;
-        const imgHeight = embeddedImage.height * scale;
-
-        const xOffset = margin + (columnWidths[0] - imgWidth) / 2;
-        const yOffset = y - rowHeight + (rowHeight - imgHeight) / 2;
-
-        page.drawImage(embeddedImage, {
-          x: xOffset,
-          y: yOffset,
-          width: imgWidth,
-          height: imgHeight,
-        });
-      }
-    } catch (err) {
-      console.error("Error fetching or embedding image:", err);
     }
+
+    // 🖼️ Draw the image if found
+    if (embeddedImage) {
+      const maxWidth = columnWidths[0] - 10;
+      const maxHeight = rowHeight - 10;
+      const scale = Math.min(
+        maxWidth / embeddedImage.width,
+        maxHeight / embeddedImage.height
+      );
+      const imgWidth = embeddedImage.width * scale;
+      const imgHeight = embeddedImage.height * scale;
+
+      const xOffset = margin + (columnWidths[0] - imgWidth) / 2;
+      const yOffset = y - rowHeight + (rowHeight - imgHeight) / 2;
+
+      page.drawImage(embeddedImage, {
+        x: xOffset,
+        y: yOffset,
+        width: imgWidth,
+        height: imgHeight,
+      });
+    } else {
+      console.warn(`⚠️ No valid image found for ${item.modelName}`);
+    }
+  } catch (err) {
+    console.error("Error embedding image:", err);
   }
+}
+
 
     currentX += columnWidths[0];
     const values = [
@@ -2606,11 +2729,12 @@ function drawWrappedText(
                   </thead>
                   <tbody>
                     {orderSelectedItems.map((item, index) => (
+                
                       <tr key={index}>
                         <td className="px-4 py-2">
                           {item.designImage && (
                             <div className="relative w-20 h-20">
-                              <Image
+                              {/* <Image
                                 // src={ imageapi+item.modelName}
                                   src={`${imageapi}${item.modelName}.png`}
                                 alt="Design"
@@ -2628,7 +2752,26 @@ function drawWrappedText(
                                       
                                     }
                                   }}
-                              />
+                              /> */}
+                              <Image
+  src={`${imageapi}${item.modelName}.png`}
+  alt="Design"
+  width={80}
+  height={80}
+  className="object-contain rounded-md border"
+  onError={(e) => {
+    const target = e.currentTarget;
+    if (target.src.endsWith(".png")) {
+      target.src = `${imageapi}${item.modelName}.jpg`;
+    } else if (target.src.endsWith(".jpg")) {
+      target.src = `${imageapi}${item.modelName}.jpeg`;
+    } else {
+      target.src = noimage.src;
+    }
+  }}
+/>
+
+                              
                             </div>
                           )}
                         </td>
