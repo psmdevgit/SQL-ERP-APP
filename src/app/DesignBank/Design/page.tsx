@@ -230,7 +230,7 @@ import noimage from "../../../../assets/no.png"; // remove {}
 
 
 const apiBaseUrl = "https://Kalash.app";
-// const apiBaseUrl = "http://localhost:4001";
+// const apiBaseUrl = "http://localhost:4001"
 const imageapi = "https://psmport.pothysswarnamahalapp.com/FactoryModels/";
 
 interface Category {
