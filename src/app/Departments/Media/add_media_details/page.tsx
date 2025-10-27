@@ -41,7 +41,7 @@ export default function AddSettingDetails() {
     const [mediaWT,setmediaWt ] = useState<number>(0);
 
   
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+const apiBaseUrl = "https://kalash.app"; 
 
 
   useEffect(() => {

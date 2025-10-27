@@ -56,7 +56,9 @@ const departments: Department[] = [
   { value: 'cutting', label: 'Cutting', path: '/Departments/Cutting/add_cutting_details' }
 ];
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; // Ensure this is set correctly
+// const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+
+const apiBaseUrl = "https://kalash.app";
 
 const formatIndianDateTime = (date: string | null): string => {
   if (!date) return '';

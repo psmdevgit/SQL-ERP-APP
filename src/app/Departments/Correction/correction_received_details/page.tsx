@@ -14,6 +14,7 @@ const apiBaseUrl ='https://kalash.app'
 
 
 
+
 interface Details {
   Id: string;
   Name: string;

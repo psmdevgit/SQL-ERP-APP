@@ -65,7 +65,7 @@ const SettingDetailsPage = () => {
   const searchParams = useSearchParams();
   const settingId = searchParams.get('settingId');
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+const apiBaseUrl = "https://kalash.app"; 
 
 //const apiBaseUrl = "http://localhost:5001"; 
   useEffect(() => {
