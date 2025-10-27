@@ -4,40 +4,39 @@ import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Input } from "@/components/ui/input";
 
-// const apiBaseUrl =  "https://erp-server-r9wh.onrender.com";
 
 const apiBaseUrl =  "https://kalash.app";
 
-//const apiBaseUrl ="http://localhost:5001";
+// const apiBaseUrl ="http://localhost:5001";
 interface CastingDetails {
 
   Id: string;
   Name: string;
-  Issued_Date__c: string;
-  Wax_Tree_Weight__c: number;
-  Required_Purity__c: string;
-  Gold_Tree_Weight__c: number;
-  Required_Pure_Metal_Casting__c: number;
-  Required_Alloy_for_Casting__c: number;
-  Issud_weight__c: number;
-  Received_Date__c: string | null;
-  Weight_Received__c: number | null;
-  Casting_Loss__c: number | null;
+  Issued_Date_c: string;
+  Wax_Tree_Weight_c: number;
+  Required_Purity_c: string;
+  Gold_Tree_Weight_c: number;
+  Required_Pure_Metal_Casting_c: number;
+  Required_Alloy_for_Casting_c: number;
+  Issud_weight_c: number;
+  Received_Date_c: string | null;
+  Weight_Received_c: number | null;
+  Casting_Loss_c: number | null;
 }
 
 interface OrderDetails {
   Id: string;
-  Order_Id__c: string;
-  id__c: string;
+  Order_Id_c: string;
+  id_c: string;
 }
 
 interface InventoryItem {
   Name: string;
-  Issued_Date__c: string;
-  Purity__c: string;
-  Issue_Weight__c: number;
-  Pure_Metal_weight__c: number;
-  Alloy_Weight__c: number;
+  Issued_Date_c: string;
+  Purity_c: string;
+  Issue_Weight_c: number;
+  Pure_Metal_weight_c: number;
+  Alloy_Weight_c: number;
 }
 
 const CastingAllDetailsPage = () => {
@@ -159,48 +158,48 @@ const CastingAllDetailsPage = () => {
               <div>
                 <label className="text-sm text-gray-600">Issued Date</label>
                 <p className="font-medium">
-                  {new Date(data.casting.Issued_Date__c).toLocaleDateString()}
+                  {new Date(data.casting.Issued_Date_c).toLocaleDateString()}
                 </p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Wax Tree Weight</label>
-                <p className="font-medium">{data.casting.Wax_Tree_Weight__c}g</p>
+                <p className="font-medium">{data.casting.Wax_Tree_Weight_c}g</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Required Purity</label>
-                <p className="font-medium">{data.casting.Required_Purity__c}</p>
+                <p className="font-medium">{data.casting.Required_Purity_c}</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Gold Tree Weight</label>
-                <p className="font-medium">{data.casting.Gold_Tree_Weight__c}g</p>
+                <p className="font-medium">{data.casting.Gold_Tree_Weight_c}g</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Required Pure Metal</label>
-                <p className="font-medium">{data.casting.Required_Pure_Metal_Casting__c}g</p>
+                <p className="font-medium">{data.casting.Required_Pure_Metal_Casting_c}g</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Required Alloy</label>
-                <p className="font-medium">{data.casting.Required_Alloy_for_Casting__c}g</p>
+                <p className="font-medium">{data.casting.Required_Alloy_for_Casting_c}g</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Total Issued Weight</label>
-                <p className="font-medium">{data.casting.Issud_weight__c}g</p>
+                <p className="font-medium">{data.casting.Issud_weight_c}g</p>
               </div>
-              {data.casting.Received_Date__c && (
+              {data.casting.Received_Date_c && (
                 <>
                   <div>
                     <label className="text-sm text-gray-600">Received Date</label>
                     <p className="font-medium">
-                      {new Date(data.casting.Received_Date__c).toLocaleDateString()}
+                      {new Date(data.casting.Received_Date_c).toLocaleDateString()}
                     </p>
                   </div>
                   <div>
                     <label className="text-sm text-gray-600">Received Weight</label>
-                    <p className="font-medium">{data.casting.Weight_Received__c}g</p>
+                    <p className="font-medium">{data.casting.Weight_Received_c}g</p>
                   </div>
                   <div>
                     <label className="text-sm text-gray-600">Casting Loss</label>
-                    <p className="font-medium">{data.casting.Casting_Loss__c}g</p>
+                    <p className="font-medium">{data.casting.Casting_Loss_c}g</p>
                   </div>
                 </>
               )}
@@ -244,8 +243,8 @@ const CastingAllDetailsPage = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {(filteredOrders.length > 0 ? filteredOrders : data.orders).map((order) => (
                     <tr key={order.Id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">{order.Order_Id__c}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{order.id__c}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{order.Order_Id_c}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{order.id_c}</td>
                     </tr>
                   ))}
                   {(filteredOrders.length === 0 && searchTerm) && (
@@ -294,12 +293,12 @@ const CastingAllDetailsPage = () => {
                     <tr key={index}>
                       <td className="px-6 py-4 whitespace-nowrap">{item.Name}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {new Date(item.Issued_Date__c).toLocaleDateString()}
+                        {new Date(item.Issued_Date_c).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.Purity__c}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.Issue_Weight__c}g</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.Pure_Metal_weight__c}g</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.Alloy_Weight__c}g</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{item.Purity_c}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{item.Issue_Weight_c}g</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{item.Pure_Metal_weight_c}g</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{item.Alloy_Weight_c}g</td>
                     </tr>
                   ))}
                 </tbody>

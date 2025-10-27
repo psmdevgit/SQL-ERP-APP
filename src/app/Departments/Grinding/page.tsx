@@ -56,7 +56,9 @@ export default function CreateGrindingFromDepartment() {
 
 const apiBaseUrl = "https://kalash.app"; 
 
-  // Fetch department records when department changes
+// const apiBaseUrl = "http://localhost:5001";
+
+// Fetch department records when department changes
   useEffect(() => {
     const fetchDepartmentRecords = async () => {
       if (!selectedDepartment) return;

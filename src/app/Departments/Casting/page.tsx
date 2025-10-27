@@ -14,8 +14,8 @@ import CastingTable from "@/components/casting/castingtable";
 import { toast } from "react-hot-toast";
 import { z } from "zod";
 import { Portal } from "@radix-ui/react-portal"; // ✅
+import { Console, log } from "console";
 
-// const apiUrl = "https://erp-server-r9wh.onrender.com";
 
 const apiUrl = "https://kalash.app";
 
@@ -47,36 +47,112 @@ interface InventoryApiItem {
 
 const CastingForm = () => {
 
-  const [trees, setTrees] = useState<any[]>([]);
-const [selectedTree, setSelectedTree] = useState<any | null>(null);
 
+  // ✅ Tree & Partycode Handling (Fixed)
+const [trees, setTrees] = useState<any[]>([]);
+const [selectedTree, setSelectedTree] = useState<any | null>(null);
+ const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+const [partycode, setPartycode] = useState("");
+
+// ✅ Fetch casting trees on mount
 useEffect(() => {
   fetch(`${apiUrl}/casting-trees`)
     .then(res => res.json())
     .then(data => {
       if (data.success) setTrees(data.data);
-    });
+      console.log("Trees fetched:", data);
+    })
+    .catch(err => console.error("Error fetching trees:", err));
 }, []);
 
+// ✅ When tree is selected
 const handleTreeSelect = (treeId: string) => {
   const tree = trees.find(t => t.Id === treeId);
-  if (tree) {
+  if (!tree) return;
 
-    setSelectedTree(tree);
-     // auto-fill your main form
-    setCastingNumber(tree.Name);  // Casting Number
-    setWaxTreeWeight(tree.Tree_Weight__c || 0);
-    setStoneWeight(tree.stone_weight__c || 0);
-    setSelectedOrders(tree.OrderID__C||0); // Assuming OrderID__c is a comma-separated string of order IDs  
-    // set Issued Date & Time (today by default)
-    setSelectedOrders([tree.orderId__c||0]);
-    const now = new Date();
-    setIssuedDate(tree.Issue_Date__c || now.toISOString().split("T")[0]   // "2025-09-10"
-);
-    setIssuedTime( tree.issue_Date__C||now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }));
-    
+  console.log("Selected Tree:", tree);
+
+  setSelectedTree(tree);
+
+  // Auto-fill main form
+  setCastingNumber(tree.Name || "");
+  setWaxTreeWeight(tree.Tree_Weight_c || 0);
+  setStoneWeight(tree.stone_weight_c || 0);
+
+  // ✅ Properly set selectedOrders as string array
+  const orderValue = tree.OrderID_C ?? "";
+  setSelectedOrders([String(orderValue)]);
+
+  // ✅ Set issue date and time
+  const now = new Date();
+  setIssuedDate(tree.Issue_Date_c || now.toISOString().split("T")[0]);
+  setIssuedTime(
+    tree.Issue_Time_c ||
+      now.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" })
+  );
+};
+
+// ✅ Watch for selectedOrders change and update partycode
+useEffect(() => {
+  console.log("Selected orders updated:", selectedOrders);
+
+  if (!Array.isArray(selectedOrders) || selectedOrders.length === 0) {
+    setPartycode("");
+    return;
+  }
+
+  const first = selectedOrders[0];
+
+  if (typeof first !== "string" || !first) {
+    setPartycode("");
+    return;
+  }
+
+  const code = first.includes("/") ? first.split("/")[0] : first;
+  console.log("Extracted Party Code:", code);
+
+  setPartycode(code);
+}, [selectedOrders]);
+
+// ✅ Fetch inventory when partycode updates (not before)
+useEffect(() => {
+  if (partycode) {
+    console.log("Fetching inventory for Party Code:", partycode);
+    fetchInventoryItems();
+  }
+}, [partycode]);
+
+// ✅ Inventory Fetch Function
+const fetchInventoryItems = async () => {
+  try {
+    console.log("Inventory Selected orders:", selectedOrders);
+    console.log("Inventory Extracted partycode:", partycode);
+
+    const response = await fetch(`${apiUrl}/get-inventory?partycode=${partycode}`);
+    const data = await response.json();
+
+    console.log("Raw API Response:", data);
+
+    if (data.success) {
+      data.data.forEach((item: any) => {
+        console.log("Inventory Item:", {
+          name: item.name,
+          availableWeight: item.availableWeight,
+          purity: item.purity,
+        });
+      });
+
+      setInventoryApiItems(data.data);
+    } else {
+      console.log("Error Message:", data.message);
+      setError(data.message);
+    }
+  } catch (error) {
+    console.error("Error fetching inventory:", error);
+    setError("Failed to fetch inventory items");
   }
 };
+
 const handleSubmit = async (e?: React.FormEvent) => {
   if (e) e.preventDefault();
 
@@ -95,10 +171,10 @@ const handleSubmit = async (e?: React.FormEvent) => {
 
     // Combine date and time into proper ISO string
   // Combine date and time into proper ISO string
-       const combinedDateTime = `${issuedDate}T${issuedTime}`;
+      const combinedDateTime = `${issuedDate}T${issuedTime}`;
 
     // Total issued weight = inventory + stones
-    const totalIssuedFromInventory = inventoryItems.reduce(
+     const totalIssuedFromInventory = inventoryItems.reduce(
       (sum, item) => sum + Number(item.issueWeight), 0
     );
     const totalIssued = totalIssuedFromInventory + (stoneWeight || 0);
@@ -108,7 +184,8 @@ const handleSubmit = async (e?: React.FormEvent) => {
 
     // Round calculated weight
     const roundedReceivedWeight = customRound(calculatedWeight);
-
+// Example: split the first selected order if needed
+let [partycode, order] = selectedOrders.length > 0 ? selectedOrders[0].split("/") : ["", ""];
     // Prepare payload for API
     const castingData = {
       castingNumber: finalCastingNumber,
@@ -129,7 +206,6 @@ const handleSubmit = async (e?: React.FormEvent) => {
         const purityNum = parseFloat(item.purity.replace(/[^0-9.]/g, '')) / 100;
         return {
           itemName: item.itemName,
-          order:selectedOrders[0],
           purity: item.purity,
           issueWeight: Number(item.issueWeight),
           issuedGold: Number(item.issueWeight) * purityNum,
@@ -159,6 +235,7 @@ const handleSubmit = async (e?: React.FormEvent) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         issuedItems: inventoryItems.map(item => ({
+          partycode: partycode,
           itemName: item.itemName,
           purity: item.purity,
           issueWeight: Number(item.issueWeight),
@@ -207,7 +284,7 @@ const handleSubmit = async (e?: React.FormEvent) => {
 
 
   // Main form state
-  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+ 
   const [waxTreeWeight, setWaxTreeWeight] = useState<number>(0);
   const [purity, setPurity] = useState<string>('');
   const [calculatedWeight, setCalculatedWeight] = useState<number>(0);
@@ -321,41 +398,38 @@ const handleSubmit = async (e?: React.FormEvent) => {
   }, [orders]);
 
   // Log selected orders changes
-  useEffect(() => {
-    console.log('Selected orders:', selectedOrders);
-  }, [selectedOrders]);
+
+
+useEffect(() => {
+  console.log("Selected orders:", selectedOrders);
+
+  if (!Array.isArray(selectedOrders) || selectedOrders.length === 0) {
+    setPartycode("");
+    return;
+  }
+
+  const first = selectedOrders[0];
+
+  if (typeof first !== "string" || !first) {
+    setPartycode("");
+    return;
+  }
+
+  const code = first.includes("/") ? first.split("/")[0] : first;
+  console.log("Extracted Party Code:", code);
+  setPartycode(code);
+}, [selectedOrders]);
+
+
+// Now you can use partycode elsewhere
+
 
   // Fetch inventory items on component mount
   useEffect(() => {
-    fetchInventoryItems();
+   
   }, []);
 
-  const fetchInventoryItems = async () => {
-    try {
-      const response = await fetch(`${apiUrl}/get-inventory`);
-      const data = await response.json();
-      console.log('Raw API Response:', data); // Log the raw response 
-      
-      if (data.success) {
-        // Log each item's structure
-        data.data.forEach((item: any) => {
-          console.log('Individual Item Structure:', {
-            name: item.name,
-            availableWeight: item.availableWeight,
-            purity: item.purity
-          });
-        });
-        
-        setInventoryApiItems(data.data);
-      } else {
-        console.log('Error Message:', data.message);
-        setError(data.message);
-      }
-    } catch (error) {
-      console.error('Error fetching inventory:', error);
-      setError('Failed to fetch inventory items');
-    }
-  };
+
 
   // Add log when inventory items state updates
   useEffect(() => {
@@ -670,7 +744,7 @@ const handleSubmit = async (e?: React.FormEvent) => {
       <SelectContent className="z-[1000] bg-white">
         {trees.map((tree) => (
           <SelectItem key={tree.Id} value={tree.Id}>
-            {tree.Name} (Weight: {tree.Tree_Weight__c} g, Stones: {tree.stone_weight__c} g)
+            {tree.Name} (Weight: {tree.Tree_Weight_c} g, Stones: {tree.stone_weight_c} g)
           </SelectItem>
         ))}
       </SelectContent>
