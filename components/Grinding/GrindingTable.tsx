@@ -53,7 +53,9 @@ const departments: Department[] = [
   { value: 'dull', label: 'Dull', path: '/Departments/Dull/add_dull_details' }
 ];
 
-const apiBaseUrl ='http://localhost:5001'; // Ensure this is set correctly
+
+const apiBaseUrl = "https://kalash.app";
+
 const downloadPDF = async (pdfUrl: string) => {
   try {
     const response = await fetch(pdfUrl, {

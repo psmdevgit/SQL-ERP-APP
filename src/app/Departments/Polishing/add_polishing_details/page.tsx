@@ -50,7 +50,7 @@ export default function AddPolishingDetails() {
 
 const apiBaseUrl = "https://kalash.app"; 
 
-// const apiBaseUrl= process.env.NEXT_PUBLIC_API_URL;
+
   useEffect(() => {
     const initializePolishing = async () => {
       if (!filingId && !grindingId && !settingId  && !correctionId ) {

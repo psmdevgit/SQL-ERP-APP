@@ -57,9 +57,11 @@ const departments: Department[] = [
 
 ];
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-//const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+// const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+
+const apiBaseUrl = "https://kalash.app";
+
 
 const getStatusClass = (status: string) => {
   switch (status?.toLowerCase()) {

@@ -68,8 +68,9 @@ const GrindingDetailsPage = () => {
   
 const apiBaseUrl = "https://kalash.app"; 
 
+
 // const apiBaseUrl = "http://localhost:5001"; 
-// Use this for local development
+
   useEffect(() => {
     const fetchDetails = async () => {
       if (!grindingId) {

@@ -35,9 +35,10 @@ export default function AddCuttingDetails() {
   const [orderId, setOrderId] = useState<string>('');
   const router = useRouter();
 
+
+
+const apiBaseUrl = "https://kalash.app";
   
-//const apiBaseUrl =  "https://erp-server-r9wh.onrender.com";
-const apiBaseUrl =  "http://localhost:5001";
   useEffect(() => {
     const initializeCutting = async () => {
       if (!platingId) {

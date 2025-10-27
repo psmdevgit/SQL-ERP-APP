@@ -38,10 +38,12 @@ export default function AddSettingDetails() {
   const router = useRouter();
 
   
-// const apiBaseUrl ='http://localhost:5001' 
 
 
-const apiBaseUrl ='https://kalash.app' 
+// const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+  
+const apiBaseUrl = "https://kalash.app"; 
+
 
 
 

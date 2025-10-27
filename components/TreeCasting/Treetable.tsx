@@ -10,7 +10,9 @@ export default function CastingReport() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
-const apiUrl = "http://localhost:5001"; // Replace with your actual API URL
+
+const apiUrl = "https://kalash.app";
+
   useEffect(() => {
   const fetchData = async () => {
     setLoading(true);

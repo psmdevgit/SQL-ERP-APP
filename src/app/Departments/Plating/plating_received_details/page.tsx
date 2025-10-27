@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { Label } from "@/components/ui/label";
 
 const apiBaseUrl = "https://kalash.app"; 
-// const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5001";
+
 
 type Plating= {
   Id: string;

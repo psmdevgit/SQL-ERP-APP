@@ -42,7 +42,8 @@ export default function AddSettingDetails() {
 const apiBaseUrl = "https://kalash.app"; 
 
 
-// const apiBaseUrl= process.env.NEXT_PUBLIC_API_URL;
+
+
 
   useEffect(() => {
     const initializeSetting = async () => {
