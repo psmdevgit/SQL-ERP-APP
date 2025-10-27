@@ -10,7 +10,7 @@ export default function CastingReport() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
-const apiUrl = "https://erp-server-r9wh.onrender.com";
+const apiUrl = "https://kalash.app";
   useEffect(() => {
   const fetchData = async () => {
     setLoading(true);
