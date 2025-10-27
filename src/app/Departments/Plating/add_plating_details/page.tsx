@@ -36,9 +36,10 @@ export default function AddPlatingDetails() {
   const router = useRouter();
 
   
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+const apiBaseUrl = "https://kalash.app"; 
 
-  useEffect(() => {
+// const apiBaseUrl = "http://localhost:5001";  
+useEffect(() => {
     const initializePlating = async () => {
       if (!dullId) {
         console.log('[Add Plating] No dull ID provided');

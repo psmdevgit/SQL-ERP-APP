@@ -57,9 +57,9 @@ const departments: Department[] = [
 
 ];
 
-// const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+//const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
 
 const getStatusClass = (status: string) => {
   switch (status?.toLowerCase()) {
@@ -272,7 +272,7 @@ const PlatingTable = () => {
                             </TableCell>
                             <TableCell>{deal.Name}</TableCell>
                             <TableCell>{deal.Issued_Weight__c}</TableCell>
-                            <TableCell>{deal.Returned_Weight__c}</TableCell>
+                            <TableCell>{deal.Returned_weight__c}</TableCell>
                             <TableCell>{deal.Issued_Date__c || ''}</TableCell>
                             <TableCell>{deal.Received_Date__c || ''}</TableCell>
                             <TableCell>{deal.Order_Id__c || ' '}</TableCell>

@@ -48,16 +48,14 @@ export default function AddPolishingDetails() {
 
   const router = useRouter();
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+const apiBaseUrl = "https://kalash.app"; 
 
-
+// const apiBaseUrl= process.env.NEXT_PUBLIC_API_URL;
   useEffect(() => {
     const initializePolishing = async () => {
       if (!filingId && !grindingId && !settingId  && !correctionId ) {
         toast.error('No ID provided');
-
         console.error('[AddPolishing] Initialization failed: No ID provided in URL parameters.');
-
         return;
       }
 
