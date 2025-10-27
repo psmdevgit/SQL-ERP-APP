@@ -11,7 +11,9 @@ import { Label } from "@/components/ui/label";
 // const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://erp-server-r9wh.onrender.com";
 
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+// const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+
+const apiBaseUrl = "https://kalash.app";
 
 // const apiBaseUrl = "http://locaLhost:5001"; 
 
