@@ -36,7 +36,7 @@ export default function AddPlatingDetails() {
   const router = useRouter();
 
   
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+const apiBaseUrl = "https://kalash.app"; 
 
   useEffect(() => {
     const initializePlating = async () => {
