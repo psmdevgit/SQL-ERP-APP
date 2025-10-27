@@ -40,7 +40,9 @@ export default function AddDullDetails() {
   const [orderId, setOrderId] = useState<string>('');
   const router = useRouter();
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+// const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+  
+const apiBaseUrl = "https://kalash.app";
 
   useEffect(() => {
     const initializeDull = async () => {
