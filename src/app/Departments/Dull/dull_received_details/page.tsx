@@ -10,7 +10,9 @@ import { useRouter } from 'next/navigation';
 
 // const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+// const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+
+const apiBaseUrl = "https://kalash.app";
 
 // const apiBaseUrl = "http://localhost:5001"; 
 
