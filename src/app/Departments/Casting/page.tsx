@@ -15,7 +15,9 @@ import { toast } from "react-hot-toast";
 import { z } from "zod";
 import { Portal } from "@radix-ui/react-portal"; // ✅
 
-const apiUrl = "https://erp-server-r9wh.onrender.com";
+// const apiUrl = "https://erp-server-r9wh.onrender.com";
+
+const apiUrl = "https://kalash.app";
 
 
 // const apiUrl = "http://localhost:5001";
