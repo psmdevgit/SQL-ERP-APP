@@ -53,8 +53,6 @@ const departments: Department[] = [
   { value: 'dull', label: 'Dull', path: '/Departments/Dull/add_dull_details' }
 ];
 
-// const apiBaseUrl ="https://erp-server-r9wh.onrender.com"; 
-
 
 const apiBaseUrl = "https://kalash.app";
 
@@ -208,12 +206,15 @@ const GrindingTable = () => {
 
   // Apply sorting
   const sortedDeals = getSortedData(deals);
-  
+    console.log("Sorting by:", sortedDeals);
+
   console.log("Deals State:", deals.length, "Sorted deals:", sortedDeals.length);
 
   const startIndex = page * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const paginatedRows = sortedDeals.slice(startIndex, endIndex);
+
+  console.log(`Paginating rows: startIndex=${startIndex}, endIndex=${endIndex}, paginatedRows=${paginatedRows.length}`);
   const filteredRows = sortedDeals; // For compatibility with existing code
 
   const {

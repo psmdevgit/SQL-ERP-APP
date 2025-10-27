@@ -38,7 +38,8 @@ export default function AddPlatingDetails() {
   
 const apiBaseUrl = "https://kalash.app"; 
 
-  useEffect(() => {
+// const apiBaseUrl = "http://localhost:5001";  
+useEffect(() => {
     const initializePlating = async () => {
       if (!dullId) {
         console.log('[Add Plating] No dull ID provided');

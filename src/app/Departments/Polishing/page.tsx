@@ -55,7 +55,9 @@ export default function CreateSettingFromDepartment() {
   const router = useRouter();
 
   
+
 const apiBaseUrl ="https://kalash.app"; 
+
 
   // Fetch department records when department changes
   useEffect(() => {

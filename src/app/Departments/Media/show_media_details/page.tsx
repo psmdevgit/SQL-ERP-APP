@@ -68,7 +68,9 @@ const GrindingDetailsPage = () => {
   
 const apiBaseUrl = "https://kalash.app"; 
 
+
   useEffect(() => {
+
     const fetchDetails = async () => {
       if (!grindingId) {
         toast.error('No grinding ID provided');

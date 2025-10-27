@@ -10,10 +10,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "react-hot-toast";
 import { Portal } from "@radix-ui/react-portal"; // ✅
 
-//const apiUrl = "http://localhost:5001";
+
+// const apiUrl = "http://localhost:5001";
 
 
 const apiUrl = "https://kalash.app";
+
+
+
 // Interfaces
 interface InventoryItem {
   id: string;
@@ -41,12 +45,12 @@ interface InventoryApiItem {
 interface Stone {
   Id: string;
   Name: string;
-  Type__c: string;
-  Colour__c: string;
-  Shape__c: string;
-  Size__c: number;
-  Pieces__c: number;
-  Weight__c: number;
+  Type_c: string;
+  Colour_c: string;
+  Shape_c: string;
+  Size_c: number;
+  Pieces_c: number;
+  Weight_c: number;
 }
 
 
@@ -91,10 +95,10 @@ const [filteredStones, setFilteredStones] = useState<Stone[]>([]);
   useEffect(() => {
   let temp = stones;
 
-  if (selectedType) temp = temp.filter(s => s.Type__c === selectedType);
-  if (selectedColor) temp = temp.filter(s => s.Colour__c === selectedColor);
-  if (selectedShape) temp = temp.filter(s => s.Shape__c === selectedShape);
-  if (selectedSize) temp = temp.filter(s => s.Size__c === selectedSize);
+  if (selectedType) temp = temp.filter(s => s.Type_c === selectedType);
+  if (selectedColor) temp = temp.filter(s => s.Colour_c === selectedColor);
+  if (selectedShape) temp = temp.filter(s => s.Shape_c === selectedShape);
+  if (selectedSize) temp = temp.filter(s => s.Size_c === selectedSize);
 
   setFilteredStones(temp);
 }, [selectedType, selectedColor, selectedShape, selectedSize, stones]);
@@ -126,20 +130,10 @@ const [filteredStones, setFilteredStones] = useState<Stone[]>([]);
   }, [searchOrder, orders]);
 
   // Fetch inventory
-  useEffect(() => {
-    const fetchInventoryItems = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/get-inventory`);
-        const data = await response.json();
-        if (data.success) {
-          setInventoryApiItems(data.data);
-        }
-      } catch (error) {
-        console.error("Error fetching inventory:", error);
-      }
-    };
-    fetchInventoryItems();
-  }, []);
+
+  
+   
+    
 
   // Fetch stones
   useEffect(() => {
@@ -281,13 +275,13 @@ const handleSubmit = async (e?: React.FormEvent) => {
     if (field === "size") {
       const stone = stones.find(
         s =>
-          s.Size__c === value &&
-          (!updated[index].type || s.Type__c === updated[index].type) &&
-          (!updated[index].color || s.Colour__c === updated[index].color) &&
-          (!updated[index].shape || s.Shape__c === updated[index].shape)
+          s.Size_c === value &&
+          (!updated[index].type || s.Type_c === updated[index].type) &&
+          (!updated[index].color || s.Colour_c === updated[index].color) &&
+          (!updated[index].shape || s.Shape_c === updated[index].shape)
       );
       if (stone) {
-        updated[index].weight = stone.Weight__c || 0;
+        updated[index].weight = stone.Weight_c || 0;
       }
     }
 
@@ -387,7 +381,7 @@ const handleSubmit = async (e?: React.FormEvent) => {
           <SelectTrigger><SelectValue placeholder="Select Type" /></SelectTrigger>
           <Portal>
             <SelectContent className="z-[1000] bg-white">
-              {[...new Set(stones.map(s => s.Type__c))].map(type => (
+              {[...new Set(stones.map(s => s.Type_c))].map(type => (
                 <SelectItem key={type} value={type}>{type}</SelectItem>
               ))}
             </SelectContent>
@@ -414,7 +408,7 @@ const handleSubmit = async (e?: React.FormEvent) => {
           <Portal>
             <SelectContent className="z-[1000] bg-white">
               {[...new Set(
-                stones.filter(s => s.Type__c === row.type).map(s => s.Colour__c)
+                stones.filter(s => s.Type_c === row.type).map(s => s.Colour_c)
               )].map(color => (
                 <SelectItem key={color} value={color}>{color}</SelectItem>
               ))}
@@ -442,8 +436,8 @@ const handleSubmit = async (e?: React.FormEvent) => {
             <SelectContent className="z-[1000] bg-white">
               {[...new Set(
                 stones.filter(s =>
-                  s.Type__c === row.type && s.Colour__c === row.color
-                ).map(s => s.Shape__c)
+                  s.Type_c === row.type && s.Colour_c === row.color
+                ).map(s => s.Shape_c)
               )].map(shape => (
                 <SelectItem key={shape} value={shape}>{shape}</SelectItem>
               ))}
@@ -459,17 +453,17 @@ const handleSubmit = async (e?: React.FormEvent) => {
           value={row.size}
           onValueChange={(val) => {
             const selectedStone = stones.find(s =>
-              s.Size__c === val &&
-              s.Type__c === row.type &&
-              s.Colour__c === row.color &&
-              s.Shape__c === row.shape
+              s.Size_c === val &&
+              s.Type_c === row.type &&
+              s.Colour_c === row.color &&
+              s.Shape_c === row.shape
             );
             if (selectedStone) {
-              updateRow(index, "size", selectedStone.Size__c);
+              updateRow(index, "size", selectedStone.Size_c);
               updateRow(index, "id", selectedStone.Id);
               updateRow(index, "name", selectedStone.Name);
-              updateRow(index, "weight", selectedStone.Weight__c || 0);
-              updateRow(index, "availableWeight", selectedStone.Weight__c || 0);
+              updateRow(index, "weight", selectedStone.Weight_c || 0);
+              updateRow(index, "availableWeight", selectedStone.Weight_c || 0);
             }
           }}
           disabled={!row.type || !row.color || !row.shape}
@@ -479,10 +473,10 @@ const handleSubmit = async (e?: React.FormEvent) => {
             <SelectContent className="z-[1000] bg-white">
               {[...new Set(
                 stones.filter(s =>
-                  s.Type__c === row.type &&
-                  s.Colour__c === row.color &&
-                  s.Shape__c === row.shape
-                ).map(s => s.Size__c)
+                  s.Type_c === row.type &&
+                  s.Colour_c === row.color &&
+                  s.Shape_c === row.shape
+                ).map(s => s.Size_c)
               )].map(size => (
                 <SelectItem key={size} value={size}>{size}</SelectItem>
               ))}
@@ -535,12 +529,12 @@ const handleSubmit = async (e?: React.FormEvent) => {
 {selectedStone && (
   <div className="mt-4 p-3 border rounded bg-gray-50">
   {/* <p><strong>Name:</strong> {selectedStone.Name}</p> */}
-    <p><strong>Type:</strong> {selectedStone.Type__c}</p>
-    <p><strong>Color:</strong> {selectedStone.Colour__c}</p>
-    <p><strong>Shape:</strong> {selectedStone.Shape__c}</p>
-    <p><strong>Size:</strong> {selectedStone.Size__c}</p>
-    <p><strong>Pieces:</strong> {selectedStone.Pieces__c}</p>
-    <p><strong>Weight:</strong> {selectedStone.Weight__c} g</p>
+    <p><strong>Type:</strong> {selectedStone.Type_c}</p>
+    <p><strong>Color:</strong> {selectedStone.Colour_c}</p>
+    <p><strong>Shape:</strong> {selectedStone.Shape_c}</p>
+    <p><strong>Size:</strong> {selectedStone.Size_c}</p>
+    <p><strong>Pieces:</strong> {selectedStone.Pieces_c}</p>
+    <p><strong>Weight:</strong> {selectedStone.Weight_c} g</p>
       <div>
     <Label>Stone Weight (g)</Label>
     <Input
@@ -549,15 +543,11 @@ const handleSubmit = async (e?: React.FormEvent) => {
       onChange={(e) => setStoneWeight(parseFloat(e.target.value) || 0)}
     />
     <p className="text-xs text-gray-500 mt-1">
-      Default from Stone Master: {selectedStone?.Weight__c ?? "N/A"}g
+      Default from Stone Master: {selectedStone?.Weight_c ?? "N/A"}g
     </p>
   </div>
   </div>
 )}
-
-
-
-
 
 </div>
 

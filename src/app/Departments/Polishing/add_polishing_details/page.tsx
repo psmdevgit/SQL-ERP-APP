@@ -55,9 +55,7 @@ const apiBaseUrl = "https://kalash.app";
     const initializePolishing = async () => {
       if (!filingId && !grindingId && !settingId  && !correctionId ) {
         toast.error('No ID provided');
-
         console.error('[AddPolishing] Initialization failed: No ID provided in URL parameters.');
-
         return;
       }
 

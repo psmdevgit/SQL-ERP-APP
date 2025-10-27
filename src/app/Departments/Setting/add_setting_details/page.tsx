@@ -44,6 +44,7 @@ const apiBaseUrl = "https://kalash.app";
 
 
 
+
   useEffect(() => {
     const initializeSetting = async () => {
       if (!filingId && !grindingId && !correctionId) {
@@ -97,6 +98,7 @@ const formattedPouches = pouchResult.data.pouches.map((pouch: Pouch) => ({
 
 
         setPouches(formattedPouches);
+        console.log('[AddSetting] Formatted Pouches:', formattedPouches);
         
         const weights: { [key: string]: number } = {};
         const quantities: { [key: string]: number } = {};
@@ -136,11 +138,11 @@ const formattedPouches = pouchResult.data.pouches.map((pouch: Pouch) => ({
       [pouchId]: quantity
     }));
   };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-     for (const pouch of pouches) {
+  // ✅ Validation: ensure entered weight is not greater than received weight
+  for (const pouch of pouches) {
     const enteredWeight = pouchWeights[pouch.Id] || 0;
     const receivedWeight = pouch.Received_Weight_Grinding__c || 0;
 
@@ -148,79 +150,89 @@ const formattedPouches = pouchResult.data.pouches.map((pouch: Pouch) => ({
       alert(
         `Entered Setting Weight (${enteredWeight}g) cannot be greater than Received Grinding Weight (${receivedWeight}g) for pouch ${pouch.Name}`
       );
-      return; // ❌ Stop form submission
+      return;
     }
   }
 
-    try {
-      setIsSubmitting(true);
+  try {
+    setIsSubmitting(true);
 
-      // Combine date and time for issued datetime
-      const combinedDateTime = `${issuedDate}T${issuedTime}:00.000Z`;
+    // ✅ Combine date and time properly
+    const combinedDateTime = `${issuedDate}T${issuedTime}:00.000Z`;
 
-      // Prepare pouch data
-      const pouchData = pouches.map(pouch => ({
-        pouchId: pouch.Id,
-        settingWeight: pouchWeights[pouch.Id] || 0,
-        quantity: pouchQuantities[pouch.Id] || 0,
-        product: pouch.Product__c || 'N/A'
-      }));
+    // ✅ Prepare pouch data
+    const pouchData = pouches.map((pouch) => ({
+      pouchId: pouch.Id,
+      pouchName: pouch.Name,
+      settingWeight: pouchWeights[pouch.Id] || 0,
+      quantity: pouch.Quantity__c || 0,
+      product: pouch.Product__c || "N/A",
+      orderId: pouch.Order_Id__c || "N/A", // ✅ Pass actual order number
+      receivedWeightGrinding: pouch.Received_Weight_Grinding__c || 0,
+      receivedWeightCorrection: pouch.Received_Weight_Correction__c || 0,
+    }));
 
-      // Prepare setting data
-      const settingData = {
-        settingId: formattedId,
-        issuedDate: combinedDateTime, // Use combined date and time
-        pouches: pouchData,
-        totalWeight: totalWeight,
-        status: 'Pending',
-        product: pouches[0]?.Product__c || 'N/A',
-        quantity: pouchQuantities[pouches[0]?.Id] || 0,
-        orderId: orderId
-      };
+    // ✅ Prepare main setting record
+    const settingData = {
+      settingId: formattedId,
+      issuedDate: combinedDateTime,
+      pouches: pouchData,
+      totalWeight: totalWeight,
+      status: "Pending",
+      product: pouches[0]?.Product__c || "N/A",
+      quantity: pouches[0]?.Quantity__c || 0,
+      orderId: pouches[0]?.Order_Id__c || "N/A", // ✅ Include main orderId
+    };
 
-      console.log('[AddSetting] Submitting data:', settingData);
+    console.log("[AddSetting] Submitting data:", settingData);
 
-      const response = await fetch(`${apiBaseUrl}/api/setting/create`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(settingData)
-      });
+    const response = await fetch(`${apiBaseUrl}/api/setting/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(settingData),
+    });
 
-      const result = await response.json();
+    const result = await response.json();
 
-      if (result.success) {
-        toast.success('Setting details saved successfully');
-        alert('Setting details saved successfully');
-        // Reset form
-        setPouches([]);
-        setPouchWeights({});
-        setPouchQuantities({});
-        setTotalWeight(0);
-        setIssuedDate(new Date().toISOString().split('T')[0]);
-        setIssuedTime(new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }));
-        setFormattedId('');
-        
-        // Reset any other state variables
-        setLoading(false);
-        
-        // Optionally redirect to the setting list page
-         setTimeout(() => {
-          router.push('/Departments/Setting/Setting_Table');
-        }, 1000);
-        
-      } else {
-        throw new Error(result.message || 'Failed to save setting details');
-      }
-    } catch (error) {
-      console.error('[AddSetting] Error:', error);
-      toast.error(error.message || 'Failed to save setting details');
-      alert(error.message || 'Failed to save setting details');
-    } finally {
-      setIsSubmitting(false);
+    if (result.success) {
+      toast.success("Setting details saved successfully");
+      alert("Setting details saved successfully");
+
+      // ✅ Reset state
+      setPouches([]);
+      setPouchWeights({});
+      setPouchQuantities({});
+      setTotalWeight(0);
+      setIssuedDate(new Date().toISOString().split("T")[0]);
+      setIssuedTime(
+        new Date().toLocaleTimeString("en-US", {
+          hour12: false,
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      );
+      setFormattedId("");
+      setLoading(false);
+
+      // ✅ Optional redirect
+      setTimeout(() => {
+        router.push("/Departments/Setting/Setting_Table");
+      }, 1000);
+    } else {
+      throw new Error(result.message || "Failed to save setting details");
     }
-  };
+  } catch (error: any) {
+    console.error("[AddSetting] Error:", error);
+    toast.error(error.message || "Failed to save setting details");
+    alert(error.message || "Failed to save setting details");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
 
   if (loading) {
     return <div>Loading...</div>;

@@ -24,7 +24,7 @@ export const fetchSettingData = async (): Promise<ISetting[]> => {
             status: setting.status__c,  
             product: setting.Product__c || 'N/A',
             quantity: setting.Quantity__c || 0,
-            orderId: setting.Order_Id__c || '',
+            orderId: setting.Order_Id_c || '',
             stoneWeight: setting.Stone_Weight__c || 0,
             grindingLoss: setting.Setting_l__c || 0 // Calculate loss
           };

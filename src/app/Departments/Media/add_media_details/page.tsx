@@ -43,6 +43,7 @@ export default function AddSettingDetails() {
   
 const apiBaseUrl = "https://kalash.app"; 
 
+// const apiBaseUrl = "http://localhost:5001";
 
   useEffect(() => {
     const initializeSetting = async () => {

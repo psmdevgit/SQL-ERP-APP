@@ -13,6 +13,7 @@ const apiBaseUrl = "https://kalash.app";
 
 // const apiBaseUrl = "http://localhost:5001"; 
 
+ 
 
 interface Setting {
   Id: string;
@@ -102,7 +103,7 @@ const SettingDetailsPage = () => {
       
       // Set ornament weight as pouch weights + stone weights
       setOrnamentWeight(totalPouchWeight + totalStoneWeight);
-      
+    
       // Calculate total received weight including scrap and dust
       const newTotalReceived = totalPouchWeight + totalStoneWeight + scrapReceivedWeight + dustReceivedWeight;
       setTotalReceivedWeight(newTotalReceived);

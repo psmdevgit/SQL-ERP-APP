@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Table, Input, DatePicker, Select, Button, Tag } from "antd";
 import dayjs from "dayjs";
-
+import dataAxios from "@/src/axios";
 const { RangePicker } = DatePicker;
 
 export default function CastingReport() {
@@ -10,7 +10,9 @@ export default function CastingReport() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
+
 const apiUrl = "https://kalash.app";
+
   useEffect(() => {
   const fetchData = async () => {
     setLoading(true);
@@ -35,19 +37,19 @@ const filteredData = (Array.isArray(data) ? data : []).filter((item) => {
 
   const columns = [
     { title: "ID", dataIndex: "Name", key: "id" },
-    { title: "Tree Weight", dataIndex: "Tree_Weight__c", key: "tw" },
-    { title: "Order ID", dataIndex: "orderId__c", key: "order" },
-    { title: "Stone Name", dataIndex: "stone_type__c", key: "stone" },
-    { title: "Stone Weight", dataIndex: "stone_weight__c", key: "sw" },
+    { title: "Tree Weight", dataIndex: "Tree_Weight_c", key: "tw" },
+    { title: "Order ID", dataIndex: "OrderID_C", key: "order" },
+    { title: "Stone Name", dataIndex: "stone_type_c", key: "stone" },
+    { title: "Stone Weight", dataIndex: "stone_weight_c", key: "sw" },
     {
       title: "Issued Date",
-      dataIndex: "issued_Date__c",
+      dataIndex: "issued_Date_c",
       key: "date",
       render: (val: string) => (val ? dayjs(val).format("DD/MM/YYYY HH:mm") : "-"),
     },
     {
       title: "Status",
-      dataIndex: "status__c",
+      dataIndex: "status_c",
       key: "status",
       render: (text: string) => (
         <Tag color={text === "Finished" ? "green" : "orange"}>{text}</Tag>
