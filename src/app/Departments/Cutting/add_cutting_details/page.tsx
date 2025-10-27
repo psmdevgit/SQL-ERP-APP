@@ -36,8 +36,8 @@ export default function AddCuttingDetails() {
   const router = useRouter();
 
   
-const apiBaseUrl =  "https://erp-server-r9wh.onrender.com";
-
+//const apiBaseUrl =  "https://erp-server-r9wh.onrender.com";
+const apiBaseUrl =  "http://localhost:5001";
   useEffect(() => {
     const initializeCutting = async () => {
       if (!platingId) {
@@ -229,11 +229,14 @@ const apiBaseUrl =  "https://erp-server-r9wh.onrender.com";
 
       } else {
         console.error('[Add Cutting] API returned error:', result);
+         alert('Failed to save cutting details');
         throw new Error(result.message || 'Failed to save cutting details');
+       
       }
     } catch (error) {
       console.error('[Add Cutting] Error:', error);
       console.error('[Add Cutting] Full error details:', JSON.stringify(error, null, 2));
+        alert('Failed to save cutting details');
       toast.error(error.message || 'Failed to save cutting details');
       // alert(error.message || 'Failed to save cutting details');
     } finally {

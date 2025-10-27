@@ -8,13 +8,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "react-hot-toast";
 
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+const apiBaseUrl = "https://kalash.app"; 
+
+
+
+// const apiBaseUrl = "http://localhost:5001"; 
 
 interface Order {
   Id: string;
-  Order_Id__c: string;
-  Id__c: string;
-  Casting__c: string;
+  Order_Id_c: string;
+  Id_c: string;
+  Casting_c: string;
 }
 
 interface CastingResponse {
@@ -46,14 +50,14 @@ interface ModelsByCategory {
   [category: string]: {
     Id: string;
     Name: string;
-    Category__c: string;
-    Purity__c: string;
-    Size__c: string;
-    Color__c: string;
-    Quantity__c: number;
-    Gross_Weight__c: number;
-    Stone_Weight__c: number;
-    Net_Weight__c: number;
+    Category_c: string;
+    Purity_c: string;
+    Size_c: string;
+    Color_c: string;
+    Quantity_c: number;
+    Gross_Weight_c: number;
+    Stone_Weight_c: number;
+    Net_Weight_c: number;
   }[];
 }
 
@@ -125,75 +129,90 @@ export default function AddGrindingDetails() {
 
 
   // Fetch casting details and related orders
-  useEffect(() => {
-    const fetchCastingDetails = async () => {
-      if (!castingId) {
-        console.log('No castingId provided');
-        return;
-      }
-      
-      console.log("Casting Orders:", castingDetails.orders);
+useEffect(() => {
+  const fetchCastingDetails = async () => {
+    if (!castingId) {
+      console.log("No castingId provided");
+      return;
+    }
 
-      try {
-        setLoading(true);
-        const [date, month, year , number] = castingId.split('/');
-        console.log('Parsed date components:', { year, month, date, number });
-        
-        const apiUrl = `${apiBaseUrl}/api/casting/all/${date}/${month}/${year}/${number}`;
-        console.log('Fetching from:', apiUrl);
-        
-        const response = await fetch(apiUrl);
-        console.log('Response status:', response.status);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch casting details: ${response.statusText}`);
-        }
-        
-        const responseData = await response.json();
-        console.log('Full API Response:', responseData);
-         
-        console.log(castingId);
-        // Log the casting data structure to debug
-        console.log('Casting data structure:', responseData.data.casting);
-        
-        // Format the date from ISO string to YYYY-MM-DD
-        const receivedDateTime = responseData.data.casting.Received_Date__c;
-        const formattedDate = receivedDateTime ? receivedDateTime.split('T')[0] : '';
-        
-        // Check all possible field names for received weight
-        const receivedWeightValue = responseData.data.casting.Weight_Received__c || 
-                                  responseData.data.casting.Received_Weight__c || 
-                                  responseData.data.casting.ReceivedWeight__c || 
-                                  responseData.data.casting.Weight__c || 
-                                  0;
-        
-        console.log('Extracted received weight:', receivedWeightValue);
-        
-        // Get received weight and date from the API response using correct field names
-        const castingDetailsData = {
-          id: castingId,
-          receivedWeight: receivedWeightValue,
-          receivedDate: formattedDate,
-          orders: responseData.data.orders || []
-        };
-        
-        console.log('Setting casting details:', castingDetailsData);
-        setCastingDetails(castingDetailsData);
-        
-        // Set the received weight and date in state using correct field names
-        setReceivedWeight(receivedWeightValue);
-        setReceivedDate(formattedDate);
-      } catch (error) {
-        console.error('Error fetching casting details:', error);
-        toast.error('Failed to fetch casting details');
-        // alert('Failed to fetch casting details');
-      } finally {
-        setLoading(false);
-      }
-    };
+    console.log("Fetching casting details for:", castingId);
 
-    fetchCastingDetails();
-  }, [castingId, apiBaseUrl]);
+    try {
+      setLoading(true);
+
+      // Extract ID parts like "15/10/2025/01"
+      const [date, month, year, number] = castingId.split("/");
+      const apiUrl = `${apiBaseUrl}/api/casting/all/${date}/${month}/${year}/${number}`;
+
+      console.log("Fetching from:", apiUrl);
+      const response = await fetch(apiUrl);
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch casting details: ${response.statusText}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Full API Response:", responseData);
+
+      // Validate and destructure
+      const { data } = responseData || {};
+      const { casting = {}, orders = [] } = data || {};
+
+      // Extract weights safely
+      const receivedWeightValue =
+        casting.Weight_Received_c ??
+        casting.Received_Weight_c ??
+        casting.ReceivedWeight_c ??
+        casting.Weight_c ??
+        0;
+
+      // Extract issued weight
+      const issuedWeightValue =
+        casting.Issud_weight_c ??
+        casting.IssuedWeight_c ??
+        0;
+
+      // Format the date to YYYY-MM-DD (for input fields)
+      const formattedDate = casting.Received_Date_c
+        ? new Date(casting.Received_Date_c).toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0];
+
+      // Final structured object for state
+      const castingDetailsData = {
+        id: casting.Id ?? null,
+        name: casting.Name ?? castingId,
+        issuedDate: casting.Issued_Date_c
+          ? new Date(casting.Issued_Date_c).toISOString().split("T")[0]
+          : "",
+        issuedWeight: issuedWeightValue,
+        receivedWeight: receivedWeightValue,
+        receivedDate: formattedDate,
+        status: casting.Status_c ?? "Pending",
+        loss: casting.Casting_Loss_c ?? 0,
+        orders: Array.isArray(orders) ? orders : [],
+      };
+
+      // Debugging logs
+      console.log("📦 Extracted castingDetailsData:", castingDetailsData);
+      console.log("✅ Orders count:", castingDetailsData.orders.length);
+
+      // Set states
+      setCastingDetails(castingDetailsData);
+      setReceivedWeight(receivedWeightValue);
+      setReceivedDate(formattedDate);
+    } catch (error) {
+      console.error("Error fetching casting details:", error);
+      toast.error("Failed to fetch casting details");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCastingDetails();
+}, [castingId, apiBaseUrl]);
+
 
   // Update the generatePouchName function to use formattedId
   const generatePouchName = () => {
@@ -219,94 +238,138 @@ export default function AddGrindingDetails() {
   };
 
   // Update handleAddBag to initialize the weight
-  const handleAddBag = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedOrder) {
-      toast.error('Please select an order for the bag');
-      // alert('Please select an order for the bag');
-      return;
+const handleAddBag = (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!selectedOrder) {
+    toast.error("Please select an order for the bag");
+    return;
+  }
+
+  if (selectedCategoryQuantities.length === 0) {
+    toast.error("Please select at least one category before creating a pouch");
+    return;
+  }
+
+  // Ensure orders is an array
+  const ordersArray: any[] = Array.isArray(castingDetails?.orders) ? castingDetails.orders : [];
+
+  // Normalize selectedOrder to a string we can compare (supports string or object)
+  const selectedOrderStr = (() => {
+    if (typeof selectedOrder === "string") return selectedOrder.trim();
+    if (typeof selectedOrder === "number") return String(selectedOrder).trim();
+    if (typeof selectedOrder === "object" && selectedOrder !== null) {
+      return String(
+        selectedOrder.Order_Id_c ??
+        selectedOrder.Order_Id ??
+        selectedOrder.OrderId ??
+        selectedOrder.Id ??
+        ""
+      ).trim();
     }
+    return "";
+  })();
 
-    // Check if categories are selected before creating a pouch
-    if (selectedCategoryQuantities.length === 0) {
-      toast.error('Please select at least one category before creating a pouch');
-      // alert('Please select at least one category before creating a pouch');
-      return;
-    }
+  // Debug: show what we will compare against
+  console.log("[AddBag] selectedOrder normalized:", selectedOrderStr);
+  console.log("[AddBag] available orders (sample):", ordersArray.map((o) => ({
+    Order_Id_c: o?.Order_Id_c ?? o?.Order_Id ?? o?.OrderId,
+    Id: o?.Id ?? o?.id ?? null
+  })));
 
-    const orderDetails = castingDetails.orders.find(o => o.Id === selectedOrder);
-    if (!orderDetails) {
-      toast.error('Order details not found');
-      // alert('Order details not found');
-      return;
-    }
+  // Try to find matching order using multiple possible fields
+  const orderDetails = ordersArray.find((o: any) => {
+    const orderIdCandidates = [
+      o?.Order_Id_c,
+      o?.Order_Id,
+      o?.OrderId,
+      o?.OrderId_c,
+      o?.Id,
+      o?.id,
+    ];
+    // Normalize each candidate to string and compare
+    return orderIdCandidates.some((c) => {
+      if (c === undefined || c === null) return false;
+      return String(c).trim() === selectedOrderStr;
+    });
+  });
 
-    const newBagName = generatePouchName();
-    console.log('Generated new bag name:', newBagName);
-
-    // Get the weight for this order/casting
-    const castingWeight = orderDetails.weight || 0;
-
-    // Create a new bag with this order
-    const newBag = {
-      bagName: newBagName,
-      order: selectedOrder,
-      orderNumber: orderDetails.Id__c || '',
-      weight: castingWeight
-    };
-
-    // Add this bag to our list of bags
-    setBags(prev => [...prev, newBag]);
-
-    // Initialize weight for this bag
-    setPouchWeights(prev => ({
-      ...prev,
-      [newBagName]: 0
-    }));
-
-    // Automatically add the selected categories to this pouch
-    setPouchCategories(prev => {
-      // Create a deep copy of the previous state
-      const updated = JSON.parse(JSON.stringify(prev));
-      
-      // Initialize categories for this bag if needed
-      if (!updated[newBagName]) {
-        updated[newBagName] = [];
-      }
-      
-      // Add all selected categories to this pouch
-      selectedCategoryQuantities.forEach(category => {
-        updated[newBagName].push({...category});
-        console.log(`[AddBag] Added category ${category.category} to ${newBagName}`);
-      });
-      
-      // Store the updated categories in localStorage
-      try {
-        localStorage.setItem('pouchCategories', JSON.stringify(updated));
-      } catch (error) {
-        console.error('[AddBag] Error storing pouchCategories in localStorage:', error);
-      }
-      
-      return updated;
+  if (!orderDetails) {
+    // Extra attempt: sometimes selectedOrder might be the index or the full object string — try less strict matching
+    const fuzzy = ordersArray.find((o: any) => {
+      const combined = `${o?.Order_Id_c ?? ""} ${o?.Order_Id ?? ""} ${o?.Id ?? ""}`.trim();
+      return combined.includes(selectedOrderStr) && selectedOrderStr.length > 0;
     });
 
-    toast.success(`Added pouch ${newBagName} with ${selectedCategoryQuantities.length} categories for order ${orderDetails.Id__c}`);
-    //alert(`Added pouch ${newBagName} with ${selectedCategoryQuantities.length} categories for order ${orderDetails.Id__c}`);
-    
-    // Set this as the current editing pouch
-    setCurrentEditingPouch(newBagName);
-    
-    // Keep the selected order (don't reset it)
-    // This allows the user to continue adding categories for the same order
-    // setSelectedOrder('');
-    
-    // Reset category selection
-    setSelectedCategory('');
-    setSelectedCategoryQuantities([]);
-    setBagName(newBagName);
-    
-    toast.success(`Added pouch ${newBagName}. Now select categories for this pouch.`);
+    if (fuzzy) {
+      console.warn("[AddBag] Exact match failed; using fuzzy match:", fuzzy);
+      console.log("✅ Order found (fuzzy):", fuzzy);
+      // Use fuzzy match as orderDetails
+      // proceed with fuzzy as orderDetails
+      processNewBag(fuzzy);
+      return;
+    }
+
+    toast.error("Selected order not found in casting details");
+    console.error("❌ Order not found. Selected:", selectedOrderStr, "Available orders:", ordersArray);
+    return;
+  }
+
+  console.log("✅ Order found:", orderDetails);
+
+  // Proceed to create bag (extracted to a small helper to keep things tidy)
+  processNewBag(orderDetails);
+};
+
+// helper to create the bag and update state (keeps main handler readable)
+function processNewBag(orderDetails: any) {
+  const newBagName = generatePouchName();
+  console.log("👜 New pouch created:", newBagName);
+
+  const castingWeight = castingDetails?.receivedWeight ?? 0;
+
+  const newBag = {
+    bagName: newBagName,
+    order: selectedOrder,
+    orderNumber: orderDetails.Order_Id_c ?? orderDetails.Order_Id ?? orderDetails.OrderId ?? "",
+    weight: castingWeight,
   };
+
+  setBags((prev: any[]) => [...prev, newBag]);
+
+  setPouchWeights((prev: Record<string, number>) => ({
+    ...prev,
+    [newBagName]: 0,
+  }));
+
+  setPouchCategories((prev: Record<string, any[]>) => {
+    const updated = { ...prev };
+    if (!updated[newBagName]) updated[newBagName] = [];
+
+    selectedCategoryQuantities.forEach((cat) => {
+      updated[newBagName].push({ ...cat });
+      console.log(`[AddBag] Added category '${cat.category}' to ${newBagName}`);
+    });
+
+    try {
+      localStorage.setItem("pouchCategories", JSON.stringify(updated));
+    } catch (error) {
+      console.error("[AddBag] Failed to save pouchCategories:", error);
+    }
+
+    return updated;
+  });
+
+  setCurrentEditingPouch(newBagName);
+  setSelectedCategory("");
+  setSelectedCategoryQuantities([]);
+  setBagName(newBagName);
+
+  toast.success(
+    `✅ Added pouch ${newBagName} with ${selectedCategoryQuantities.length} categories for order ${selectedOrder}`
+  );
+}
+
 
   // Update function to fetch categories using Order_Id__c
   const fetchCategories = async (orderId: string) => {
@@ -324,7 +387,7 @@ export default function AddGrindingDetails() {
         return;
       }
       
-      const orderIdForApi = orderDetails.Order_Id__c;
+      const orderIdForApi = orderDetails.Order_Id_c;
       console.log(`Using Order_Id__c for API: ${orderIdForApi}`);
       
       // Parse the Order_Id__c to get the prefix and number parts
@@ -409,7 +472,7 @@ export default function AddGrindingDetails() {
 
   // Update order selection handler
   const handleOrderSelect = (orderId: string) => {
-    console.log(`Selected order: ${orderId}`);
+    console.log(`Selected  Pouchorder : ${orderId}`);
     setSelectedOrder(orderId);
     setSelectedCategory('');
     setSelectedCategoryQuantities([]);
@@ -539,211 +602,185 @@ export default function AddGrindingDetails() {
     setSelectedCategoryQuantities([]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('[AddFiling] Starting form submission');
-    console.log('Current pouch weights:', pouchWeights);
-    console.log('Current bags:', bags);
-    console.log('Current pouch categories (before localStorage check):', pouchCategories);
-    
-    try {
-      if (bags.length === 0) {
-        console.log('[AddFiling] No bags added');
-        toast.error('Please add at least one bag');
-        return;
-      }
-      
-      // Initialize tracking variables
-      let allSuccessful = true;
-      const submissionResults: Array<{
-        pouchNumber: number;
-        success: boolean;
-        message: string;
-        data?: any;
-        error?: any;
-      }> = [];
-      
-      // Try to load pouch categories from localStorage if they're empty
-      let currentPouchCategories = {...pouchCategories};
-      console.log('[AddFiling] Current pouch categories before localStorage check:', currentPouchCategories);
-      
-      // Always try to get the latest data from localStorage (which might be more up-to-date)
-      try {
-        const savedCategoriesStr = localStorage.getItem('pouchCategories');
-        if (savedCategoriesStr) {
-          const savedCategories = JSON.parse(savedCategoriesStr);
-          console.log('[AddFiling] Loaded pouch categories from localStorage:', savedCategories);
-          currentPouchCategories = savedCategories;
-        }
-      } catch (error) {
-        console.error('[AddFiling] Failed to load from localStorage:', error);
-      }
-      
-      // Format the issued date and time
-      const now = new Date();
-      const combinedIssuedDateTime = now.toISOString();
-      
-      // Validate categories for each pouch before proceeding
-      for (let i = 0; i < bags.length; i++) {
-        const bag = bags[i];
-        const pouchNumber = i + 1;
-        
-        // Create a sub-numbered filing ID for this pouch
-        const subNumberedFilingId = `${formattedId}/${pouchNumber}`;
-        let pouchCategoriesData = currentPouchCategories[bag.bagName] || [];
-        console.log(`[AddFiling] Pouch categories for ${bag.bagName}:`, pouchCategoriesData);
-        console.log('[AddFiling] All pouch categories:', currentPouchCategories);
-        
-        // Get the weight for this specific pouch
-        const pouchWeight = parseFloat(pouchWeights[bag.bagName]?.toString() || '0');
-        
-        // Get the order details for this pouch
-        const orderDetails = castingDetails.orders.find(o => o.Id === bag.order);
-        const orderId = orderDetails?.Order_Id__c || '';
-        const orderNumber = orderDetails?.Id__c || '';
-        
-        // Check if we have any categories for this pouch
-        if (pouchCategoriesData.length === 0) {
-          console.log(`[AddFiling] WARNING: No categories found for ${bag.bagName}. Please add categories before submitting.`);
-          
-          // Check if we have categories in localStorage that might not be in state
-          try {
-            const savedCategoriesStr = localStorage.getItem('pouchCategories');
-            if (savedCategoriesStr) {
-              const savedCategories = JSON.parse(savedCategoriesStr);
-              if (savedCategories[bag.bagName] && savedCategories[bag.bagName].length > 0) {
-                console.log(`[AddFiling] Found categories in localStorage for ${bag.bagName}:`, savedCategories[bag.bagName]);
-                pouchCategoriesData = savedCategories[bag.bagName];
-              }
-            }
-          } catch (error) {
-            console.error('[AddFiling] Error loading categories from localStorage:', error);
-          }
-          
-          // If still no categories found, show a toast message
-          if (pouchCategoriesData.length === 0) {
-            console.error(`[AddFiling] No categories found for ${bag.bagName}. Please add categories before submitting.`);
-            toast.error(`Please add categories to ${bag.bagName} before submitting.`);
-          //  alert(`Please add categories to ${bag.bagName} before submitting.`);
-            throw new Error(`No categories found for ${bag.bagName}. Please add categories before submitting.`);
-          }
-        }
-        
-        // Map category data to the format expected by the API - include name and quantity only
-        const formattedCategories = pouchCategoriesData.map(cat => {
-          const categoryData = {
-            name: cat.category,
-            quantity: cat.quantity
-          };
-          console.log(`[AddFiling] Adding category '${cat.category}' with quantity ${cat.quantity} to ${bag.bagName}`);
-          return categoryData;
-        });
-        
-        console.log(`[AddFiling] Formatted categories for ${bag.bagName}:`, formattedCategories);
-        console.log(`[AddFiling] Category names being added:`, formattedCategories.map((c: { name: string }) => c.name).join(', '));
-        
-        // Get the category data - assuming only one category per pouch for this format
-        const categoryData = pouchCategoriesData[0] || { category: '', quantity: 0 };
-        
-        // Create the filing data for this specific pouch with category name and quantity at top level
-        const filingData = {
-          filingId: subNumberedFilingId,
-          // Removed receivedWeight as requested
-          issuedWeight: pouchWeight,
-          receivedDate: receivedDate,
-          issuedDate: combinedIssuedDateTime,
-          orderId: orderId,            // Include order ID in the filing record
-          orderNumber: orderNumber,     // Include order number in the filing record
-          name: categoryData.category,  // Category name as direct property
-          quantity: categoryData.quantity, // Category quantity as direct property
-          pouches: [{
-            pouchId: bag.bagName,
-            orderId: orderId,
-            weight: pouchWeight,
-            name: categoryData.category,  // Category name as direct property in pouch too
-            quantity: categoryData.quantity // Category quantity as direct property in pouch too
-          }]
-        };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  console.log('[AddFiling] Starting form submission');
+  console.log('Current pouch weights:', pouchWeights);
+  console.log('Current bags:', bags);
+  console.log('Current pouch categories (before localStorage check):', pouchCategories);
 
-        console.log(`[AddFiling] Filing data created with ${formattedCategories.length} categories for filing ID ${subNumberedFilingId}`);
-        console.log(`[AddFiling] Categories included in filing data:`, formattedCategories.map((c: { name: string, quantity: number }) => `${c.name} (${c.quantity})`).join(', '));
-        console.log(`[AddFiling] Submitting filing data for pouch ${pouchNumber}:`, JSON.stringify(filingData, null, 2));
-        
-        try {
-          // Submit this pouch's filing data
-          const response = await fetch(`${apiBaseUrl}/api/filing/create`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(filingData),
-          });
-
-          console.log(`[AddFiling] API Response status for pouch ${pouchNumber}:`, response.status);
-          
-          const result = await response.json();
-          console.log(`[AddFiling] API Response data for pouch ${pouchNumber}:`, result);
-          
-          submissionResults.push({
-            pouchNumber,
-            success: response.ok && result.success,
-            message: result.message || '',
-            data: result
-          });
-          
-          if (!response.ok || !result.success) {
-            allSuccessful = false;
-          }
-        } catch (error: any) {
-          console.error(`[AddFiling] Error submitting pouch ${pouchNumber}:`, error);
-          submissionResults.push({
-            pouchNumber,
-            success: false,
-            message: error.message || 'Failed to submit filing details',
-            error
-          });
-          allSuccessful = false;
-        }
-      }
-
-      // Show appropriate toast message based on results
-      if (allSuccessful) {
-        console.log('[AddFiling] All submissions successful:', submissionResults);
-        toast.success(`Successfully created ${bags.length} filing records`);
-        alert(`Successfully created ${bags.length} Pouch Creation records`);
-        
-        
-
-        // Reset form
-        setBags([]);
-        setPouchWeights({});
-        setSelectedOrder('');
-        setSelectedCategory('');
-        setSelectedCategoryQuantities([]);
-        setPouchCategories({});
-        setReceivedWeight(castingDetails.receivedWeight);
-        setReceivedDate(castingDetails.receivedDate);
-
-         setTimeout(() => {
-          router.push('/Departments/Filing/add_filing_details/Grinding_Table');
-        }, 1000);
-
-
-      } else {
-        // Some submissions failed
-        const successCount = submissionResults.filter(r => r.success).length;
-        const failCount = submissionResults.filter(r => !r.success).length;
-        
-        console.error('[AddFiling] Some submissions failed:', submissionResults);
-        toast.error(`${successCount} filings created, ${failCount} failed. Check console for details.`);
-        
-      }
-    } catch (error: any) {
-      console.error('[AddFiling] Error in handleSubmit:', error);
-      toast.error(error.message || 'Failed to submit filing details');
-      // alert(error.message || 'Failed to submit filing details');
+  try {
+    if (bags.length === 0) {
+      console.log('[AddFiling] No bags added');
+      toast.error('Please add at least one bag');
+      return;
     }
-  };
+
+    let allSuccessful = true;
+    const submissionResults: Array<{
+      pouchNumber: number;
+      success: boolean;
+      message: string;
+      data?: any;
+      error?: any;
+    }> = [];
+
+    let currentPouchCategories = { ...pouchCategories };
+
+    try {
+      const savedCategoriesStr = localStorage.getItem('pouchCategories');
+      if (savedCategoriesStr) {
+        const savedCategories = JSON.parse(savedCategoriesStr);
+        console.log('[AddFiling] Loaded pouch categories from localStorage:', savedCategories);
+        currentPouchCategories = savedCategories;
+      }
+    } catch (error) {
+      console.error('[AddFiling] Failed to load from localStorage:', error);
+    }
+
+    const now = new Date();
+    const combinedIssuedDateTime = now.toISOString();
+
+    for (let i = 0; i < bags.length; i++) {
+      const bag = bags[i];
+      const pouchNumber = i + 1;
+      const subNumberedFilingId = `${formattedId}/${pouchNumber}`;
+      let pouchCategoriesData = currentPouchCategories[bag.bagName] || [];
+
+      console.log(`[AddFiling] Pouch categories for ${bag.bagName}:`, pouchCategoriesData);
+
+      const pouchWeight = parseFloat(pouchWeights[bag.bagName]?.toString() || '0');
+
+      // ✅ FIX START — safer order lookup
+      const ordersArray: any[] = Array.isArray(castingDetails?.orders) ? castingDetails.orders : [];
+      const selectedOrderStr = String(bag.order).trim();
+
+      const orderDetails = ordersArray.find((o: any) => {
+        const possibleIds = [
+          o?.Order_Id_c,
+          o?.Order_Id,
+          o?.OrderId,
+          o?.Id,
+          o?.id
+        ];
+        return possibleIds.some((id) => id && String(id).trim() === selectedOrderStr);
+      });
+
+      console.log(`[AddFiling] Matching orderDetails for bag '${bag.bagName}':`, orderDetails);
+      // ✅ FIX END
+
+      const orderId = orderDetails?.Order_Id_c ?? orderDetails?.Order_Id ?? orderDetails?.OrderId ?? '';
+      const orderNumber = orderDetails?.Id_c ?? orderDetails?.Id ?? '';
+
+      if (pouchCategoriesData.length === 0) {
+        try {
+          const savedCategoriesStr = localStorage.getItem('pouchCategories');
+          if (savedCategoriesStr) {
+            const savedCategories = JSON.parse(savedCategoriesStr);
+            if (savedCategories[bag.bagName]?.length > 0) {
+              console.log(`[AddFiling] Found categories in localStorage for ${bag.bagName}:`, savedCategories[bag.bagName]);
+              pouchCategoriesData = savedCategories[bag.bagName];
+            }
+          }
+        } catch (error) {
+          console.error('[AddFiling] Error loading categories from localStorage:', error);
+        }
+
+        if (pouchCategoriesData.length === 0) {
+          console.error(`[AddFiling] No categories found for ${bag.bagName}`);
+          toast.error(`Please add categories to ${bag.bagName} before submitting.`);
+          throw new Error(`No categories found for ${bag.bagName}`);
+        }
+      }
+
+      const formattedCategories = pouchCategoriesData.map(cat => ({
+        name: cat.category,
+        quantity: cat.quantity
+      }));
+
+      const categoryData = pouchCategoriesData[0] || { category: '', quantity: 0 };
+
+      const filingData = {
+        filingId: subNumberedFilingId,
+        issuedWeight: pouchWeight,
+        receivedDate: receivedDate,
+        issuedDate: combinedIssuedDateTime,
+        orderId: orderId,
+        orderNumber: orderNumber,
+        name: categoryData.category,
+        quantity: categoryData.quantity,
+        pouches: [{
+          pouchId: bag.bagName,
+          orderId: orderId,
+          weight: pouchWeight,
+          name: categoryData.category,
+          quantity: categoryData.quantity
+        }]
+      };
+
+      console.log('[AddFiling] Prepared filing data:', filingData);
+
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/filing/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(filingData),
+        });
+
+        console.log(`[AddFiling] API Response status for pouch ${pouchNumber}:`, response.status);
+
+        const result = await response.json();
+        console.log(`[AddFiling] API Response data for pouch ${pouchNumber}:`, result);
+
+        submissionResults.push({
+          pouchNumber,
+          success: response.ok && result.success,
+          message: result.message || '',
+          data: result
+        });
+
+        if (!response.ok || !result.success) allSuccessful = false;
+      } catch (error: any) {
+        console.error(`[AddFiling] Error submitting pouch ${pouchNumber}:`, error);
+        submissionResults.push({
+          pouchNumber,
+          success: false,
+          message: error.message || 'Failed to submit filing details',
+          error
+        });
+        allSuccessful = false;
+      }
+    }
+
+    if (allSuccessful) {
+      console.log('[AddFiling] All submissions successful:', submissionResults);
+      toast.success(`Successfully created ${bags.length} filing records`);
+      alert(`Successfully created ${bags.length} Pouch Creation records`);
+
+      setBags([]);
+      setPouchWeights({});
+      setSelectedOrder('');
+      setSelectedCategory('');
+      setSelectedCategoryQuantities([]);
+      setPouchCategories({});
+      setReceivedWeight(castingDetails.receivedWeight);
+      setReceivedDate(castingDetails.receivedDate);
+
+      setTimeout(() => {
+        router.push('/Departments/Filing/add_filing_details/Grinding_Table');
+      }, 1000);
+    } else {
+      const successCount = submissionResults.filter(r => r.success).length;
+      const failCount = submissionResults.filter(r => !r.success).length;
+      console.error('[AddFiling] Some submissions failed:', submissionResults);
+      toast.error(`${successCount} filings created, ${failCount} failed. Check console for details.`);
+    }
+  } catch (error: any) {
+    console.error('[AddFiling] Error in handleSubmit:', error);
+    toast.error(error.message || 'Failed to submit filing details');
+  }
+};
+
 
   return (
         <div className="h-screen overflow-hidden">
@@ -817,15 +854,15 @@ export default function AddGrindingDetails() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <Label>Select Order</Label>
+                    <Label>Choose Order</Label>
                     <Select value={selectedOrder} onValueChange={handleOrderSelect}>
-                      <SelectTrigger className="w-full bg-white text-black">
+                      <SelectTrigger className="w-full bg-grey text-black ">
                         <SelectValue placeholder="Select an order" />
                       </SelectTrigger>
                       <SelectContent className="bg-white text-black">
                         {castingDetails.orders.map((order) => (
                           <SelectItem key={order.Id} value={order.Id} className="bg-white text-black hover:bg-gray-100">
-                            {order.Order_Id__c}
+                            {order.Order_Id_c}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -896,6 +933,8 @@ export default function AddGrindingDetails() {
                 </Button>
               </div>
 
+
+
               {/* Bags List */}
               {bags.length > 0 && (
                 <div className="mt-4">
@@ -919,7 +958,7 @@ export default function AddGrindingDetails() {
                             <div>
                               <span className="font-medium">{bag.bagName}</span>
                               <span className="text-gray-500 ml-2">
-                                Order: {orderDetails ? orderDetails.Order_Id__c : bag.order}
+                                Order: {orderDetails ? orderDetails.Order_Id_c : bag.order}
                               </span>
                             </div>
                             <div className="flex items-center gap-4">

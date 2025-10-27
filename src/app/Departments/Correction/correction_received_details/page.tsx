@@ -7,7 +7,10 @@ import { Button } from "@/components/ui/button";
 import { z } from 'zod';
 
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com";
+// const apiBaseUrl ='http://localhost:5001'
+
+
+const apiBaseUrl ='https://kalash.app'
 
 
 
@@ -102,88 +105,82 @@ const GrindingDetailsPage = () => {
   }, [ornamentWeight, scrapReceivedWeight, dustReceivedWeight, data]);
 
   // Update fetch details to handle different ID formats
-  useEffect(() => {
-    const fetchDetails = async () => {
-      if (!grindingId) {
-        toast.error('No Correction ID provided');
-        setLoading(false);
+useEffect(() => {
+  const fetchCorrectionDetails = async () => {
+    if (!grindingId) {
+      toast.error('No Correction ID provided');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Split the correction ID
+      const [prefix, date, month, year, number, subnumber] = grindingId.split('/');
+      setIdParts({ prefix, date, month, year, number, subnumber });
+
+      const response = await fetch(
+        `${apiBaseUrl}/api/correction/${prefix}/${date}/${month}/${year}/${number}/${subnumber}`
+      );
+      const result = await response.json();
+
+      if (!result.success || !result.data) {
+        toast.error(result.message || 'Correction record not found');
         return;
       }
 
-      try {
-        const parts = grindingId.split('/');
-        let prefix, date, month, year, number, subnumber;
-        
-        if (parts[0].length > 1) {
-          [prefix, date, month, year, number, subnumber] = parts;
-        } else {
-          [prefix, date, month, year, number, subnumber] = parts;
-        }
+      const { correction, pouches } = result.data;
 
-        // Store the ID parts for later use
-        setIdParts({prefix, date, month, year, number, subnumber});
+      // Initialize pouch received weights
+      const initialPouchWeights: { [key: string]: number } = {};
+      (pouches || []).forEach((pouch: any) => {
+        initialPouchWeights[pouch.Id] = Number(pouch.Received_Weight__c || 0);
+      });
+      setPouchReceivedWeights(initialPouchWeights);
 
-        const response = await fetch(
-          `${apiBaseUrl}/api/correction/${prefix}/${date}/${month}/${year}/${number}/${subnumber}`
-        );
-        const result = await response.json();
-        
-        if (result.success && result.data) {
-          const { grinding, pouches } = result.data;
-          
-          // Initialize pouch weights with existing data
-          const initialPouchWeights: { [key: string]: number } = {};
-          pouches.forEach((pouch: Pouch) => {
-            initialPouchWeights[pouch.Id] = pouch.Received_Weight__c || 0;
-          });
-          setPouchReceivedWeights(initialPouchWeights);
+      // Set frontend-friendly state
+      setData({
+        grinding: {
+          Id: correction.Id ?? '',
+          Name: correction.Name ?? '',
+          Issued_Date__c: correction.Issued_Date__c ?? '',
+          Issued_Weight__c: Number(correction.Issued_Weight__c || 0),
+          Received_Date__c: correction.Received_Date__c ?? '',
+          Received_Weight__c: Number(correction.Received_Weight__c || 0),
+          Status__c: correction.Status__c ?? 'Pending',
+          Grinding_loss__c: Number(correction.Grinding_loss__c || 0),
+          Product__c: correction.Product__c ?? '',
+          Quantity__c: Number(correction.Quantity__c || 0),
+          Order_Id__c: correction.Order_Id__c ?? ''
+        },
+        pouches: (pouches || []).map((pouch: any) => ({
+          Id: pouch.Id ?? '',
+          Name: pouch.Name ?? '',
+          Correction__c: pouch.Correction__c ?? '',
+          Issued_Weight__c: Number(pouch.Isssued_Weight_Correction__c || 0),
+          Received_Weight__c: Number(pouch.Received_Weight__c || 0),
+          Product__c: pouch.Product__c ?? '',
+          Quantity__c: Number(pouch.Quantity__c || 0),
+          Order_Id__c: pouch.Order_Id__c ?? ''
+        }))
+      });
 
-          setData({
-            grinding: {
-              Id: grinding.Id || '',
-              Name: grinding.Name || '',
-              Issued_Date__c: grinding.Issued_Date__c || '',
-              Issued_Weight__c: Number(grinding.Issued_Weight__c) || 0,
-              Received_Date__c: grinding.Received_Date__c || '',
-              Received_Weight__c: Number(grinding.Received_Weight__c) || 0,
-              Status__c: grinding.Status__c || 'Pending',
-              Grinding_loss__c: Number(grinding.Grinding_loss__c) || 0,
-              Source_Department__c: grinding.Source_Department__c || '' // Add source department
-            },
-            pouches: pouches.map((pouch: Pouch) => ({
-              Id: pouch.Id || '',
-              Name: pouch.Name || '',
-              Order_Id__c: pouch.Order_Id__c || '',
-              Grinding__c: pouch.Grinding__c || '',
-              Issued_Weight__c: Number(pouch.Isssued_Weight_Grinding__c) || 0,
-              Received_Weight__c: Number(pouch.Received_Weight__c) || 0,
-              Source_Department__c: pouch.Source_Department__c || '' // Add source department
-            }))
-          });
+      // Set additional state
+      setReceivedWeight(Number(correction.Received_Weight__c || 0));
+      setReceivedDate(correction.Received_Date__c ?? '');
+      setGrindingLoss(Number(correction.Grinding_loss__c || 0));
 
-          // Set initial values if they exist
-          if (grinding.Received_Weight__c) {
-            setReceivedWeight(Number(grinding.Received_Weight__c));
-          }
-          if (grinding.Received_Date__c) {
-            setReceivedDate(grinding.Received_Date__c);
-          }
-          if (grinding.Grinding_loss__c) {
-            setGrindingLoss(Number(grinding.Grinding_loss__c));
-          }
-        } else {
-          toast.error(result.message || 'Correction record not found');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        toast.error('Error fetching Correction details');
-      } finally {
-        setLoading(false);
-      }
-    };
+    } catch (error) {
+      console.error('Error fetching Correction details:', error);
+      toast.error('Error fetching Correction details');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchDetails();
-  }, [grindingId]);
+  fetchCorrectionDetails();
+}, [grindingId]);
+
+
 
   // Validate form data
   const validateForm = (data: UpdateFormData) => {

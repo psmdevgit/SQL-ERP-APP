@@ -66,17 +66,18 @@ const GrindingDetailsPage = () => {
   const grindingId = searchParams.get('grindingId');
 
   
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
-// const apiBaseUrl = "http://localhost:5001"; // Use this for local development
+const apiBaseUrl = "https://kalash.app"; 
+
+// const apiBaseUrl = "http://localhost:5001"; 
+// Use this for local development
   useEffect(() => {
     const fetchDetails = async () => {
       if (!grindingId) {
         toast.error('No grinding ID provided');
         setLoading(false);
         return;
-      }
-
-      try {
+      }.
+       {
         const [prefix, date, month, year, number,subnumber] = grindingId.split('/');
         const response = await fetch(
           `${apiBaseUrl}/api/correction-details/${prefix}/${date}/${month}/${year}/${number}/${subnumber}`
