@@ -40,7 +40,7 @@ import TaggingTableControls from "./TaggingTableControl";
 // const apiBaseUrl = "https://kalash.app"; 
 
 
-const apiBaseUrl = "http://localhost:4001"; 
+const apiBaseUrl = "https://kalash.app"; 
 
 // const apiBaseUrl = "http://192.168.5.62:8080"; 
 
