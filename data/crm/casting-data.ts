@@ -1,12 +1,12 @@
 import { ICasting } from "@/interface/table.interface";
 
-import dataAxios from '../../src/axios';
+// import dataAxios from '../../src/axios';
 const apiUrl = "https://kalash.app";
 
 // Function to fetch casting data from the server
 export const fetchDealData = async (): Promise<ICasting[]> => {
   try {
-    const response = await dataAxios.get(`/api/casting`);
+    const response = await fetch(`${apiUrl}/api/casting`);
     console.log("API Response:", response.data); // ✅ Axios gives data directly
 
     const result = response.data;
