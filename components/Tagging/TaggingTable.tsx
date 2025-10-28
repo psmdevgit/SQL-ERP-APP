@@ -258,6 +258,7 @@ console.log("Deals State:", deals);
         },
         body: JSON.stringify({ orderId }),
       });
+      
 
       const result = await response.json();
       

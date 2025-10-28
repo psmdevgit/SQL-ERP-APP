@@ -1,6 +1,6 @@
 import { ITagging } from "@/interface/table.interface";
 
-const apiUrl = "http://kalash.app";
+const apiUrl = "https://kalash.app";
 
 
 // const apiUrl = "http://localhost:4001";
