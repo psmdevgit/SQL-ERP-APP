@@ -1,7 +1,7 @@
 import { ICasting } from "@/interface/table.interface";
 
 import dataAxios from '../../src/axios';
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiUrl = "https://kalash.app";
 
 // Function to fetch casting data from the server
 export const fetchDealData = async (): Promise<ICasting[]> => {
