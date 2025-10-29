@@ -37,7 +37,9 @@ export default function AddCuttingDetails() {
 
 
 
-const apiBaseUrl = "https://kalash.app";
+//const apiBaseUrl = "https://kalash.app";
+
+const apiBaseUrl = "http://localhost:4001";
   
   useEffect(() => {
     const initializeCutting = async () => {

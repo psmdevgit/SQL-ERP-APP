@@ -39,9 +39,10 @@ export default function AddSettingDetails() {
   const router = useRouter();
 
   
-const apiBaseUrl = "https://kalash.app"; 
+//const apiBaseUrl = "https://kalash.app"; 
 
 
+const apiBaseUrl = "http://localhost:4001";
 
 
 
