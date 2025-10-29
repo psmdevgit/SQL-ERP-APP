@@ -226,7 +226,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
-import noimage from "../../../../assets/no.png"; // remove {}
+import noimage from "../../../../assets/no.png"; 
 
 
 const apiBaseUrl = "https://Kalash.app";
