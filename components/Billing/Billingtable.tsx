@@ -413,7 +413,7 @@ export default function BillingTable() {
                                       }}
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        window.open(deal.DeliveryChallanUrl, '_blank');
+                                        window.open(`${apiBaseUrl}/${deal.DeliveryChallanUrl}`, '_blank');
                                       }}
                                       title="Download Delivery Challan"
                                     >
@@ -436,7 +436,7 @@ export default function BillingTable() {
                                       }}
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        window.open(deal.TaxInvoiceUrl, '_blank');
+                                        window.open(`${apiBaseUrl}/${deal.TaxInvoiceUrl}`, '_blank');
                                       }}
                                       title="Download Tax Invoice"
                                     >

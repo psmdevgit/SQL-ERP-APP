@@ -11,6 +11,7 @@ import { toast } from "sonner";
 interface TaggedItem {
   id: string;
   name: string;
+  model: string;
   modelUniqueNumber: string;
   grossWeight: number;
   netWeight: number;
@@ -85,6 +86,10 @@ const CARAT_OPTIONS = [
   { value: '14Ct', label: '14Ct' },
 ];
 export default function InvoiceGenerator() {
+
+  
+        const router = useRouter();
+
   const [taggingOptions, setTaggingOptions] = useState<TaggingOption[]>([]);
   const [taggingId, setTaggingId] = useState('');
   const [taggingDetails, setTaggingDetails] = useState<TaggingDetail | null>(null);
@@ -396,7 +401,7 @@ export default function InvoiceGenerator() {
         borderWidth: 1,
       });
       
-      page.drawText('Invoice No.:', {
+      page.drawText(`Invoice No.: ${invoiceNumber}` ,{
         x: margin + 10,
         y: y - 15,
         size: 10,
@@ -458,8 +463,8 @@ export default function InvoiceGenerator() {
       
       const headers = [
         'Sr. No.',
-        'Item Name',
-        'Item Narr.',
+        'Tag No',
+        'Item Name.',
         'HSN',  // Shortened text
         'Pcs',
         'Gross Wt',
@@ -538,11 +543,14 @@ export default function InvoiceGenerator() {
         // Set rate text
         const rateText = (itemCategories[item.id] || CATEGORY_OPTIONS[0]).label;
         
+        console.log(  `item name is : ${item.model.toString()}`);
+
         xPos = margin;
         const rowData = [
           (index + 1).toString(),
           item.name,
-          '', // Item narr
+          item.model,
+          // '',
           '', // HSN code
           '1', // Pcs
           item.grossWeight.toFixed(3),
@@ -1359,6 +1367,8 @@ export default function InvoiceGenerator() {
       
       // toast.success(`Billing ${billingId} created successfully`);
       alert(`Billing ${billingId} created successfully`);
+
+       router.push(`/Billing/Billing`);
       
     } catch (error) {
       console.error('Error in submitBilling:', error);
@@ -1384,7 +1394,7 @@ export default function InvoiceGenerator() {
   };
 
   return (
-    <div className="container mx-auto max-w-7xl p-6">
+    <div className="container mx-auto max-w-7xl p-6" style={{minHeight:"100vh",marginTop:"50px"}}>
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-4">

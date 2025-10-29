@@ -101,7 +101,7 @@ export default function TaggingDetailsPage() {
   if (!details) return <div>No details found</div>;
 
   return (
-    <div className="container mx-auto max-w-5xl p-6 flex flex-col gap-6">
+    <div className="container mx-auto max-w-5xl p-6 flex flex-col gap-6" style={{marginTop:"50px",minHeight:"100vh"}}>
       {/* Tagging Details Section */}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex flex-col">
@@ -168,7 +168,7 @@ export default function TaggingDetailsPage() {
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Net Weight</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stone Weight</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stone Charge</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                {/* <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th> */}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 text-sm">
@@ -188,7 +188,7 @@ export default function TaggingDetailsPage() {
                     <td className="px-4 py-2 whitespace-nowrap">{item.netWeight.toFixed(3)}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{item.stoneWeight.toFixed(3)}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{calculatedStoneCharge.toFixed(2)}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">
+                    {/* <td className="px-4 py-2 whitespace-nowrap">
                       {item.pdfUrl && (
                         <a 
                           href={fileUrl} 
@@ -199,7 +199,7 @@ export default function TaggingDetailsPage() {
                           <i className="fa-solid fa-file-pdf"></i>
                         </a>
                       )}
-                    </td>
+                    </td> */}
                   </tr>
                 );
               })}
