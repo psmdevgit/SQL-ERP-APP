@@ -25,6 +25,7 @@ interface TaggingDetail {
     id: string;
     taggingId: string;
     partyCode: string;
+    orderNo:string;
     totalGrossWeight: number;
     totalNetWeight: number;
     totalStoneWeight: number;
@@ -1331,6 +1332,8 @@ export default function InvoiceGenerator() {
       const formData = new FormData();
       formData.append('billingId', billingId);
       formData.append('taggingId', taggingId);
+      formData.append('orderNo',  taggingDetails.tagging.orderNo);
+      formData.append('partyCode', taggingDetails.tagging.partyCode);
       formData.append('partyName', partyDetails?.partyName || '');
       formData.append('totalFineWeight', totalFineWeight.toString());
       formData.append('goldRate', goldRate.toString());
@@ -1342,6 +1345,8 @@ export default function InvoiceGenerator() {
       console.log('Submitting billing data:', {
         billingId,
         taggingId,
+        orderNo: taggingDetails.tagging.orderNo,
+        partyCode: taggingDetails.tagging.partyCode,
         partyName: partyDetails?.partyName,
         totalFineWeight,
         goldRate,
@@ -1572,6 +1577,14 @@ export default function InvoiceGenerator() {
                         {taggingDetails?.tagging?.partyCode || 'N/A'}
                       </p>
                     </div>
+
+                     <div>
+                      <p className="text-sm text-gray-600">Order No</p>
+                      <p className="font-medium">
+                        {taggingDetails?.tagging?.orderNo || 'N/A'}
+                      </p>
+                    </div>
+
                     <div>
                       <p className="text-sm text-gray-600">Net Weight</p>
                       <p className="font-medium">
