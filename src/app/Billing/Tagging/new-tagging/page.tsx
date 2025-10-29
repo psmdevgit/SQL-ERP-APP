@@ -928,6 +928,7 @@ const handleSubmitModels = async () => {
     const formDataDetails = {
       taggingId,
       partyCode: selectedParty,
+      orderNo:selectedOrder,
       totalGrossWeight: totals.grossWeight.toFixed(3),
       totalNetWeight: totals.netWeight.toFixed(3),
       totalStoneWeight: totals.stoneWeight.toFixed(3),
