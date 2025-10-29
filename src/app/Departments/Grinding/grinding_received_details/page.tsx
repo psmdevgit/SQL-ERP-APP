@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { z } from 'zod';
 
 
-const apiBaseUrl = "http://localhost:4001"; // Replace with your actual API base URL
+//const apiBaseUrl = "http://localhost:4001"; // Replace with your actual API base URL
 
+const apiBaseUrl="https://kalash.app";
 
 
 interface Details {
