@@ -165,7 +165,7 @@ const InventoryTransaction: React.FC = () => {
             AlloyWeight: item.alloyWeight,
             CreatedDate: item.createdDate,
             CreatedByName: item.createdByName,
-            Order: item.order,
+            Order: item.orderno,
           }));
         }
 
@@ -201,7 +201,7 @@ useEffect(() => {
   to.setHours(23, 59, 59, 999);
 
   const filtered = reports.filter((report) => {
-    const created = new Date(report.CreatedDate);
+    const created = new Date(report.Issued_Date);
     const dateInRange = created >= from && created <= to;
     const nameMatch = selectedName === "All" || report.Name === selectedName;
     const orderMatch = selectedOrder === "All" || report.Order === selectedOrder;

@@ -313,7 +313,7 @@ const InventoryItemSummary: React.FC = () => {
                         {purityGoldWeight}
                       </td>
                       <td className="px-4 py-2 text-sm text-gray-800">
-                        {report.partycode}
+                        {report.partycode || '-'}
                       </td>
                     </tr>
                   );
