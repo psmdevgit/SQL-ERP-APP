@@ -39,8 +39,8 @@ export default function AddGrindingDetails() {
 
 
   
- const apiBaseUrl = "https://kalash.app"; 
-//  const apiBaseUrl = "http://localhost:4001"; 
+  // const apiBaseUrl = "https://kalash.app"; 
+  const apiBaseUrl = "http://localhost:4001"; 
 
   useEffect(() => {
     const initializeGrinding = async () => {
@@ -156,6 +156,7 @@ const pouchData = pouches.map(pouch => ({
 
       // Prepare grinding data
       const grindingData = {
+        pouchid: filingId,
         grindingId: formattedId,
         issuedDate: combinedDateTime, // Use combined date and time
         pouches: pouchData,

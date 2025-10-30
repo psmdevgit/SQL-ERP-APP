@@ -219,6 +219,7 @@ console.log(`[Add Dull] Fetching pouches from ${sourceType}:`, { url: apiEndpoin
       console.log('[Add Dull] Combined datetime:', combinedDateTime);
 
       console.log('[Add Dull] Preparing submission with:', {
+        polishingId,
         dullId: formattedId,
         issuedDate,
         issuedTime,
@@ -231,6 +232,7 @@ console.log(`[Add Dull] Fetching pouches from ${sourceType}:`, { url: apiEndpoin
 
       // Prepare dull data
       const dullData = {
+        polishingId: polishingId,
         dullId: formattedId,
         issuedDate: combinedDateTime, // Use combined date and time
         pouches: pouchesWithWeights,

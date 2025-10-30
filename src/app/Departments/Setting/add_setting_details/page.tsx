@@ -25,6 +25,11 @@ export default function AddSettingDetails() {
    
   const [loading, setLoading] = useState(true);
   const [formattedId, setFormattedId] = useState<string>('');
+
+  
+  const [correctId, setCorrectId] = useState<string>('');
+
+
   const [pouches, setPouches] = useState<Pouch[]>([]);
   const [pouchWeights, setPouchWeights] = useState<{ [key: string]: number }>({});
   const [pouchQuantities, setPouchQuantities] = useState<{ [key: string]: number }>({});
@@ -39,10 +44,10 @@ export default function AddSettingDetails() {
   const router = useRouter();
 
   
-const apiBaseUrl = "https://kalash.app"; 
+//const apiBaseUrl = "https://kalash.app"; 
 
 
-//const apiBaseUrl = "http://localhost:4001";
+const apiBaseUrl = "http://localhost:4001";
 
 
 
@@ -81,6 +86,8 @@ const apiBaseUrl = "https://kalash.app";
         
         const generatedSettingId = `SETTING/${date}/${month}/${year}/${number}/${subnumber}`;
         setFormattedId(generatedSettingId);
+
+        setCorrectId(`CORRECT/${date}/${month}/${year}/${number}/${subnumber}`);
 
         const pouchResponse = await fetch(apiEndpoint);
         const pouchResult = await pouchResponse.json();
@@ -175,6 +182,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     // ✅ Prepare main setting record
     const settingData = {
+      correctId: correctId,
       settingId: formattedId,
       issuedDate: combinedDateTime,
       pouches: pouchData,

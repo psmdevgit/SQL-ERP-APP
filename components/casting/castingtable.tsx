@@ -45,7 +45,9 @@ import {
 import { Input } from "@/components/ui/input";
 
 
-const apiBaseUrl = "https://kalash.app"; 
+const apiBaseUrl = "http:localhost:4001"; 
+
+// const apiBaseUrl = "https://kalash.app"; 
 
 
 
@@ -250,6 +252,7 @@ const handleScrapUpSubmit = async () => {
         setLoading(true);
         const data = await fetchDealData();
         setDeals(data);
+        console.log(`Loaded ${data} deals from API`);
         
         // Initial data is loaded - filters will be applied in the next useEffect
       } catch (error) {
@@ -776,8 +779,13 @@ const handleScrapUpSubmit = async () => {
                                     <i className="fa-solid fa-check"></i>
                                   </button>
 
+
+
                                   {/* Transfer select - always enabled */}
-                                  <Select
+
+
+
+                                  <Select  disabled={String(deal.movedstatus) === "1"}
                                     onValueChange={(value) => {
                                       const dept = departments.find(d => d.value === value);
                                       if (dept) {
