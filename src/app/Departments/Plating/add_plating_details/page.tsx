@@ -36,9 +36,9 @@ export default function AddPlatingDetails() {
   const router = useRouter();
 
   
-const apiBaseUrl = "https://kalash.app"; 
+//const apiBaseUrl = "https://kalash.app"; 
 
-//const apiBaseUrl = "http://localhost:4001";  
+const apiBaseUrl = "http://localhost:4001";  
 useEffect(() => {
     const initializePlating = async () => {
       if (!dullId) {
@@ -167,6 +167,7 @@ useEffect(() => {
       const issuedDateTime = `${issuedDate}T${issuedTime}:00.000Z`;
 
       console.log('[Add Plating] Preparing submission with:', {
+        dullId: dullId,
         platingId: formattedId,
         issuedDateTime,
         pouchCount: pouchData.length,
@@ -178,6 +179,7 @@ useEffect(() => {
 
       // Prepare plating data
       const platingData = {
+        dullId: dullId,
         platingId: formattedId,
         issuedDate: issuedDateTime, // Send combined date and time as issuedDate
         pouches: pouchData,

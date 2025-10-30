@@ -1,6 +1,8 @@
 import { ICasting } from "@/interface/table.interface";
 
-const apiUrl = "https://kalash.app";
+// const apiUrl = "https://kalash.app";
+
+const apiUrl = "http://localhost:4001";
 
 // ✅ Corrected Fetch Function
 export const fetchDealData = async (): Promise<ICasting[]> => {
@@ -17,6 +19,8 @@ export const fetchDealData = async (): Promise<ICasting[]> => {
 
     // ✅ Check backend structure (e.g. { success: true, data: [...] })
     if (result.success && Array.isArray(result.data)) {
+      
+      console.log("Fetched castings:", result.data);
       return result.data.map((casting: any) => ({
         id: casting.Name,
         issuedWeight: casting.Issued_weight || 0,
@@ -28,7 +32,9 @@ export const fetchDealData = async (): Promise<ICasting[]> => {
         ornamentWeight: casting.Ornament_Weight || 0,
         scrapWeight: casting.Scrap_Weight || 0,
         dustWeight: casting.Dust_Weight || 0,
+        movedstatus: casting.movedstatus || 0,
       }));
+
     } else {
       console.error("Unexpected API structure:", result);
       return [];
@@ -37,4 +43,5 @@ export const fetchDealData = async (): Promise<ICasting[]> => {
     console.error("Error in fetchDealData:", error);
     throw error;
   }
+  
 };

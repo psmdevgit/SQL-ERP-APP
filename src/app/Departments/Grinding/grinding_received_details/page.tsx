@@ -7,10 +7,9 @@ import { Button } from "@/components/ui/button";
 import { z } from 'zod';
 
 
-//const apiBaseUrl = "http://localhost:4001"; // Replace with your actual API base URL
+const apiBaseUrl = "http://localhost:4001"; // Replace with your actual API base URL
 
-const apiBaseUrl="https://kalash.app";
-
+// const apiBaseUrl = "https://kalash.app"; 
 
 interface Details {
   Id: string;
@@ -252,6 +251,7 @@ const GrindingDetailsPage = () => {
       }));
 
       const formData = {
+        // pouchid:data.pouches.map(pouch => pouch.Name),
         grindingId: data.grinding.Id,
         sourceDepartment: data.grinding.Source_Department__c,
         issuedWeight: newissuedWeight,

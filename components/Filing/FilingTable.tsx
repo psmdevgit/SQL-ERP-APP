@@ -56,7 +56,10 @@ const departments: Department[] = [
 //const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; // Ensure this is set correctly
 
 
-const apiBaseUrl = "https://kalash.app";
+// const apiBaseUrl = "https://kalash.app";
+
+
+const apiBaseUrl = "http://localhost:4001";
 
 
 const downloadPDF = async (pdfUrl: string) => {
@@ -573,7 +576,7 @@ console.log("Deals State:", deals);
                                     <i className="fa-solid fa-check"></i>
                                   </button>
 
-                                  <Select
+                                  <Select disabled={deal.movedstatus === 1}
                                     onValueChange={(value) => {
                                       const dept = departments.find(d => d.value === value);
                                       if (dept) {

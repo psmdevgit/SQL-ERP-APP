@@ -167,6 +167,7 @@ const apiBaseUrl = "http://localhost:4001";
       }));
 
       console.log('[Add Cutting] Preparing submission with:', {
+        platingId,
         cuttingId: formattedId,
         issuedDate,
         issuedTime,
@@ -178,6 +179,7 @@ const apiBaseUrl = "http://localhost:4001";
 
       // Prepare cutting data
       const cuttingData = {
+        platingId:platingId,
         cuttingId: formattedId,
         issuedDate: issuedDate,
         issuedTime: issuedTime,

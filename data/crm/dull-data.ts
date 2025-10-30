@@ -1,6 +1,8 @@
 import { IDull } from "@/interface/table.interface";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+// const apiUrl = "https://kalash.app";
+
+const apiUrl = "http://localhost:4001";
 
 // Function to fetch dull data from the server with date range filtering
 export const fetchDullData = async (startDate?: string, endDate?: string): Promise<IDull[]> => {
@@ -32,7 +34,8 @@ export const fetchDullData = async (startDate?: string, endDate?: string): Promi
             orderId:dull.Order_Id__c, 
             Quantity : dull.Quantity__c,
             Product : dull.Product__c,         // Updated to match server field
-            dullLoss: dull.Dull_loss__c || 0 // Calculate loss
+            dullLoss: dull.Dull_loss__c || 0,
+            movedstatus:dull.movedstatus || 0
           };
         });
       } else {

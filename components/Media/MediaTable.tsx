@@ -51,7 +51,9 @@ const departments: Department[] = [
 
 ];
 
-const apiBaseUrl = "https://kalash.app";
+// const apiBaseUrl = "https://kalash.app";
+
+const apiBaseUrl = "http://localhost:4001";
 
 
 const downloadPDF = async (pdfUrl: string) => {
@@ -612,7 +614,7 @@ const GrindingTable = () => {
                                     <i className="fa-solid fa-check"></i>
                                   </button>
 
-                                  <Select
+                                  <Select disabled={deal.movedstatus === 1}
                                     onValueChange={(value) => {
                                       const dept = departments.find(d => d.value === value);
                                       if (dept) {

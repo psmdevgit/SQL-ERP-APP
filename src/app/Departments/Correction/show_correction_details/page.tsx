@@ -71,46 +71,40 @@ const apiBaseUrl = "https://kalash.app";
 
 // const apiBaseUrl = "http://localhost:5001"; 
 
-useEffect(() => {
-  const fetchDetails = async () => {
-    try {
+  useEffect(() => {
+    const fetchDetails = async () => {
       if (!grindingId) {
         toast.error('No grinding ID provided');
         setLoading(false);
         return;
+      }.
+       {
+        const [prefix, date, month, year, number,subnumber] = grindingId.split('/');
+        const response = await fetch(
+          `${apiBaseUrl}/api/correction-details/${prefix}/${date}/${month}/${year}/${number}/${subnumber}`
+        );
+        const result = await response.json();
+        
+        if (result.success) {
+          const { data, summary } = result;
+          setData({
+            grinding: data.grinding,
+            pouches: data.pouches,
+            summary: summary
+          });
+        } else {
+          toast.error(result.message || 'Correction record not found');
+        }
+      } catch (error) {
+        console.error('Error fetching details:', error);
+        toast.error('Error fetching Correction details');
+      } finally {
+        setLoading(false);
       }
+    };
 
-      // ✅ Split ID parts safely
-      const [prefix, date, month, year, number, subnumber] = grindingId.split('/');
-
-      // ✅ Fetch from API
-      const response = await fetch(
-        `${apiBaseUrl}/api/correction-details/${prefix}/${date}/${month}/${year}/${number}/${subnumber}`
-      );
-
-      const result = await response.json();
-
-      if (result.success) {
-        const { data, summary } = result;
-        setData({
-          grinding: data.grinding,
-          pouches: data.pouches,
-          summary: summary
-        });
-      } else {
-        toast.error(result.message || 'Correction record not found');
-      }
-    } catch (error) {
-      console.error('Error fetching details:', error);
-      toast.error('Error fetching Correction details');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchDetails();
-}, [grindingId]);
-
+    fetchDetails();
+  }, [grindingId]);
 
   if (loading) {
     return (

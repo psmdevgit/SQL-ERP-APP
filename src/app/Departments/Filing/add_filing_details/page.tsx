@@ -9,9 +9,9 @@ import { toast } from "react-hot-toast";
 
 
 
-//const apiBaseUrl = "http://localhost:4001"; 
+const apiBaseUrl = "http://localhost:4001"; 
 
-const apiBaseUrl = "https://kalash.app";
+// const apiBaseUrl = "https://kalash.app";
 
 
 interface Order {
@@ -701,6 +701,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       const categoryData = pouchCategoriesData[0] || { category: '', quantity: 0 };
 
       const filingData = {
+        castingId: castingId,
         filingId: subNumberedFilingId,
         issuedWeight: pouchWeight,
         receivedDate: receivedDate,

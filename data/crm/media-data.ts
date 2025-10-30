@@ -1,6 +1,9 @@
 import { IMedia } from "@/interface/table.interface";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+// const apiUrl = "https://kalash.app";
+
+
+const apiUrl = "http://localhost:4001";
 
 // Function to fetch grinding data from the server
 export const fetchMediaData = async (): Promise<IMedia[]> => {
@@ -25,7 +28,8 @@ export const fetchMediaData = async (): Promise<IMedia[]> => {
             product: grinding.Product__c || 'N/A',
             quantity: grinding.Quantity__c || 0,
             orderId : grinding.Order_Id__c || '',
-            grindingLoss: grinding.Grinding_loss__c || 0 // Calculate loss
+            grindingLoss: grinding.Grinding_loss__c || 0,
+            movedstatus: grinding.movedstatus || 0,
           };
         });
       } else {

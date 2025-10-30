@@ -23,6 +23,7 @@ export default function AddSettingDetails() {
   const grindingId = searchParams.get('grindingId');
   const [loading, setLoading] = useState(true);
   const [formattedId, setFormattedId] = useState<string>('');
+  const [pouchId, setPouchId] = useState<string>('');
   const [pouches, setPouches] = useState<Pouch[]>([]);
   const [pouchWeights, setPouchWeights] = useState<{ [key: string]: number }>({});
   const [pouchQuantities, setPouchQuantities] = useState<{ [key: string]: number }>({});
@@ -41,9 +42,9 @@ export default function AddSettingDetails() {
     const [mediaWT,setmediaWt ] = useState<number>(0);
 
   
-const apiBaseUrl = "https://kalash.app"; 
+// const apiBaseUrl = "https://kalash.app"; 
 
-// const apiBaseUrl = "http://localhost:5001";
+const apiBaseUrl = "http://localhost:4001";
 
   useEffect(() => {
     const initializeSetting = async () => {
@@ -71,6 +72,8 @@ const apiBaseUrl = "https://kalash.app";
         
         const generatedSettingId = `MEDIA/${date}/${month}/${year}/${number}/${subnumber}`;
         setFormattedId(generatedSettingId);
+
+         setPouchId (`${prefix}/${date}/${month}/${year}/${number}/${subnumber}`);
 
         const pouchResponse = await fetch(apiEndpoint);
         const pouchResult = await pouchResponse.json();
@@ -163,6 +166,7 @@ if (invalidPouch) {
 
     // Prepare correction data
     const correctionData = {
+      pouchid: pouchId,
       grindingId: formattedId,     // ✅ renamed
       issuedDate: combinedDateTime,
       pouches: pouchData,
