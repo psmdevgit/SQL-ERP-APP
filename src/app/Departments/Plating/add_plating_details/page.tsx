@@ -36,9 +36,10 @@ export default function AddPlatingDetails() {
   const router = useRouter();
 
   
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+//const apiBaseUrl = "https://kalash.app"; 
 
-  useEffect(() => {
+const apiBaseUrl = "http://localhost:4001";  
+useEffect(() => {
     const initializePlating = async () => {
       if (!dullId) {
         console.log('[Add Plating] No dull ID provided');
@@ -166,6 +167,7 @@ const apiBaseUrl = "https://erp-server-r9wh.onrender.com";
       const issuedDateTime = `${issuedDate}T${issuedTime}:00.000Z`;
 
       console.log('[Add Plating] Preparing submission with:', {
+        dullId: dullId,
         platingId: formattedId,
         issuedDateTime,
         pouchCount: pouchData.length,
@@ -177,6 +179,7 @@ const apiBaseUrl = "https://erp-server-r9wh.onrender.com";
 
       // Prepare plating data
       const platingData = {
+        dullId: dullId,
         platingId: formattedId,
         issuedDate: issuedDateTime, // Send combined date and time as issuedDate
         pouches: pouchData,

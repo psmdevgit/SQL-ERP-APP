@@ -42,7 +42,11 @@ export default function TaggingDetailsPage() {
   const [error, setError] = useState<string | null>(null);
 
   
-  const API_BASE_URL = "https://erp-server-r9wh.onrender.com" ;
+  // const API_BASE_URL = "https://erp-server-r9wh.onrender.com" ;
+  
+  const API_BASE_URL = "https://kalash.app" ;
+  
+  // const API_BASE_URL = "http://localhost:4001" ;
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -97,7 +101,7 @@ export default function TaggingDetailsPage() {
   if (!details) return <div>No details found</div>;
 
   return (
-    <div className="container mx-auto max-w-5xl p-6 flex flex-col gap-6">
+    <div className="container mx-auto max-w-5xl p-6 flex flex-col gap-6" style={{marginTop:"50px",minHeight:"100vh"}}>
       {/* Tagging Details Section */}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex flex-col">
@@ -107,7 +111,7 @@ export default function TaggingDetailsPage() {
           <div className="flex gap-2 mb-4">
             {details.tagging.pdfUrl && (
               <a 
-                href={details.tagging.pdfUrl} 
+                href={`${API_BASE_URL}${details.tagging.pdfUrl}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
@@ -118,7 +122,7 @@ export default function TaggingDetailsPage() {
             )}
             {details.tagging.excelUrl && (
               <a 
-                href={details.tagging.excelUrl} 
+                href={`${API_BASE_URL}${details.tagging.excelUrl}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
@@ -164,7 +168,7 @@ export default function TaggingDetailsPage() {
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Net Weight</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stone Weight</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stone Charge</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                {/* <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th> */}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 text-sm">
@@ -172,6 +176,10 @@ export default function TaggingDetailsPage() {
                 // Calculate stone charges: (stone weight * 600)
                 const calculatedStoneCharge = (item.stoneWeight * 600);
                 
+                const fileUrl = `${API_BASE_URL}/Upload/Model/${item.pdfUrl}.png`; // ✅ Proper path
+
+                console.log(fileUrl)
+
                 return (
                   <tr key={item.id}>
                     <td className="px-4 py-2 whitespace-nowrap">{item.name || 'N/A'}</td>
@@ -180,10 +188,10 @@ export default function TaggingDetailsPage() {
                     <td className="px-4 py-2 whitespace-nowrap">{item.netWeight.toFixed(3)}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{item.stoneWeight.toFixed(3)}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{calculatedStoneCharge.toFixed(2)}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">
+                    {/* <td className="px-4 py-2 whitespace-nowrap">
                       {item.pdfUrl && (
                         <a 
-                          href={item.pdfUrl} 
+                          href={fileUrl} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="text-red-600 hover:text-red-800"
@@ -191,7 +199,7 @@ export default function TaggingDetailsPage() {
                           <i className="fa-solid fa-file-pdf"></i>
                         </a>
                       )}
-                    </td>
+                    </td> */}
                   </tr>
                 );
               })}

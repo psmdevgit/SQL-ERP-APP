@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import QRCode  from 'qrcode';
+import noimage from "../../../../../assets/no.png";
 
 import { useRouter } from "next/navigation";
 
@@ -88,7 +89,14 @@ const NewTagging = () => {
 const [previewData, setPreviewData] = useState<{ modelIndex: number; pcIndex: number } | null>(null);
 
 
-  const apiBaseUrl = "https://erp-server-r9wh.onrender.com" ;
+  const apiBaseUrl = "https://kalash.app" ;
+
+  const imageUrl = "https://psmport.pothysswarnamahalapp.com/FactoryModels/";
+
+  
+  // const apiBaseUrl = "http://192.168.5.62:8080" ;
+  
+  // const apiBaseUrl = "http://localhost:4001" ;
 
   // Add this helper function at the top of your component
   const getInitialTaggingNumber = () => {
@@ -197,7 +205,10 @@ const handleRemove = (modelIndex: number, pcIndex: number) => {
 
     // If only 1 row remains → alert and block removal
     if (m.pcs.length === 1) {
-      setTimeout(() => alert("At least one model detail is required."), 0);
+      // setTimeout(() => alert("At least one model detail is required."), 0);
+
+      alert("At least one model detail is required.");
+
       return prev;
     }
 
@@ -224,7 +235,16 @@ const handlePreviewPDFOne = async () => {
 
   try {
     // Convert the div to canvas
-    const canvas = await html2canvas(element, { scale: 2 });
+    // const canvas = await html2canvas(element, { scale: 2 });
+
+    const canvas = await html2canvas(element, {
+  scale: 2,
+  useCORS: true,        // allow cross-origin images
+  allowTaint: false,    // prevent tainted canvas
+  logging: false
+});
+
+
     const imgData = canvas.toDataURL("image/png");
 
     // Create PDF
@@ -266,11 +286,11 @@ const handlePreviewPDFOne = async () => {
 
         if (result.success && Array.isArray(result.data)) {
           const formattedData = result.data
-            .filter(party => party.Id && party.Party_Code__c)
+            .filter(party => party.Id && party.Party_Code_c)
             .map(party => ({
               id: party.Id,
-              name: party.Party_Code__c,
-              code: party.Party_Code__c
+              name: party.Party_Code_c,
+              code: party.Party_Code_c
             }));
           console.log('Formatted Party Data:', formattedData);
           setPartyLedgers(formattedData);
@@ -362,6 +382,7 @@ const handlePreviewPDFOne = async () => {
                 
                 const imageData = await imageResponse.json();
                 
+                console.log("imageData",imageData);
                 return {
                   id: modelCode,
                   modelName: modelCode,
@@ -727,86 +748,72 @@ const handleSubmitModels = async () => {
 
     const taggingId = generateTaggingId();
 
-     // ✅ Pre-validation
+    // ✅ Pre-validation
     for (const model of selectedModels) {
       const totals = computeModelTotals(model);
-      if (Number(totals.stoneTotal) === 0) {
-     alert('Please enter Stone Weight and Net Weight before model submitting.....');
+      if (Number(totals.netTotal) === 0) {
+        alert("Please enter Net Weight before model submitting.....");
         setIsSubmittingModels(false);
-        return; // stop whole submission
+        return; // stop entire submission
       }
     }
 
-    const taggedItems = await Promise.all(
-      selectedModels.map(async (model, index) => {
-        try {
-          // Generate PDF (PDF uses totals from pcs now)
-          const pdfBytes = await generatePDF(model);
+    // ✅ Process models locally
+    const taggedItems = selectedModels.map((model) => {
+      const totals = computeModelTotals(model);
 
-          // compute totals again for the formData payload
-          const totals = computeModelTotals(model);
+      const modelData = {
+        taggingId: taggingId,
+        modelDetails: model.modelName,
+        modelUniqueNumber: String(model.uniqueNumber),
+        grossWeight: Number(totals.grossTotal).toFixed(3),
+        netWeight: Number(totals.netTotal).toFixed(3),
+        stoneWeight: Number(totals.stoneTotal).toFixed(3),
+        stoneCharge: Number(totals.stoneChargesTotal).toFixed(2),
+      };
 
-          console.log("submit model check",model);
+      console.log("✅ Local model data:", modelData);
 
-          const formData = new FormData();
-          const modelData = {
-            taggingId: taggingId,
-            modelDetails: model.modelName,
-            modelUniqueNumber: String(model.uniqueNumber),
-            grossWeight: Number(totals.grossTotal).toFixed(3),
-            netWeight: Number(totals.netTotal).toFixed(3),
-            stoneWeight: Number(totals.stoneTotal).toFixed(3),
-            stoneCharge: Number(totals.stoneChargesTotal).toFixed(2),
-          };
+      return modelData;
+    });
 
-          console.log("model data  : ",modelData);
-          
-          
-
-
-          Object.entries(modelData).forEach(([key, value]) => {
-            formData.append(key, String(value));
-          });
-
-          const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
-          const safeModelName = (model.modelName || "model").replace(/\s+/g, "_");
-          const pdfFileName = `${taggingId}_${safeModelName}_${model.uniqueNumber}.pdf`;
-          formData.append("pdf", pdfBlob, pdfFileName);
-
-          const response = await fetch(`${apiBaseUrl}/api/create-tagged-item`, {
-            method: "POST",
-            body: formData,
-          });
-
-          if (!response.ok) {
-            throw new Error(`Server error: ${response.status} ${response.statusText}`);
-          }
-
-          const result = await response.json();
-          console.log("Server response for model:", { modelName: model.modelName, response: result });
-
-          if (!result.success) {
-            throw new Error(result.message || "Failed to create tagged item");
-          }
-
-          return result.data;
-        } catch (error) {
-          console.error(`Error processing model ${model.modelName}:`, error);
-          throw error;
-        }
-      })
-    );
-
-    console.log("All tagged items responses:", taggedItems);
+    // ✅ Set locally processed items
+    console.log("All tagged items :", taggedItems);
     setSubmittedItems(taggedItems);
+
     alert("Models submitted successfully!");
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in handleSubmitModels:", error);
-    alert(`Error submitting models: ${error?.message ?? "Unknown error"}`);
+    alert("Error processing models: Unknown error");
   } finally {
     setIsSubmittingModels(false);
   }
 };
+
+
+
+
+// const handleSubmitModels = async () => {
+
+//   setIsSubmittingModels(true);
+//   try {
+//     console.log("Starting submission of models:", selectedModels);
+
+//     const taggingId = generateTaggingId();
+
+//      // ✅ Pre-validation
+//     for (const model of selectedModels) {
+//       const totals = computeModelTotals(model);
+//       if (Number(totals.netTotal) === 0) {
+//      alert('Please enter Net Weight before model submitting.....');
+//         setIsSubmittingModels(false);
+//         return; // stop whole submission
+//       }
+//     }
+
+  
+
+
 
   // Helper function to preview PDF
   const handlePreviewPDF = async (downloadUrl: string) => {
@@ -845,180 +852,301 @@ const handleSubmitModels = async () => {
   };
 
   // Handle final tagging submission
+
   const handleSubmitTagging = async () => {
-    setIsSubmittingTagging(true);
-    try {
-      if (submittedItems.length === 0) {
-        // alert('Please submit models first');
-        throw new Error('Please submit models first');
-      }
+  setIsSubmittingTagging(true);
+  const taggingId = generateTaggingId(); // ✅ Generate once
 
-      // Calculate totals with stone details
+  try {
+    if (submittedItems.length === 0) {
+      alert('Please submit models first');
+      setIsSubmittingTagging(false);
+      return;
+    }
 
-      console.log("selectedModels",  selectedModels);
+    // Upload each model PDF
+    const taggedItems = await Promise.all(
+      selectedModels.map(async (model) => {
+        const pdfBytes = await generatePDF(model);
+        const totals = computeModelTotals(model);
 
-      // const totals = selectedModels.reduce((acc, model) => ({
-      //   grossWeight: acc.grossWeight + model.grossWeight,
-      //   netWeight: acc.netWeight + model.netWeight,
-      //   stoneWeight: acc.stoneWeight + model.stoneWeight,
-      //   stoneCharges: acc.stoneCharges + ((model.stoneWeight * 600)) // 600₹ per kg
-      // }), { grossWeight: 0, netWeight: 0, stoneWeight: 0, stoneCharges: 0 });
+        const formData = new FormData();
+        const modelData = {
+          taggingId,
+          modelDetails: model.modelName,
+          modelUniqueNumber: String(model.uniqueNumber),
+          grossWeight: Number(totals.grossTotal || 0).toFixed(3),
+          netWeight: Number(totals.netTotal || 0).toFixed(3),
+          stoneWeight: Number(totals.stoneTotal || 0).toFixed(3),
+          stoneCharge: Number(totals.stoneChargesTotal || 0).toFixed(2),
+        };
 
-      const totals = selectedModels.reduce(
-  (acc, model) => {
-    const pcsTotals = model.pcs.reduce(
-      (pcsAcc, p) => ({
-        grossWeight: pcsAcc.grossWeight + (p.grossWeight || 0),
-        netWeight: pcsAcc.netWeight + (p.netWeight || 0),
-        stoneWeight: pcsAcc.stoneWeight + (p.stoneWeight || 0),
-        stoneCharges: pcsAcc.stoneCharges + (p.stoneWeight || 0) * 600
-      }),
-      { grossWeight: 0, netWeight: 0, stoneWeight: 0, stoneCharges: 0 }
+        Object.entries(modelData).forEach(([key, value]) => formData.append(key, value));
+
+        const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+        const safeModelName = (model.modelName || "model").replace(/\s+/g, "_");
+        const pdfFileName = `${taggingId}_${safeModelName}_${model.uniqueNumber}.pdf`;
+        formData.append("pdf", pdfBlob, pdfFileName);
+
+        const response = await fetch(`${apiBaseUrl}/api/create-tagged-item`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message || "Failed to create tagged item");
+        return result.data;
+      })
     );
 
-    return {
-      grossWeight: acc.grossWeight + pcsTotals.grossWeight,
-      netWeight: acc.netWeight + pcsTotals.netWeight,
-      stoneWeight: acc.stoneWeight + pcsTotals.stoneWeight,
-      stoneCharges: acc.stoneCharges + pcsTotals.stoneCharges
-    };
-  },
-  { grossWeight: 0, netWeight: 0, stoneWeight: 0, stoneCharges: 0 }
-);
-
-
-      // Log detailed calculations
-      console.log('Calculated Totals:', {
-        grossWeight: totals.grossWeight.toFixed(3),
-        netWeight: totals.netWeight.toFixed(3),
-        stoneWeight: totals.stoneWeight.toFixed(3),
-        stoneCharges: totals.stoneCharges.toFixed(2),
-        stoneRate: '600₹ per g',
-        totalModels: selectedModels.length
-      });
-
-      // Log individual model details
-      console.log('Model Details:', selectedModels.map(model => ({
-        modelId: model.modelId,
-        modelName: model.modelName,
-        netWeight: model.netWeight.toFixed(3),
-        stoneWeight: model.stoneWeight.toFixed(3),
-        grossWeight: model.grossWeight.toFixed(3),
-        stoneCharges: ((model.stoneWeight * 600)).toFixed(2)
-      })));
-
-      // Generate PDF and Excel
-      const pdfBytes = await generateSummaryPDF(selectedModels);
-      const excelBlob = generateExcel(selectedModels);
-
-      // Create form data
-      const formData = new FormData();
-      const taggingId = generateTaggingId();
-      
-      // Add basic details with stone information
-      const formDataDetails = {
-        taggingId,
-        partyCode: selectedParty,
-        totalGrossWeight: totals.grossWeight.toFixed(3),
-        totalNetWeight: totals.netWeight.toFixed(3),
-        totalStoneWeight: totals.stoneWeight.toFixed(3),
-        totalStoneCharges: totals.stoneCharges.toFixed(2),
-        stoneRate: '600', // Rate per kg
-        modelCount: selectedModels.length
+    // Calculate totals across models
+    const totals = selectedModels.reduce((acc, model) => {
+      const pcsTotals = model.pcs.reduce(
+        (pcsAcc, p) => ({
+          grossWeight: pcsAcc.grossWeight + (p.grossWeight || 0),
+          netWeight: pcsAcc.netWeight + (p.netWeight || 0),
+          stoneWeight: pcsAcc.stoneWeight + (p.stoneWeight || 0),
+          stoneCharges: pcsAcc.stoneCharges + (p.stoneWeight || 0) * 600,
+        }),
+        { grossWeight: 0, netWeight: 0, stoneWeight: 0, stoneCharges: 0 }
+      );
+      return {
+        grossWeight: acc.grossWeight + pcsTotals.grossWeight,
+        netWeight: acc.netWeight + pcsTotals.netWeight,
+        stoneWeight: acc.stoneWeight + pcsTotals.stoneWeight,
+        stoneCharges: acc.stoneCharges + pcsTotals.stoneCharges,
       };
+    }, { grossWeight: 0, netWeight: 0, stoneWeight: 0, stoneCharges: 0 });
 
-      console.log(formDataDetails);
+    // Generate summary files
+    const pdfBytes = await generateSummaryPDF(selectedModels);
+    const excelBlob = generateExcel(selectedModels);
 
-      // Log submission details
-      console.log('Submitting Tagging Order:', {
-        ...formDataDetails,
-        selectedModelsCount: selectedModels.length,
-        submittedItemsCount: submittedItems.length,
-        hasPDF: !!pdfBytes,
-        hasExcel: !!excelBlob
-      });
+    // Prepare tagging submission
+    const formData = new FormData();
+    const formDataDetails = {
+      taggingId,
+      partyCode: selectedParty,
+      orderNo:selectedOrder,
+      totalGrossWeight: totals.grossWeight.toFixed(3),
+      totalNetWeight: totals.netWeight.toFixed(3),
+      totalStoneWeight: totals.stoneWeight.toFixed(3),
+      totalStoneCharges: totals.stoneCharges.toFixed(2),
+      stoneRate: "600", // per gram
+      modelCount: selectedModels.length,
+    };
+    Object.entries(formDataDetails).forEach(([k, v]) => formData.append(k, v));
 
-      // Append all form data
-      Object.entries(formDataDetails).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
+    formData.append("pdfFile", new Blob([pdfBytes], { type: "application/pdf" }), "tagging_summary.pdf");
+    formData.append("excelFile", excelBlob, "tagging_summary.xlsx");
+
+    const response = await fetch(`${apiBaseUrl}/api/submit-tagging`, { method: "POST", body: formData });
+    if (!response.ok) throw new Error(`Server error: ${response.status}`);
+    const result = await response.json();
+    if (!result.success) throw new Error(result.message || "Failed to submit tagging");
+
+    alert("Tagging order submitted successfully!");
+    setTimeout(() => router.push(`/Billing/Tagging`), 500);
+
+    // Reset form state
+    setSelectedParty("");
+    setSelectedOrder("");
+    setOrderModels([]);
+    setSelectedModels([]);
+    setPreviewData(null);
+    setModelCounts({});
+    setSubmittedItems([]);
+    setOrders([]);
+
+    const newNumber = lastTaggingNumber + 1;
+    setLastTaggingNumber(newNumber);
+    localStorage.setItem("lastTaggingNumber", newNumber.toString());
+
+  } catch (error) {
+    console.error("Error submitting tagging:", error);
+    alert(`Error submitting tagging: ${error.message}`);
+  } finally {
+    setIsSubmittingTagging(false);
+  }
+};
+
+
+//   const handleSubmitTagging = async () => {
+//     setIsSubmittingTagging(true);
+//     try {
+//       if (submittedItems.length === 0) {
+//         alert('Please submit models first');
+//         return;
+//         // throw new Error('Please submit models first');
+//       }
       
-      // Append files
-      const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
-      formData.append('pdfFile', pdfBlob, 'tagging_summary.pdf');
-      formData.append('excelFile', excelBlob, 'tagging_summary.xlsx');
+//       // Calculate totals with stone details
 
-      // Log request URL and data
-      console.log('Sending request to:', `${apiBaseUrl}/api/submit-tagging`);
-      console.log('Form Data Keys:', Array.from(formData.keys()));
+//       console.log("selectedModels",  selectedModels);
 
-      // Submit the tagging
-      const response = await fetch(`${apiBaseUrl}/api/submit-tagging`, {
-        method: 'POST',
-        body: formData
-      });
+//       // const totals = selectedModels.reduce((acc, model) => ({
+//       //   grossWeight: acc.grossWeight + model.grossWeight,
+//       //   netWeight: acc.netWeight + model.netWeight,
+//       //   stoneWeight: acc.stoneWeight + model.stoneWeight,
+//       //   stoneCharges: acc.stoneCharges + ((model.stoneWeight * 600)) // 600₹ per kg
+//       // }), { grossWeight: 0, netWeight: 0, stoneWeight: 0, stoneCharges: 0 });
 
-      // Log response status
-      console.log('Server Response Status:', response.status);
+//       const totals = selectedModels.reduce(
+//   (acc, model) => {
+//     const pcsTotals = model.pcs.reduce(
+//       (pcsAcc, p) => ({
+//         grossWeight: pcsAcc.grossWeight + (p.grossWeight || 0),
+//         netWeight: pcsAcc.netWeight + (p.netWeight || 0),
+//         stoneWeight: pcsAcc.stoneWeight + (p.stoneWeight || 0),
+//         stoneCharges: pcsAcc.stoneCharges + (p.stoneWeight || 0) * 600
+//       }),
+//       { grossWeight: 0, netWeight: 0, stoneWeight: 0, stoneCharges: 0 }
+//     );
 
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status} ${response.statusText}`);
-      }
+//     return {
+//       grossWeight: acc.grossWeight + pcsTotals.grossWeight,
+//       netWeight: acc.netWeight + pcsTotals.netWeight,
+//       stoneWeight: acc.stoneWeight + pcsTotals.stoneWeight,
+//       stoneCharges: acc.stoneCharges + pcsTotals.stoneCharges
+//     };
+//   },
+//   { grossWeight: 0, netWeight: 0, stoneWeight: 0, stoneCharges: 0 }
+// );
 
-      const result = await response.json();
+
+//       // Log detailed calculations
+//       console.log('Calculated Totals:', {
+//         grossWeight: totals.grossWeight.toFixed(3),
+//         netWeight: totals.netWeight.toFixed(3),
+//         stoneWeight: totals.stoneWeight.toFixed(3),
+//         stoneCharges: totals.stoneCharges.toFixed(2),
+//         stoneRate: '600₹ per g',
+//         totalModels: selectedModels.length
+//       });
+
+//       // Log individual model details
+//       console.log('Model Details:', selectedModels.map(model => ({
+//         modelId: model.modelId,
+//         modelName: model.modelName,
+//         netWeight: model.netWeight.toFixed(3),
+//         stoneWeight: model.stoneWeight.toFixed(3),
+//         grossWeight: model.grossWeight.toFixed(3),
+//         stoneCharges: ((model.stoneWeight * 600)).toFixed(2)
+//       })));
+
+//       // Generate PDF and Excel
+//       const pdfBytes = await generateSummaryPDF(selectedModels);
+//       const excelBlob = generateExcel(selectedModels);
+
+//       // Create form data
+//       const formData = new FormData();
+//       const taggingId = generateTaggingId();
       
-      // Log server response
-      console.log('Server Response:', {
-        success: result.success,
-        message: result.message,
-        data: result.data
-      });
+//       // Add basic details with stone information
+//       const formDataDetails = {
+//         taggingId,
+//         partyCode: selectedParty,
+//         totalGrossWeight: totals.grossWeight.toFixed(3),
+//         totalNetWeight: totals.netWeight.toFixed(3),
+//         totalStoneWeight: totals.stoneWeight.toFixed(3),
+//         totalStoneCharges: totals.stoneCharges.toFixed(2),
+//         stoneRate: '600', // Rate per kg
+//         modelCount: selectedModels.length
+//       };
 
-      if (!result.success) {
-        throw new Error(result.message || 'Failed to submit tagging');
-      }
+//       console.log(formDataDetails);
 
-      // Log success details
-      console.log('Tagging Order created successfully:', {
-        taggingId,
-        partyCode: selectedParty,
-        modelsCount: selectedModels.length,
-        totalStoneWeight: totals.stoneWeight.toFixed(3),
-        totalStoneCharges: totals.stoneCharges.toFixed(2)
-      });
+//       // Log submission details
+//       console.log('Submitting Tagging Order:', {
+//         ...formDataDetails,
+//         selectedModelsCount: selectedModels.length,
+//         submittedItemsCount: submittedItems.length,
+//         hasPDF: !!pdfBytes,
+//         hasExcel: !!excelBlob
+//       });
 
-      // Increment tagging number and save to localStorage
-      const newNumber = lastTaggingNumber + 1;
-      setLastTaggingNumber(newNumber);
-      localStorage.setItem('lastTaggingNumber', newNumber.toString());
-
-      alert('Tagging order submitted successfully!');
+//       // Append all form data
+//       Object.entries(formDataDetails).forEach(([key, value]) => {
+//         formData.append(key, value);
+//       });
       
-      // Reset form
-      setSelectedParty('');
-      setSelectedOrder('');
-      setOrderModels([]);
-      setSelectedModels([]);
-      setPreviewData(null);
-      setModelCounts({});
-      setSubmittedItems([]);
-      setOrders([]);
-      setIsLoadingOrders(false);
-      setIsLoadingModels(false);
-          router.push(`/Billing/Tagging`);
+//       // Append files
+//       const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+//       formData.append('pdfFile', pdfBlob, 'tagging_summary.pdf');
+//       formData.append('excelFile', excelBlob, 'tagging_summary.xlsx');
 
-    } catch (error) {
-      console.error('Error submitting tagging:', {
-        error: error.message,
-        stack: error.stack,
-        selectedModels: selectedModels.length,
-        submittedItems: submittedItems.length
-      });
-      // alert(`Error submitting tagging: ${error.message}`);
-    } finally {
-      setIsSubmittingTagging(false);
-    }
-  };
+//       // Log request URL and data
+//       console.log('Sending request to:', `${apiBaseUrl}/api/submit-tagging`);
+//       console.log('Form Data Keys:', Array.from(formData.keys()));
+
+//       // Submit the tagging
+//       const response = await fetch(`${apiBaseUrl}/api/submit-tagging`, {
+//         method: 'POST',
+//         body: formData
+//       });
+
+//       // Log response status
+//       console.log('Server Response Status:', response.status);
+
+//       if (!response.ok) {
+//         throw new Error(`Server error: ${response.status} ${response.statusText}`);
+//       }
+
+//       const result = await response.json();
+      
+//       // Log server response
+//       console.log('Server Response:', {
+//         success: result.success,
+//         message: result.message,
+//         data: result.data
+//       });
+
+//       if (!result.success) {
+//         throw new Error(result.message || 'Failed to submit tagging');
+//       }
+
+//       // Log success details
+//       console.log('Tagging Order created successfully:', {
+//         taggingId,
+//         partyCode: selectedParty,
+//         modelsCount: selectedModels.length,
+//         totalStoneWeight: totals.stoneWeight.toFixed(3),
+//         totalStoneCharges: totals.stoneCharges.toFixed(2)
+//       });
+
+//       // Increment tagging number and save to localStorage
+//       const newNumber = lastTaggingNumber + 1;
+//       setLastTaggingNumber(newNumber);
+//       localStorage.setItem('lastTaggingNumber', newNumber.toString());
+
+//       alert('Tagging order submitted successfully!');
+      
+//       // Reset form
+//       setSelectedParty('');
+//       setSelectedOrder('');
+//       setOrderModels([]);
+//       setSelectedModels([]);
+//       setPreviewData(null);
+//       setModelCounts({});
+//       setSubmittedItems([]);
+//       setOrders([]);
+//       setIsLoadingOrders(false);
+//       setIsLoadingModels(false);
+//           router.push(`/Billing/Tagging`);
+
+//     } catch (error) {
+//       console.error('Error submitting tagging:', {
+//         error: error.message,
+//         stack: error.stack,
+//         selectedModels: selectedModels.length,
+//         submittedItems: submittedItems.length
+//       });
+//       // alert(`Error submitting tagging: ${error.message}`);
+//     } finally {
+//       setIsSubmittingTagging(false);
+//     }
+//   };
 
   // Update the generateSummaryPDF function
   // const generateSummaryPDF = async (models: TaggingModel[]): Promise<Uint8Array> => {
@@ -1132,9 +1260,9 @@ const generateSummaryPDF = async (models: TaggingModel[]): Promise<Uint8Array> =
       'Sr.No',
       'Model',
       'Unique #',
-      'Net Weight',
-      'Stone Weight',
-      'Gross Weight',
+      'Net Wt',
+      'Stone Wt',
+      'Gross Wt',
       'Stone Charges',
     ];
     let yPos = height - 100;
@@ -1272,7 +1400,7 @@ const generateExcel = (models: TaggingModel[]): Blob => {
         'Stone Weight': p.stoneWeight.toFixed(3),
         'Gross Weight': p.grossWeight.toFixed(3),
         'Stone Charges': p.stoneCharges.toFixed(2),
-        'PDF URL': model.imageUrl || ''
+        'PDF URL': `${apiBaseUrl}${model.imageUrl}` || ''
       });
     });
   });
@@ -1391,12 +1519,12 @@ const generateExcel = (models: TaggingModel[]): Blob => {
             <SelectContent className="bg-white max-h-[200px] overflow-y-auto">
               {orders.length > 0 ? (
                 orders.map((order) => (
-                  <SelectItem key={`${order.id}-${order.orderNo}`} value={order.id}>
+                  <SelectItem key={`${order.id}-${order.orderNo}`} value={order.id} className="hover:bg-gray-100">
                     {order.orderNo}
                   </SelectItem>
                 ))
               ) : (
-                <SelectItem value="no-data" disabled>
+                <SelectItem value="no-data" disabled >
                   {isLoadingOrders ? 'Loading...' : 'No orders available'}
                 </SelectItem>
               )}
@@ -1414,10 +1542,11 @@ const generateExcel = (models: TaggingModel[]): Blob => {
               <SelectTrigger className="w-full bg-white border border-gray-200">
                 <SelectValue placeholder={isLoadingModels ? 'Loading Models...' : 'Select Model'} />
               </SelectTrigger>
-              <SelectContent className="bg-white max-h-[200px] overflow-y-auto">
+              <SelectContent className="bg-white max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100
+             hover:scrollbar-thumb-gray-500 ">
                 {uniqueModels.length > 0 ? (
                   uniqueModels.map((model, index) => (
-                    <SelectItem key={`model-${model.id}-${index}`} value={model.id}>
+                    <SelectItem key={`model-${model.id}-${index}`} value={model.id} className="hover:bg-gray-100">
                       {model.modelName}
                     </SelectItem>
                   ))
@@ -1579,8 +1708,11 @@ const generateExcel = (models: TaggingModel[]): Blob => {
                   const stoneWeight = Number(pc.stoneWeight || 0);
                   const netWeight = Number(pc.netWeight || 0); // Add this if you want to check netWeight too
 
-                  if (stoneWeight === 0 || netWeight === 0) {
-                    alert('Please enter Stone Weight and Net Weight before previewing.');
+                  // if (stoneWeight === 0 || netWeight === 0)
+                  
+                  if (netWeight === 0) 
+                    {
+                    alert('Please enter Net Weight before previewing.');
                     return;
                   }
 
@@ -1599,8 +1731,10 @@ const generateExcel = (models: TaggingModel[]): Blob => {
                    const stoneWeight = Number(pc.stoneWeight || 0);
                   const netWeight = Number(pc.netWeight || 0); // Add this if you want to check netWeight too
 
-                  if (stoneWeight === 0 || netWeight === 0) {
-                    alert('Please enter Stone Weight and Net Weight before Tag Printing.');
+                  // if (stoneWeight === 0 || netWeight === 0)
+                  if (netWeight === 0)
+                     {
+                    alert('Please enter Net Weight before Tag Printing.');
                     return;
                   }
                   handlePrint(model, pcIndex)}}
@@ -1851,18 +1985,30 @@ const generateExcel = (models: TaggingModel[]): Blob => {
         {(() => {
           const model = selectedModels[previewData.modelIndex];
           const pc = model?.pcs?.[previewData.pcIndex];
+          console.log(`${apiBaseUrl}${model.imageUrl}`);
           if (!model || !pc) return <p>No data</p>;
 
           return (
             <>
               {/* Image */}
               <div className="aspect-square w-full relative rounded-lg overflow-hidden border border-gray-200">
-                {model.imageData ? (
+                {model.modelName ? (
                   <img
-                    src={model.imageData}
+                    src={`${imageUrl}${model.modelName}.png`}
                     alt={`Model ${model.modelName}`}
+                    crossOrigin="anonymous"    // 👈 Add this
                     className="w-full h-full object-contain"
-                    onError={(e) => (e.currentTarget.src = "/placeholder.png")}
+                     onError={(e) => {
+                      const target = e.currentTarget;
+                      console.warn("Image load failed, trying fallback for:", target.src);
+                      if (target.src.endsWith(".png")) {
+                        target.src = `${imageUrl}${model.modelName}.jpg`;
+                      } else if (target.src.endsWith(".jpg")) {
+                        target.src = `${imageUrl}${model.modelName}.jpeg`;
+                      } else {
+                        target.src = noimage.src;
+                      }
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-50">
@@ -1893,15 +2039,18 @@ const generateExcel = (models: TaggingModel[]): Blob => {
           );
       })()}
       
+      
           </div>
 
-    </div>
     <button
         onClick={handlePreviewPDFOne}
         className="p-2 text-white text-xs bg-blue-600 rounded hover:bg-blue-700 block mx-auto"
       >
         Preview PDF
       </button>
+
+    </div>
+
 
 
   </div>

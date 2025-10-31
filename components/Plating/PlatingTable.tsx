@@ -39,6 +39,7 @@ interface IPlating {
   Received_Date__c: string;
   Status__c: string;
   Plating_Loss__c: number;
+  movedstatus: number;
 }
 
 interface Department {
@@ -57,9 +58,14 @@ const departments: Department[] = [
 
 ];
 
-// const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+// const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+
+// const apiBaseUrl = "https://kalash.app";
+
+
+const apiBaseUrl = "http://localhost:4001";
+
 
 const getStatusClass = (status: string) => {
   switch (status?.toLowerCase()) {
@@ -272,7 +278,7 @@ const PlatingTable = () => {
                             </TableCell>
                             <TableCell>{deal.Name}</TableCell>
                             <TableCell>{deal.Issued_Weight__c}</TableCell>
-                            <TableCell>{deal.Returned_Weight__c}</TableCell>
+                            <TableCell>{deal.Returned_weight__c}</TableCell>
                             <TableCell>{deal.Issued_Date__c || ''}</TableCell>
                             <TableCell>{deal.Received_Date__c || ''}</TableCell>
                             <TableCell>{deal.Order_Id__c || ' '}</TableCell>
@@ -388,7 +394,7 @@ const PlatingTable = () => {
                                   <i className="fa-solid fa-check"></i>
                                 </button>
 
-                                <Select
+                                <Select disabled={deal.movedstatus === 1}
                                   onValueChange={(value) => {
                                     const dept = departments.find(d => d.value === value);
                                     if (dept) {

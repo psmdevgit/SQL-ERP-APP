@@ -53,7 +53,12 @@ const departments: Department[] = [
   { value: 'dull', label: 'Dull', path: '/Departments/Dull/add_dull_details' }
 ];
 
-const apiBaseUrl ="https://erp-server-r9wh.onrender.com"; // Ensure this is set correctly
+
+// const apiBaseUrl = "https://kalash.app";
+
+
+const apiBaseUrl = "http://localhost:4001";
+
 const downloadPDF = async (pdfUrl: string) => {
   try {
     const response = await fetch(pdfUrl, {
@@ -204,12 +209,15 @@ const GrindingTable = () => {
 
   // Apply sorting
   const sortedDeals = getSortedData(deals);
-  
+    console.log("Sorting by:", sortedDeals);
+
   console.log("Deals State:", deals.length, "Sorted deals:", sortedDeals.length);
 
   const startIndex = page * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const paginatedRows = sortedDeals.slice(startIndex, endIndex);
+
+  console.log(`Paginating rows: startIndex=${startIndex}, endIndex=${endIndex}, paginatedRows=${paginatedRows.length}`);
   const filteredRows = sortedDeals; // For compatibility with existing code
 
   const {
@@ -611,7 +619,7 @@ const GrindingTable = () => {
                                     <i className="fa-solid fa-check"></i>
                                   </button>
 
-                                  <Select
+                                  <Select disabled={deal.movedstatus === 1}
                                     onValueChange={(value) => {
                                       const dept = departments.find(d => d.value === value);
                                       if (dept) {

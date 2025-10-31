@@ -24,6 +24,9 @@ export default function AddSettingDetails() {
     const MediaId = searchParams.get('mediaID');
   const [loading, setLoading] = useState(true);
   const [formattedId, setFormattedId] = useState<string>('');
+
+  const [pouchId, setPouchId] = useState<string>('');
+
   const [pouches, setPouches] = useState<Pouch[]>([]);
   const [pouchWeights, setPouchWeights] = useState<{ [key: string]: number }>({});
   const [pouchQuantities, setPouchQuantities] = useState<{ [key: string]: number }>({});
@@ -38,7 +41,12 @@ export default function AddSettingDetails() {
   const router = useRouter();
 
   
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+
+
+const apiBaseUrl = "http://localhost:4001"; 
+  
+// const apiBaseUrl = "https://kalash.app"; 
+
 
 
 
@@ -72,6 +80,8 @@ const apiBaseUrl = "https://erp-server-r9wh.onrender.com";
         
         const generatedSettingId = `CORRECT/${date}/${month}/${year}/${number}/${subnumber}`;
         setFormattedId(generatedSettingId);
+
+        setPouchId(`MEDIA/${date}/${month}/${year}/${number}/${subnumber}`);
 
         const pouchResponse = await fetch(apiEndpoint);
         const pouchResult = await pouchResponse.json();
@@ -166,6 +176,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     // Prepare correction data
     const correctionData = {
+      MediaId: pouchId,
       correctionId: formattedId,     // ✅ renamed
       issuedDate: combinedDateTime,
       pouches: pouchData,

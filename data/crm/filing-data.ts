@@ -1,6 +1,9 @@
 import { IFiling } from "@/interface/table.interface";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+// const apiUrl = "https://kalash.app";
+
+
+const apiUrl = "http://localhost:4001";
 
 // Function to fetch grinding data from the server
 export const fetchGrindingData = async (): Promise<IFiling[]> => {
@@ -29,8 +32,9 @@ export const fetchGrindingData = async (): Promise<IFiling[]> => {
             orderId: grinding.OrderId || '',
             product :grinding.product || '',  
             quantity:grinding.quantity || 0,  
-            grindingLoss: grinding.Filing_Loss
-             || 0
+            grindingLoss: grinding.Filing_Loss || 0,
+            movedstatus: grinding.movedstatus || 0,
+
           };
         });
       } else {

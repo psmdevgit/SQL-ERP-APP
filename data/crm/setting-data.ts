@@ -1,6 +1,8 @@
 import { ISetting } from "@/interface/table.interface";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiUrl = "http://localhost:4001";
+
+// const apiUrl = "https://kalash.app";
 
 // Function to fetch grinding data from the server
 export const fetchSettingData = async (): Promise<ISetting[]> => {
@@ -24,9 +26,10 @@ export const fetchSettingData = async (): Promise<ISetting[]> => {
             status: setting.status__c,  
             product: setting.Product__c || 'N/A',
             quantity: setting.Quantity__c || 0,
-            orderId: setting.Order_Id__c || '',
+            orderId: setting.Order_Id_c || '',
             stoneWeight: setting.Stone_Weight__c || 0,
-            grindingLoss: setting.Setting_l__c || 0 // Calculate loss
+            grindingLoss: setting.Setting_l__c || 0,
+            movedstatus: setting.movedstatus || 0,
           };
         });
       } else {

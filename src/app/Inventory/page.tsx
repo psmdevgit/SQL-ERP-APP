@@ -19,10 +19,9 @@ import {
 } from "@/components/ui/select";
 import "../Orders/add-order/add-order.css";
 
-// const apiBaseUrl = "https://erp-server-r9wh.onrender.com" ;
+const apiBaseUrl = "https://kalash.app" ;
 
-
-const apiBaseUrl = "http://localhost:5001" ;
+// const apiBaseUrl = "http://localhost:4001" ;
 
 interface InventoryItem {
   name: string;
@@ -56,43 +55,94 @@ const InventoryUpdateForm = () => {
   const [success, setSuccess] = useState('');
 
   // Fetch inventory items
-  useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        const response = await fetch(`${apiBaseUrl}/get-inventory`);
-        const result = await response.json();
+  // useEffect(() => {
+  //   const fetchInventory = async () => {
+  //     try {
+  //       const response = await fetch(`${apiBaseUrl}/get-inventoryupdate`);
+  //       const result = await response.json();
         
-        if (result.success) {
-          setInventoryItems(result.data);
-        } else {
-          setError('Failed to fetch inventory items');
-        }
-      } catch (err) {
-        setError('Error fetching inventory items');
-        console.error(err);
-      }
-    };
+  //       if (result.success) {
+  //         setInventoryItems(result.data);
+  //       } else {
+  //         setError('Failed to fetch inventory items');
+  //       }
+  //     } catch (err) {
+  //       setError('Error fetching inventory items');
+  //       console.error(err);
+  //     }
+  //   };
 
-     const fetchPartyLedgers = async () => {
+  //    const fetchPartyLedgers = async () => {
+  //     try {
+  //       const response = await fetch(`${apiBaseUrl}/customer-groups`);
+  //       const result = await response.json();
+
+  //       if (result.success) {
+  //         console.log(result.data);
+  //         setPartyLedgers(result.data);
+  //       } else {
+  //         setError('Failed to fetch party ledgers');
+  //       }
+  //     } catch (err) {
+  //       setError('Error fetching party ledgers');
+  //       console.error(err);
+  //     }
+  //   };
+
+  //   fetchInventory();    
+  //   fetchPartyLedgers();
+  // }, []);
+
+    // ✅ Fetch Party Ledgers on load
+  useEffect(() => {
+    const fetchPartyLedgers = async () => {
       try {
         const response = await fetch(`${apiBaseUrl}/customer-groups`);
         const result = await response.json();
 
         if (result.success) {
-          console.log(result.data);
           setPartyLedgers(result.data);
         } else {
-          setError('Failed to fetch party ledgers');
+          setError("Failed to fetch party ledgers");
         }
       } catch (err) {
-        setError('Error fetching party ledgers');
+        setError("Error fetching party ledgers");
         console.error(err);
       }
     };
 
-    fetchInventory();    
     fetchPartyLedgers();
   }, []);
+
+  // ✅ Fetch Inventory when Party Ledger changes
+  useEffect(() => {
+    if (!formData.partyLedger) return;
+
+    const fetchInventory = async () => {
+      try {
+        setInventoryItems([]);
+        setError("");
+
+        const response = await fetch(
+          `${apiBaseUrl}/get-inventoryupdate?partyLedger=${encodeURIComponent(
+            formData.partyLedger
+          )}`
+        );
+
+        const result = await response.json();
+        if (result.success) {
+          setInventoryItems(result.data);
+        } else {
+          setError("Failed to fetch inventory items");
+        }
+      } catch (err) {
+        setError("Error fetching inventory items");
+        console.error(err);
+      }
+    };
+
+    fetchInventory();
+  }, [formData.partyLedger]); // ⬅️ Trigger when partyLedger changes
 
   const handleItemSelect = (value: string) => {
     if (value === 'custom') {
@@ -194,28 +244,6 @@ const InventoryUpdateForm = () => {
     }, 1000);
 
 
-            
-      // Reset form for custom items, or refresh the inventory list
-    //   if (isCustomItem) {
-    //     setFormData({
-    //       itemName: '',
-    //       purity: '',
-    //       availableWeight: '',
-    //       unitOfMeasure: 'grams',
-    //       partyLedger: ''
-    //     });
-    //     setSelectedItem('');
-    //   } else {
-    //     // Refresh inventory list
-        
-    // router.push(`/Inventory`);
-    //     const refreshResponse = await fetch(`${apiBaseUrl}/get-inventory`);
-    //     const refreshData = await refreshResponse.json();
-    //     if (refreshData.success) {
-    //       setInventoryItems(refreshData.data);
-    //     }
-    //   }
-
     } catch (err) {
       console.error('Error updating inventory:', err);
       setError(err.message || 'An error occurred while updating inventory');
@@ -254,28 +282,6 @@ const InventoryUpdateForm = () => {
               </Select>
             </div>
 
-
-            {/* Item Selection - Updated styling */}
-            {/* <div className="space-y-2">
-              <Label>Select Item</Label>
-              <Select value={selectedItem} onValueChange={handleItemSelect}>
-                <SelectTrigger className="w-full bg-white border border-gray-200">
-                  <SelectValue placeholder="Select an item" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-gray-200 max-h-60 min-h-20 overflow-y-auto">
-                  <SelectItem value="custom" className="hover:bg-gray-100">Add Custom Item</SelectItem>
-                  {inventoryItems.map((item) => (
-                    <SelectItem 
-                      key={item.name} 
-                      value={item.name}
-                      className="hover:bg-gray-100"
-                    >
-                      {item.name} ({item.availableWeight}g)
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div> */}
 
             {/* Item Selection - Updated styling */}
 <div className="space-y-2">

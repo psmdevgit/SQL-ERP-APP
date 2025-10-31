@@ -141,10 +141,10 @@ const InventoryTransaction: React.FC = () => {
   const [allNames, setAllNames] = useState<string[]>([]);
   const [allOrders, setAllOrders] = useState<string[]>([]);
 
-  const API_URL = "http://localhost:5001";
+  // const API_URL = "http://localhost:4001";
 
   
-  // const API_URL = "https://erp-server-r9wh.onrender.com";
+  const API_URL = "https://kalash.app";
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -165,7 +165,7 @@ const InventoryTransaction: React.FC = () => {
             AlloyWeight: item.alloyWeight,
             CreatedDate: item.createdDate,
             CreatedByName: item.createdByName,
-            Order: item.order,
+            Order: item.orderno,
           }));
         }
 
@@ -201,7 +201,7 @@ useEffect(() => {
   to.setHours(23, 59, 59, 999);
 
   const filtered = reports.filter((report) => {
-    const created = new Date(report.CreatedDate);
+    const created = new Date(report.Issued_Date);
     const dateInRange = created >= from && created <= to;
     const nameMatch = selectedName === "All" || report.Name === selectedName;
     const orderMatch = selectedOrder === "All" || report.Order === selectedOrder;

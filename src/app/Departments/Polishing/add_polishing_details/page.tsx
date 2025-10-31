@@ -31,6 +31,9 @@ export default function AddPolishingDetails() {
   const correctionId = searchParams.get('correctionID');
   const [loading, setLoading] = useState(true);
   const [formattedId, setFormattedId] = useState<string>('');
+
+  
+
   const [pouches, setPouches] = useState<Pouch[]>([]);
   const [pouchWeights, setPouchWeights] = useState<{ [key: string]: number }>({});
   const [pouchQuantities, setPouchQuantities] = useState<{ [key: string]: number }>({});
@@ -48,16 +51,16 @@ export default function AddPolishingDetails() {
 
   const router = useRouter();
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+//const apiBaseUrl = "https://kalash.app"; 
 
+
+const apiBaseUrl = "http://localhost:4001"; 
 
   useEffect(() => {
     const initializePolishing = async () => {
       if (!filingId && !grindingId && !settingId  && !correctionId ) {
         toast.error('No ID provided');
-
         console.error('[AddPolishing] Initialization failed: No ID provided in URL parameters.');
-
         return;
       }
 
@@ -238,6 +241,7 @@ console.log('[AddPolishing] Using weight field:', weightField);
 
       // Prepare polishing data
       const polishingData = {
+        settingId: settingId,
         polishingId: formattedId,
         issuedDate: combinedDateTime, // Use combined date and time
         pouches: pouchData,

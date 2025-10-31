@@ -7,9 +7,13 @@ import { Button } from "@/components/ui/button";
 import { z } from 'zod';
 import { Label } from "@/components/ui/label";
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+// const apiBaseUrl = "https://kalash.app"; 
 
-interface Plating {
+
+const apiBaseUrl = "http://localhost:4001"; 
+
+
+type Plating= {
   Id: string;
   Name: string;
   Issued_Date__c: string;
@@ -31,7 +35,10 @@ interface PlatingData {
   plating: Plating;
   pouches: Pouch[];
 }
-
+type PlatingResponse = {
+  plating: Plating[];  // ← array, not single object
+  pouches: any[];
+};
 // Form validation schema
 const updateFormSchema = z.object({
   receivedDate: z.string().min(1, "Received date is required"),
@@ -140,6 +147,7 @@ const PlatingDetailsPage = () => {
 
         setPouchReceivedWeights(initialWeights);
         setData(result.data);
+        console.log('[Plating Details] Plating Data Set:', result.data);
 
         // Calculate initial total weight
         const total = Object.values(initialWeights).reduce((sum, weight) => sum + (weight || 0), 0);
@@ -177,6 +185,26 @@ const PlatingDetailsPage = () => {
     }
   };
 
+  // Add debug logging
+  useEffect(() => {
+    if (platingId) {
+      console.log('[Plating Details] Working with ID:', platingId);
+    }
+  }, [platingId]);
+
+  if (loading) {
+    return <div className="p-6">Loading plating details...</div>;
+  }
+
+  if (!data || !data.plating) {
+    return <div className="p-6">Failed to load plating details</div>;
+  }
+
+const { plating, pouches }: PlatingResponse = data;
+const platingDetails = plating?.[0];
+
+// plating is already a single object
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -187,7 +215,7 @@ const PlatingDetailsPage = () => {
       if (!data || !platingId) return;
 
          // 🔥 Validation: Stop if total received weight is greater than issued weight
-    if (totalReceivedWeight > (data.plating.Issued_Weight__c || 0)) {
+    if (totalReceivedWeight > (platingDetails.Issued_Weight__c || 0)) {
       alert("Received Weight cannot be greater than Issued Weight!");
       setIsSubmitting(false);
       return; // Stop execution
@@ -241,22 +269,6 @@ const PlatingDetailsPage = () => {
     }
   };
 
-  // Add debug logging
-  useEffect(() => {
-    if (platingId) {
-      console.log('[Plating Details] Working with ID:', platingId);
-    }
-  }, [platingId]);
-
-  if (loading) {
-    return <div className="p-6">Loading plating details...</div>;
-  }
-
-  if (!data || !data.plating) {
-    return <div className="p-6">Failed to load plating details</div>;
-  }
-
-  const { plating, pouches } = data;
 
   return (
     <div className="p-6">
@@ -265,26 +277,34 @@ const PlatingDetailsPage = () => {
           <h2 className="text-xl font-semibold mb-4">Plating Details</h2>
           
           {/* Plating Info Grid */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div>
-              <Label>Plating Number</Label>
-              <div className="mt-1">{plating?.Name || 'N/A'}</div>
-            </div>
-            <div>
-              <Label>Issued Date</Label>
-              <div className="mt-1">
-                {plating?.Issued_Date__c ? new Date(plating.Issued_Date__c).toLocaleDateString() : 'N/A'}
-              </div>
-            </div>
-            <div>
-              <Label>Issued Weight</Label>
-              <div className="mt-1">{plating?.Issued_Weight__c?.toFixed(4) || '0.0000'}g</div>
-            </div>
-            <div>
-              <Label>Status</Label>
-              <div className="mt-1">{plating?.Status__c || 'N/A'}</div>
-            </div>
-          </div>
+         <div className="grid grid-cols-2 gap-4 mb-6">
+  <div>
+    <Label>Plating Number</Label>
+    <div className="mt-1">{platingDetails?.Name || 'N/A'}</div>
+  </div>
+
+  <div>
+    <Label>Issued Date</Label>
+    <div className="mt-1">
+      {platingDetails?.Issued_Date__c
+        ? new Date(platingDetails.Issued_Date__c).toLocaleDateString()
+        : 'N/A'}
+    </div>
+  </div>
+
+  <div>
+    <Label>Issued Weight</Label>
+    <div className="mt-1">
+      {platingDetails?.Issued_Weight__c?.toFixed(4) || '0.0000'}g
+    </div>
+  </div>
+
+  <div>
+    <Label>Status</Label>
+    <div className="mt-1">{platingDetails?.Status__c || 'N/A'}</div>
+  </div>
+</div>
+
 
           <form onSubmit={handleSubmit} className="mt-8">
             <div className="space-y-6">

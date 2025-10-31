@@ -11,6 +11,7 @@ import { toast } from "sonner";
 interface TaggedItem {
   id: string;
   name: string;
+  model: string;
   modelUniqueNumber: string;
   grossWeight: number;
   netWeight: number;
@@ -24,6 +25,7 @@ interface TaggingDetail {
     id: string;
     taggingId: string;
     partyCode: string;
+    orderNo:string;
     totalGrossWeight: number;
     totalNetWeight: number;
     totalStoneWeight: number;
@@ -85,6 +87,10 @@ const CARAT_OPTIONS = [
   { value: '14Ct', label: '14Ct' },
 ];
 export default function InvoiceGenerator() {
+
+  
+        const router = useRouter();
+
   const [taggingOptions, setTaggingOptions] = useState<TaggingOption[]>([]);
   const [taggingId, setTaggingId] = useState('');
   const [taggingDetails, setTaggingDetails] = useState<TaggingDetail | null>(null);
@@ -112,7 +118,10 @@ export default function InvoiceGenerator() {
   const [customPercentages, setCustomPercentages] = useState<{ [key: string]: number }>({});
 
   
-  const API_BASE_URL = "https://erp-server-r9wh.onrender.com" ;
+  const API_BASE_URL = "https://kalash.app" ;
+
+  
+  // const API_BASE_URL = "http://localhost:4001" ;
 
   // Fetch all tagging IDs on component mount
   useEffect(() => {
@@ -393,7 +402,7 @@ export default function InvoiceGenerator() {
         borderWidth: 1,
       });
       
-      page.drawText('Invoice No.:', {
+      page.drawText(`Invoice No.: ${invoiceNumber}` ,{
         x: margin + 10,
         y: y - 15,
         size: 10,
@@ -455,8 +464,8 @@ export default function InvoiceGenerator() {
       
       const headers = [
         'Sr. No.',
-        'Item Name',
-        'Item Narr.',
+        'Tag No',
+        'Item Name.',
         'HSN',  // Shortened text
         'Pcs',
         'Gross Wt',
@@ -535,18 +544,21 @@ export default function InvoiceGenerator() {
         // Set rate text
         const rateText = (itemCategories[item.id] || CATEGORY_OPTIONS[0]).label;
         
+        console.log(  `item name is : ${item.model.toString()}`);
+
         xPos = margin;
         const rowData = [
           (index + 1).toString(),
           item.name,
-          '', // Item narr
+          item.model,
+          // '',
           '', // HSN code
           '1', // Pcs
           item.grossWeight.toFixed(3),
           item.stoneWeight.toFixed(3),
           '0.000', // Other weight
           item.netWeight.toFixed(3),
-          item.stoneCharge.toFixed(2),
+          item.stoneCharge,
           '0.00', // Other amount
           purity.toFixed(2), // Purity
           rateText,
@@ -1123,7 +1135,7 @@ export default function InvoiceGenerator() {
       100,         // Stone weight
       110          // Approx value
     ];
-
+ 
     let xPos = margin;
 
     // Draw header cells in a single row
@@ -1320,6 +1332,8 @@ export default function InvoiceGenerator() {
       const formData = new FormData();
       formData.append('billingId', billingId);
       formData.append('taggingId', taggingId);
+      formData.append('orderNo',  taggingDetails.tagging.orderNo);
+      formData.append('partyCode', taggingDetails.tagging.partyCode);
       formData.append('partyName', partyDetails?.partyName || '');
       formData.append('totalFineWeight', totalFineWeight.toString());
       formData.append('goldRate', goldRate.toString());
@@ -1331,6 +1345,8 @@ export default function InvoiceGenerator() {
       console.log('Submitting billing data:', {
         billingId,
         taggingId,
+        orderNo: taggingDetails.tagging.orderNo,
+        partyCode: taggingDetails.tagging.partyCode,
         partyName: partyDetails?.partyName,
         totalFineWeight,
         goldRate,
@@ -1354,11 +1370,15 @@ export default function InvoiceGenerator() {
       const result = await response.json();
       console.log('Server response:', result);
       
-      toast.success(`Billing ${billingId} created successfully`);
+      // toast.success(`Billing ${billingId} created successfully`);
+      alert(`Billing ${billingId} created successfully`);
+
+       router.push(`/Billing/Billing`);
       
     } catch (error) {
       console.error('Error in submitBilling:', error);
       toast.error(error.message || "Failed to submit billing");
+      alert("Failed to submit billing");
     } finally {
       setLoading(false);
     }
@@ -1379,7 +1399,7 @@ export default function InvoiceGenerator() {
   };
 
   return (
-    <div className="container mx-auto max-w-7xl p-6">
+    <div className="container mx-auto max-w-7xl p-6" style={{minHeight:"100vh",marginTop:"50px"}}>
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-4">
@@ -1557,6 +1577,14 @@ export default function InvoiceGenerator() {
                         {taggingDetails?.tagging?.partyCode || 'N/A'}
                       </p>
                     </div>
+
+                     <div>
+                      <p className="text-sm text-gray-600">Order No</p>
+                      <p className="font-medium">
+                        {taggingDetails?.tagging?.orderNo || 'N/A'}
+                      </p>
+                    </div>
+
                     <div>
                       <p className="text-sm text-gray-600">Net Weight</p>
                       <p className="font-medium">
@@ -1712,7 +1740,11 @@ export default function InvoiceGenerator() {
                         <td className="px-4 py-2 text-right">{item.grossWeight.toFixed(3)}</td>
                         <td className="px-4 py-2 text-right">{item.netWeight.toFixed(3)}</td>
                         <td className="px-4 py-2 text-right">{item.stoneWeight.toFixed(3)}</td>
-                        <td className="px-4 py-2 text-right">₹ {(item.stoneCharge || 0).toFixed(2)}</td>
+                        {/* <td className="px-4 py-2 text-right">₹ {(item.stoneCharge || 0).toFixed(2)}</td> */}
+
+                        
+                        <td className="px-4 py-2 text-right">₹ {item.stoneCharge || 0}</td>
+
                         <td className="px-4 py-2 text-right">{fineWeight.toFixed(4)}</td>
                         <td className="px-4 py-2 text-right">₹ {makingCharges.toFixed(2)}</td>
                       </tr>

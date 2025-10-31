@@ -37,7 +37,9 @@ import BillingTableControls from "./BillingTableControls";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+const apiBaseUrl = "https://kalash.app"; 
+
+// const apiBaseUrl = "http://localhost:4001"; 
 
 const downloadPDF = async (pdfUrl: string) => {
   try {
@@ -411,7 +413,7 @@ export default function BillingTable() {
                                       }}
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        window.open(deal.DeliveryChallanUrl, '_blank');
+                                        window.open(`${apiBaseUrl}/${deal.DeliveryChallanUrl}`, '_blank');
                                       }}
                                       title="Download Delivery Challan"
                                     >
@@ -434,7 +436,7 @@ export default function BillingTable() {
                                       }}
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        window.open(deal.TaxInvoiceUrl, '_blank');
+                                        window.open(`${apiBaseUrl}/${deal.TaxInvoiceUrl}`, '_blank');
                                       }}
                                       title="Download Tax Invoice"
                                     >

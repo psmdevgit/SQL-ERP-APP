@@ -35,9 +35,12 @@ export default function AddCuttingDetails() {
   const [orderId, setOrderId] = useState<string>('');
   const router = useRouter();
 
-  
-const apiBaseUrl =  "https://erp-server-r9wh.onrender.com";
 
+
+//const apiBaseUrl = "https://kalash.app";
+
+const apiBaseUrl = "http://localhost:4001";
+  
   useEffect(() => {
     const initializeCutting = async () => {
       if (!platingId) {
@@ -164,6 +167,7 @@ const apiBaseUrl =  "https://erp-server-r9wh.onrender.com";
       }));
 
       console.log('[Add Cutting] Preparing submission with:', {
+        platingId,
         cuttingId: formattedId,
         issuedDate,
         issuedTime,
@@ -175,6 +179,7 @@ const apiBaseUrl =  "https://erp-server-r9wh.onrender.com";
 
       // Prepare cutting data
       const cuttingData = {
+        platingId:platingId,
         cuttingId: formattedId,
         issuedDate: issuedDate,
         issuedTime: issuedTime,
@@ -229,11 +234,14 @@ const apiBaseUrl =  "https://erp-server-r9wh.onrender.com";
 
       } else {
         console.error('[Add Cutting] API returned error:', result);
+         alert('Failed to save cutting details');
         throw new Error(result.message || 'Failed to save cutting details');
+       
       }
     } catch (error) {
       console.error('[Add Cutting] Error:', error);
       console.error('[Add Cutting] Full error details:', JSON.stringify(error, null, 2));
+        alert('Failed to save cutting details');
       toast.error(error.message || 'Failed to save cutting details');
       // alert(error.message || 'Failed to save cutting details');
     } finally {

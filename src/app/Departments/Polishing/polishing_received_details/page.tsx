@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { z } from 'zod';
 import { Label } from "@/components/ui/label";
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+//const apiBaseUrl = "https://kalash.app"; 
 
+ const apiBaseUrl = "http://localhost:4001"; 
 
 
 interface Polishing {
@@ -79,78 +80,82 @@ export default function PolishingReceivedDetails() {
   const router = useRouter();
 
 
+useEffect(() => {
+  const fetchPolishingDetails = async () => {
+    if (!polishingId) {
+      console.log('[Polishing Details] No polishing ID provided');
+      toast.error('No polishing ID provided');
+      setLoading(false);
+      return;
+    }
 
-  useEffect(() => {
-    const fetchPolishingDetails = async () => {
-      if (!polishingId) {
-        console.log('[Polishing Details] No polishing ID provided');
-        toast.error('No polishing ID provided');
-        // alert('No polishing ID provided');
-        setLoading(false);
-        return;
+    try {
+      const [prefix, date, month, year, number, subnumber] = polishingId.split('/');
+
+      console.log('[Polishing Details] Fetching details for:', {
+        prefix,
+        date,
+        month,
+        year,
+        number,
+        subnumber,
+        url: `${apiBaseUrl}/api/polishing/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`,
+      });
+
+      const response = await fetch(
+        `${apiBaseUrl}/api/polishing/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`
+      );
+
+      const result = await response.json();
+      console.log('[Polishing Details] API Response:', result);
+
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to fetch polishing details');
       }
 
-      try {
-        const [prefix, date, month, year, number, subnumber] = polishingId.split('/');
-        
-        console.log('[Polishing Details] Fetching details for:', {
-          prefix, date, month, year, number,
-          url: `${apiBaseUrl}/api/polishing/${prefix}/${date}/${month}/${year}/${number}/pouches`
-        });
+      const polishingData = result.data?.polishing?.[0]; // ✅ pick first object
+      const pouchesData = result.data?.pouches || [];
 
-        const response = await fetch(
-          `${apiBaseUrl}/api/polishing/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`
-        );
-
-        const result = await response.json();
-        console.log('[Polishing Details] API Response:', result);
-
-        if (!result.success) {
-          throw new Error(result.message || 'Failed to fetch polishing details');
-        }
-
-        if (!result.data?.polishing) {
-          console.error('[Polishing Details] No polishing data in response');
-          throw new Error('No polishing data found');
-        }
-
-        console.log('[Polishing Details] Setting state with:', {
-          polishing: result.data.polishing,
-          pouches: result.data.pouches
-        });
-
-        setPolishing(result.data.polishing);
-        setPouches(result.data.pouches);
-
-        // Initialize received weights
-        const initialWeights: { [key: string]: number } = {};
-        result.data.pouches.forEach((pouch: Pouch) => {
-          initialWeights[pouch.Id] = pouch.Received_Weight_Polishing__c || 0;
-        });
-        setPouchReceivedWeights(initialWeights);
-
-        // Calculate initial total
-        const total = Object.values(initialWeights).reduce((sum, weight) => sum + (weight || 0), 0);
-        setTotalReceivedWeight(total);
-
-        // Calculate loss
-        if (result.data.polishing?.Issued_Weight__c) {
-          setPolishingLoss(result.data.polishing.Issued_Weight__c - total);
-        }
-
-      } catch (error) {
-        console.error('[Polishing Details] Error:', error);
-        toast.error(error.message || 'Failed to fetch polishing details');
-        // alert(error.message || 'Failed to fetch polishing details');
-      } finally {
-        console.log('[Polishing Details] Setting loading to false');
-        setLoading(false);
+      if (!polishingData) {
+        console.error('[Polishing Details] ❌ No polishing data found');
+        throw new Error('No polishing data found');
       }
-    };
 
-    console.log('[Polishing Details] Component mounted with polishingId:', polishingId);
-    fetchPolishingDetails();
-  }, [polishingId]);
+      console.log('[Polishing Details] ✅ Setting state with:', {
+        polishing: polishingData,
+        pouches: pouchesData,
+      });
+
+      setPolishing(polishingData);
+      setPouches(pouchesData);
+
+      // Initialize received weights
+      const initialWeights: { [key: string]: number } = {};
+      pouchesData.forEach((pouch: Pouch) => {
+        initialWeights[pouch.Id] = pouch.Received_Weight_Polishing__c || 0;
+      });
+      setPouchReceivedWeights(initialWeights);
+
+      // Calculate total received weight
+      const total = Object.values(initialWeights).reduce((sum, weight) => sum + (weight || 0), 0);
+      setTotalReceivedWeight(total);
+
+      // Calculate loss
+      if (polishingData?.Issued_Weight__c) {
+        setPolishingLoss(polishingData.Issued_Weight__c - total);
+      }
+    } catch (error: any) {
+      console.error('[Polishing Details] ❌ Error:', error);
+      toast.error(error.message || 'Failed to fetch polishing details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  console.log('[Polishing Details] Component mounted with polishingId:', polishingId);
+  fetchPolishingDetails();
+}, [polishingId]);
+
 
   useEffect(() => {
     // Calculate total pouch weight
@@ -288,7 +293,7 @@ export default function PolishingReceivedDetails() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Polishing Number</Label>
-              <div className="mt-1">{polishing.Name}</div>
+              <div className="mt-1">{polishing?.Name || '-'}</div>
             </div>
             <div>
               <Label>Issued Date</Label>

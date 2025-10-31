@@ -1,6 +1,9 @@
 import { IFiling } from "@/interface/table.interface";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiUrl = "http://localhost:4001";
+
+
+// const apiUrl = "https://kalash.app";
 
 // Function to fetch grinding data from the server
 export const fetchCorrectionData = async (): Promise<IFiling[]> => {
@@ -21,11 +24,12 @@ export const fetchCorrectionData = async (): Promise<IFiling[]> => {
             issuedDate: grinding.Issued_Date__c || '-',    // Updated to match server field
             receivedWeight: grinding.Received_Weight__c || 0, // Updated to match server field
             receivedDate: grinding.Received_Date__c || '-',  // Updated to match server field
-            status: grinding.status__c,
+            status: grinding.Status__c,
             product: grinding.Product__c || 'N/A',
             quantity: grinding.Quantity__c || 0,
             orderId : grinding.Order_Id__c || '',
-            grindingLoss: grinding.Grinding_loss__c || 0 // Calculate loss
+            grindingLoss: grinding.Grinding_loss__c || 0 ,
+            movedstatus: grinding.movedstatus || 0,
           };
         });
       } else {

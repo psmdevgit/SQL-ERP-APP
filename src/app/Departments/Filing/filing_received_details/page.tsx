@@ -11,16 +11,17 @@ import { Label } from "@/components/ui/label";
 // const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://erp-server-r9wh.onrender.com";
 
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+//const apiBaseUrl = "https://kalash.app"; 
 
-// const apiBaseUrl = "http://locaLhost:5001"; 
+
+const apiBaseUrl = "http://locaLhost:4001"; 
 
 
 interface Details {
   Name: string;
-  Issued_Date__c: string;
-  Issued_weight__c: number;
-  Total_Issued_weight__c: number;
+  Issued_Date_c: string;
+  Issued_weight_c: number;
+  Total_Issued_weight_c: number;
 }
 
 interface PouchDetails {
@@ -127,10 +128,10 @@ const FilingDetailsPage = () => {
     setTotalReceivedWeight(totalWeight);
     
     if (data) {
-      console.log("data : ",data.filing.Issued_weight__c)
-      const issuedWeight = data.filing.Issued_weight__c;
-      
-          setCheckIsuuedWt(data.filing.Issued_weight__c);
+      console.log("data : ",data.filing.Issued_weight_c)
+      const issuedWeight = data.filing.Issued_weight_c;
+    
+          setCheckIsuuedWt(data.filing.Issued_weight_c);
           console.log(setCheckIsuuedWt);
       const loss = issuedWeight - totalWeight;
       setGrindingLoss(loss);
@@ -231,7 +232,7 @@ const FilingDetailsPage = () => {
       setOrnamentWeight(newTotal); // Update ornament weight instead of total weight
       const newTotalReceived = newTotal + scrapReceivedWeight + dustReceivedWeight;
       setTotalReceivedWeight(newTotalReceived);
-      setGrindingLoss(data?.filing.Issued_weight__c ? data.filing.Issued_weight__c - newTotalReceived : 0);
+      setGrindingLoss(data?.filing.Issued_weight_c ? data.filing.Issued_weight_c - newTotalReceived : 0);
       return newWeights;
     });
   };
@@ -269,8 +270,8 @@ const FilingDetailsPage = () => {
       const result = await updateFiling(data.filing.Name, formData);
       console.log('[FilingReceived] API response:', result);
 
-      if (result.success) {
-      
+      if (result.success) {    
+          
         console.log('[FilingReceived] Update successful');
           alert('Pouch Creation updated successfully');
         toast.success('Pouch Creation updated successfully');      
@@ -331,11 +332,11 @@ const FilingDetailsPage = () => {
               </div>
               <div>
                 <label className="text-sm text-gray-600">Issued Date</label>
-                <p className="font-medium">{new Date(data.filing.Issued_Date__c).toLocaleDateString()}</p>
+                <p className="font-medium">{new Date(data.filing.Issued_Date_c).toLocaleDateString()}</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Total Issued Weight</label>
-                <p className="font-medium">{data.filing.Issued_weight__c}g</p>
+                <p className="font-medium">{data.filing.Issued_weight_c}g</p>
               </div>
             </div>
           </div>
@@ -388,13 +389,13 @@ const FilingDetailsPage = () => {
                   <tr>
                     <td colSpan={2} className="px-4 py-3 text-sm font-medium">Totals:</td>
                     <td className="px-4 py-3 text-sm font-medium">
-                      {data.filing.Issued_weight__c}g
+                      {data.filing.Issued_weight_c}g
                     </td>
                     <td className="px-4 py-3 text-sm font-medium">
                       {totalReceivedWeight.toFixed(4)}g
                     </td>
                     <td className="px-4 py-3 text-sm font-medium text-red-600">
-                      {(data.filing.Issued_weight__c - totalReceivedWeight).toFixed(4)}g
+                      {(data.filing.Issued_weight_c - totalReceivedWeight).toFixed(4)}g
                     </td>
                   </tr>
                 </tfoot>

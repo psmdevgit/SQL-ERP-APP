@@ -44,9 +44,12 @@ import {
 
 import { Input } from "@/components/ui/input";
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
 
-// const apiBaseUrl = "http://localhost:5001"; 
+const apiBaseUrl = "http:localhost:4001"; 
+
+// const apiBaseUrl = "https://kalash.app"; 
+
+
 
 const downloadPDF = async (pdfUrl: string) => {
   try {
@@ -249,6 +252,7 @@ const handleScrapUpSubmit = async () => {
         setLoading(true);
         const data = await fetchDealData();
         setDeals(data);
+        console.log(`Loaded ${data} deals from API`);
         
         // Initial data is loaded - filters will be applied in the next useEffect
       } catch (error) {
@@ -475,7 +479,10 @@ const handleScrapUpSubmit = async () => {
   }, [showTransferMenu]);
 
   // Function to format weight with 4 decimal places
-  const formatWeight = (weight: number) => weight?.toFixed(4) || '0.0000';
+ const formatWeight = (weight: number | string | undefined | null) => {
+  const num = Number(weight);       // Convert to number safely
+  return !isNaN(num) ? num.toFixed(4) : '0.0000';
+};
 
   // Function to render weight breakdown tooltip content
   const renderWeightBreakdown = (deal: ICasting) => {
@@ -700,7 +707,7 @@ const handleScrapUpSubmit = async () => {
                                   </Link>
 
                                   {/* Edit button - disabled when status is Finished */}
-  {deal.status?.toLowerCase() !== 'finished' ? (
+                                    {deal.status?.toLowerCase() !== 'finished' ? (
                                     <Link href={`/Departments/Casting/casting_received_details?castingId=${deal.id}`} passHref>
                                       <button
                                         type="button"
@@ -772,8 +779,13 @@ const handleScrapUpSubmit = async () => {
                                     <i className="fa-solid fa-check"></i>
                                   </button>
 
+
+
                                   {/* Transfer select - always enabled */}
-                                  <Select
+
+
+
+                                  <Select  disabled={String(deal.movedstatus) === "1"}
                                     onValueChange={(value) => {
                                       const dept = departments.find(d => d.value === value);
                                       if (dept) {

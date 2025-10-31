@@ -53,9 +53,15 @@ export default function CreateFilingFromDepartment() {
 
   const router = useRouter();
 
-  
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
 
+const apiBaseUrl = "https://kalash.app"; 
+
+// const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+  
+
+
+
+// const apiBaseUrl = "http://localhost:5001"; 
   // Fetch department records when department changes
   useEffect(() => {
     const fetchDepartmentRecords = async () => {
@@ -98,6 +104,8 @@ const apiBaseUrl = "https://erp-server-r9wh.onrender.com";
   // Fetch pouches when record is selected
   useEffect(() => {
     const fetchPouches = async () => {
+console.log('Selected Record for fetching pouches:', selectedRecord);
+
       if (!selectedRecord || !selectedDepartment) return;
 
       try {
@@ -109,6 +117,8 @@ const apiBaseUrl = "https://erp-server-r9wh.onrender.com";
         
         const response = await fetch(endpoint);
         const result = await response.json();
+
+        console.log('Pouches fetch result:', result);
 
         if (result.success) {
           console.log('Fetched pouches:', result.data.pouches);

@@ -40,7 +40,11 @@ export default function AddDullDetails() {
   const [orderId, setOrderId] = useState<string>('');
   const router = useRouter();
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+//const apiBaseUrl = "https://kalash.app"; 
+
+//const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+
+const apiBaseUrl = "http://localhost:4001"; 
 
   useEffect(() => {
     const initializeDull = async () => {
@@ -66,7 +70,7 @@ const apiBaseUrl = "https://erp-server-r9wh.onrender.com";
        let apiEndpoint;
 
 if (sourceType === 'polishing') {
-  apiEndpoint = `${apiBaseUrl}/api/polish/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`;
+  apiEndpoint = `${apiBaseUrl}/api/polishing/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`;
 
 } else if (sourceType === 'grinding') {
   apiEndpoint = `${apiBaseUrl}/api/grinding/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`;
@@ -111,6 +115,7 @@ console.log(`[Add Dull] Fetching pouches from ${sourceType}:`, { url: apiEndpoin
       Quantity__c: pouch.Quantity__c || 0
     };
 
+  
   } else { // grinding (default)
     return {
       ...pouch,
@@ -186,6 +191,7 @@ console.log(`[Add Dull] Fetching pouches from ${sourceType}:`, { url: apiEndpoin
 
        // 🔹 Validation: Check if entered dull weight > received weight
     const invalidPouch = pouches.find((pouch) => {
+      console.log(`[Add Dull] Validating pouch ${pouch.Name}: entered weight = ${pouchWeights[pouch.Id]}, received weight = ${pouch.Received_Weight_Grinding__c}`);
       const receivedWeight = pouch.Received_Weight_Grinding__c || 0; // From polishing/grinding
       const enteredWeight = pouchWeights[pouch.Id] || 0; // Entered dull weight
       return enteredWeight > receivedWeight;
@@ -213,6 +219,7 @@ console.log(`[Add Dull] Fetching pouches from ${sourceType}:`, { url: apiEndpoin
       console.log('[Add Dull] Combined datetime:', combinedDateTime);
 
       console.log('[Add Dull] Preparing submission with:', {
+        polishingId,
         dullId: formattedId,
         issuedDate,
         issuedTime,
@@ -225,6 +232,7 @@ console.log(`[Add Dull] Fetching pouches from ${sourceType}:`, { url: apiEndpoin
 
       // Prepare dull data
       const dullData = {
+        polishingId: polishingId,
         dullId: formattedId,
         issuedDate: combinedDateTime, // Use combined date and time
         pouches: pouchesWithWeights,

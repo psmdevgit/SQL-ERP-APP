@@ -37,7 +37,13 @@ import TaggingTableControls from "./TaggingTableControl";
 
 // const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+// const apiBaseUrl = "https://kalash.app"; 
+
+
+const apiBaseUrl = "https://kalash.app"; 
+
+// const apiBaseUrl = "http://192.168.5.62:8080"; 
+
 const downloadPDF = async (pdfUrl: string) => {
   try {
     const response = await fetch(pdfUrl, {
@@ -252,6 +258,7 @@ console.log("Deals State:", deals);
         },
         body: JSON.stringify({ orderId }),
       });
+      
 
       const result = await response.json();
       
@@ -399,7 +406,7 @@ console.log("Deals State:", deals);
                                       }}
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        window.open(deal.pdfUrl, '_blank');
+                                        window.open(`${apiBaseUrl}${deal.pdfUrl}`, '_blank');
                                       }}
                                       title="View PDF"
                                     >
@@ -422,7 +429,7 @@ console.log("Deals State:", deals);
                                       }}
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        window.open(deal.excelUrl, '_blank');
+                                        window.open(`${apiBaseUrl}${deal.excelUrl}`, '_blank');
                                       }}
                                       title="Download Excel"
                                     >

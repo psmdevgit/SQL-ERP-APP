@@ -50,8 +50,11 @@ const departments: Department[] = [
    { value: 'Correction', label: 'Correction', path: '/Departments/Correction/add_correction_details' }
 
 ];
-const apiBaseUrl ="https://erp-server-r9wh.onrender.com"; // Ensure this is set correctly
-//const apiBaseUrl = "http://localhost:5001";
+
+// const apiBaseUrl = "https://kalash.app";
+
+const apiBaseUrl = "http://localhost:4001";
+
 
 const downloadPDF = async (pdfUrl: string) => {
   try {
@@ -611,7 +614,7 @@ const GrindingTable = () => {
                                     <i className="fa-solid fa-check"></i>
                                   </button>
 
-                                  <Select
+                                  <Select disabled={deal.movedstatus === 1}
                                     onValueChange={(value) => {
                                       const dept = departments.find(d => d.value === value);
                                       if (dept) {

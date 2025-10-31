@@ -2,11 +2,15 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'react-hot-toast';
+import {noimage} from "../../../../../assets/no.png"; 
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com";
+const apiBaseUrl = "https://kalash.app";
 
-// const apiBaseUrl = "http://localhost:5001";
+// const apiBaseUrl = "http://localhost:4001";
 
+const imageBaseUrl = "http://psmport.pothysswarnamahalapp.com/FactoryModels/";
+
+// const extensions = ["png", "jpg", "jpeg"];
 
 interface OrderDetails {
   orderId: string;
@@ -53,6 +57,11 @@ const OrderDetailsPage = () => {
 
   const [modelImages, setModelImages] = useState<Record<string, string>>({}); 
 
+//   const getImageSrc = (modelName) => {
+//   // default to first extension
+//   return `${imageBaseUrl}/${modelName}.${extensions[0]}`;
+// };
+
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -71,6 +80,8 @@ const OrderDetailsPage = () => {
         
       if (result.success) {
                 setData(result.data);
+
+                console.log(result.data);
 
                 const map: Record<string, string> = {};
 
@@ -288,18 +299,57 @@ const OrderDetailsPage = () => {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
               {regularModels.map((model) => (
-                <div key={model.id} className="bg-gray-50 rounded-lg shadow p-4 text-center">
-                <img
-                    src={modelImages[model.name] || "/no-image.png"}
-                    alt={model.name}
-                    className="w-full h-60 object-cover rounded-md mb-2 object-cover hover:scale-105 transition-transform duration-300"               
-                  />
-                  <p className="text-sm font-medium">{model.name}</p>
-                </div>
+
+            <a
+              href={ `${apiBaseUrl}${model.orderImageSheet} `}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                width:'200px',
+                backgroundColor: '#2196F3',
+                color: 'white',
+                padding: '10px 20px',
+                borderRadius: '4px',
+                textDecoration: 'none'
+              }}
+            >
+              <i className="fa-solid fa-file-image"></i>
+              View Image Sheet
+            </a>
+                // <div key={model.id} className="bg-gray-50 rounded-lg shadow p-4 text-center">
+                // {/* <img
+                //     src={model.name || "/no-image.png"}
+                //     alt={model.name}
+                //     className="w-full h-60 object-cover rounded-md mb-2 object-cover hover:scale-105 transition-transform duration-300"               
+                //   /> */}
+
+                //   {/* <img
+                //           src={getImageSrc(model.name)}
+                //           alt={model.name}
+                //           className="w-full h-60 object-cover rounded-md mb-2 hover:scale-105 transition-transform duration-300"
+                //           onError={(e) => {
+                //             let tried = 0;
+                //             const tryNext = () => {
+                //               tried++;
+                //               if (tried < extensions.length) {
+                //                 e.target.src = `${imageBaseUrl}/${model.name}.${extensions[tried]}`;
+                //               } else {
+                //                 e.target.src = "/no-image.png"; // fallback if all fail
+                //               }
+                //             };
+                //             tryNext();
+                //           }}
+                //         /> */}
+                //   <p className="text-sm font-medium">{model.name}</p>
+                // </div>
               ))}
             </div>
           </div>
         )}
+
+
+       
+
 
    {/* Processing weight on this order*/}
 {processingWeights.length > 0 && (

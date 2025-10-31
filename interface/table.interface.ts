@@ -429,7 +429,8 @@ export interface ICasting {
   castingLoss: number;
   ornamentWeight: number;
   scrapWeight: number;
-  dustWeight: number;
+  dustWeight: number;  
+  movedstatus: number;
 }
 
 // Define an interface for the casting form data
@@ -466,6 +467,7 @@ export interface IFiling {
   receivedDate: string;
   status: string;
   grindingLoss: number;
+  movedstatus: number;
 }
 
 export interface IMedia {
@@ -476,6 +478,7 @@ export interface IMedia {
   receivedDate: string;
   status: string;
   grindingLoss: number;
+   movedstatus: number;
 }
 
 export interface ICorrection {
@@ -496,6 +499,7 @@ export interface ISetting {
   receivedDate: string;
   status: string;
   settingLoss: number;
+  movedstatus: number;
 }
 
 export interface IPolishing {
@@ -506,6 +510,7 @@ export interface IPolishing {
   receivedDate: string;
   status: string;
   polishingLoss: number;
+  movedstatus: number;
 }
 
 export interface IDull {
@@ -516,6 +521,7 @@ export interface IDull {
   receivedDate: string;
   status: string;
   dullLoss: number;
+  movedstatus: number;
 }
 
 export interface ITagging {
@@ -574,6 +580,7 @@ export interface IPlating {
   Received_Date__c: string;
   Status__c: string;
   Plating_Loss__c: number;
+  movedstatus: number;
 }
 
 

@@ -6,33 +6,35 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { z } from 'zod';
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com";
 
+// const apiBaseUrl = "https://kalash.app";
+
+const apiBaseUrl = "http://localhost:4001";
 
 
 interface CastingDetails {
   Name: string;
-  Issued_Date__c: string;
-  Wax_Tree_Weight__c: number;
-  Required_Purity__c: string;
-  Gold_Tree_Weight__c: number;
-  Required_Pure_Metal_Casting__c: number;
-  Required_Alloy_for_Casting__c: number;
-  Issud_weight__c: number;
+  Issued_Date_c: string;
+  Wax_Tree_Weight_c: number;
+  Required_Purity_c: string;
+  Gold_Tree_Weight_c: number;
+  Required_Pure_Metal_Casting_c: number;
+  Required_Alloy_for_Casting_c: number;  
+  Issud_weight_c: number;
 }
 
 interface OrderDetails {
-  Order_Id__c: string;
-  id__c: string;
+  Order_Id_c: string;
+  id_c: string;
 }
 
 interface InventoryItem {
   Name: string;
-  Issued_Date__c: string;
-  Purity__c: string;
-  Issue_Weight__c: number;
-  Pure_Metal_weight__c: number;
-  Alloy_Weight__c: number;
+  Issued_Date_c: string;
+  Purity_c: string;
+  Issue_Weight_c: number;
+  Pure_Metal_weight_c: number;
+  Alloy_Weight_c: number;
 }
 
 // Form validation schema
@@ -100,7 +102,7 @@ console.log(enterWeight,issWt);
         
         if (result.success) {
           setData(result.data);
-          console.log(result.data.casting.Issud_weight__c)
+          console.log(result.data.casting.Issud_weight_c)
    
         } else {
           toast.error(result.message || 'Failed to fetch casting details');
@@ -120,8 +122,8 @@ console.log(enterWeight,issWt);
 
   useEffect(() => {
     if (data) {
-      const issuedWeight = data.casting.Issud_weight__c;
-             setIssWt(data.casting.Issud_weight__c);
+      const issuedWeight = data.casting.Issud_weight_c;
+             setIssWt(data.casting.Issud_weight_c);
           console.log("issued weight",issWt)
       // Calculate total received weight (including ornaments, scrap, and dust)
       const totalReceived = (receivedWeight || 0) + (scrapReceivedWeight || 0) + (dustReceivedWeight || 0);
@@ -306,31 +308,31 @@ console.log(enterWeight,issWt);
               </div>
               <div>
                 <label className="text-sm text-gray-600">Issued Date</label>
-                <p className="font-medium">{new Date(data.casting.Issued_Date__c).toLocaleDateString()}</p>
+                <p className="font-medium">{new Date(data.casting.Issued_Date_c).toLocaleDateString()}</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Wax Tree Weight</label>
-                <p className="font-medium">{data.casting.Wax_Tree_Weight__c}g</p>
+                <p className="font-medium">{data.casting.Wax_Tree_Weight_c}g</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Required Purity</label>
-                <p className="font-medium">{data.casting.Required_Purity__c}</p>
+                <p className="font-medium">{data.casting.Required_Purity_c}</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Gold Tree Weight</label>
-                <p className="font-medium">{data.casting.Gold_Tree_Weight__c}g</p>
+                <p className="font-medium">{data.casting.Gold_Tree_Weight_c}g</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Required Pure Metal</label>
-                <p className="font-medium">{data.casting.Required_Pure_Metal_Casting__c}g</p>
+                <p className="font-medium">{data.casting.Required_Pure_Metal_Casting_c}g</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Required Alloy</label>
-                <p className="font-medium">{data.casting.Required_Alloy_for_Casting__c}g</p>
+                <p className="font-medium">{data.casting.Required_Alloy_for_Casting_c}g</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Total Issued Weight</label>
-                <p className="font-medium">{data.casting.Issud_weight__c}g</p>
+                <p className="font-medium">{data.casting.Issud_weight_c}g</p>
               </div>
             </div>
           </div>
@@ -351,7 +353,7 @@ console.log(enterWeight,issWt);
                 <tbody className="bg-white divide-y divide-gray-200">
                   {data.orders.map((order) => (
                     <tr key={order.id__c}>
-                      <td className="px-6 py-4 whitespace-nowrap">{order.Order_Id__c}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{order.Order_Id_c}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{order.id__c}</td>
                     </tr>
                   ))}
@@ -381,11 +383,11 @@ console.log(enterWeight,issWt);
                   {data.inventoryItems.map((item, index) => (
                     <tr key={index}>
                       <td className="px-6 py-4 whitespace-nowrap">{item.Name}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{new Date(item.Issued_Date__c).toLocaleDateString()}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.Purity__c}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.Issue_Weight__c}g</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.Pure_Metal_weight__c}g</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.Alloy_Weight__c}g</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{new Date(item.Issued_Date_c).toLocaleDateString()}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{item.Purity_c}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{item.Issue_Weight_c}g</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{item.Pure_Metal_weight_c}g</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{item.Alloy_Weight_c}g</td>
                     </tr>
                   ))}
                 </tbody>
@@ -484,9 +486,10 @@ console.log(enterWeight,issWt);
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div>
                         <label className="text-xs text-gray-500">Total Issued</label>
-                        <div className="text-sm font-medium">
-                          {data?.casting.Issud_weight__c.toFixed(3)}g
-                        </div>
+                       <div className="text-sm font-medium">
+     {(Number(data?.casting.Issud_weight_c) || 0).toFixed(3)}g
+</div>
+
                       </div>
                       
                       <div>
@@ -506,7 +509,7 @@ console.log(enterWeight,issWt);
                       <div>
                         <label className="text-xs text-gray-500">Loss Percentage</label>
                         <div className={`text-sm font-medium ${castingLoss > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                          {((castingLoss / data?.casting.Issud_weight__c) * 100).toFixed(2)}%
+                          {((castingLoss / data?.casting.Issud_weight_c) * 100).toFixed(2)}%
                         </div>
                       </div>
                     </div>

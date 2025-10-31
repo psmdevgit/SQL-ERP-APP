@@ -10,9 +10,13 @@ import { useRouter } from 'next/navigation';
 
 // const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
 
-// const apiBaseUrl = "http://localhost:5001"; 
+// const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+
+//const apiBaseUrl = "https://kalash.app";
+
+
+ const apiBaseUrl = "http://localhost:4001"; 
 
 interface Setting {
   Id: string;
@@ -141,7 +145,7 @@ const DullDetailsPage = () => {
         );
 
         const result = await response.json();
-
+console.log('[Dull Details] Fetch result:', result);
         if (!result.success) {
           throw new Error(result.message || 'Failed to fetch setting details');
         }
