@@ -117,8 +117,6 @@ useEffect(() => {
 }, [grindingId]);
 
 
-    fetchDetails();
-  }, [grindingId]);
 
   if (loading) {
     return (
