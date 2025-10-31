@@ -43,9 +43,9 @@ export default function AddSettingDetails() {
   
 
 
-const apiBaseUrl = "http://localhost:4001"; 
+// const apiBaseUrl = "http://localhost:4001"; 
   
-// const apiBaseUrl = "https://kalash.app"; 
+const apiBaseUrl = "https://kalash.app"; 
 
 
 

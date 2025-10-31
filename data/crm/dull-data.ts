@@ -1,8 +1,8 @@
 import { IDull } from "@/interface/table.interface";
 
-// const apiUrl = "https://kalash.app";
+const apiUrl = "https://kalash.app";
 
-const apiUrl = "http://localhost:4001";
+// const apiUrl = "http://localhost:4001";
 
 // Function to fetch dull data from the server with date range filtering
 export const fetchDullData = async (startDate?: string, endDate?: string): Promise<IDull[]> => {

@@ -1,6 +1,6 @@
 import { ICutting } from "@/interface/table.interface";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiUrl = "https://kalash.app";
 
 // Function to fetch grinding data from the server
 export const fetchcuttingData = async (): Promise<ICutting[]> => {

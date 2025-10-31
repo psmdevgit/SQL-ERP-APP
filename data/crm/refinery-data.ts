@@ -1,6 +1,6 @@
 import { DepartmentLosses } from "@/interface/table.interface";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiUrl = "https://kalash.app";
 
 // Function to fetch department losses data from the server
 export const fetchDepartmentLosses = async (startDate: string, endDate: string): Promise<DepartmentLosses> => {

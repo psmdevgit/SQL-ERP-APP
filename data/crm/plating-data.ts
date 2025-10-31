@@ -1,8 +1,8 @@
 import { IPlating } from "@/interface/table.interface";
 
-// const apiBaseUrl = "https://kalash.app";
+const apiBaseUrl = "https://kalash.app";
 
-const apiBaseUrl = "http://localhost:4001";
+// const apiBaseUrl = "http://localhost:4001";
 
 // Function to fetch plating data from the server
 export const fetchPlatingData = async (): Promise<IPlating[]> => {

@@ -55,9 +55,9 @@ const departments: Department[] = [
 
 // const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-// const apiBaseUrl = "https://kalash.app";
+const apiBaseUrl = "https://kalash.app";
 
-const apiBaseUrl = "http://localhost:4001"; 
+// const apiBaseUrl = "http://localhost:4001"; 
 
 const downloadPDF = async (pdfUrl: string) => {
   try {

@@ -1,9 +1,9 @@
 import { IMedia } from "@/interface/table.interface";
 
-// const apiUrl = "https://kalash.app";
+const apiUrl = "https://kalash.app";
 
 
-const apiUrl = "http://localhost:4001";
+// const apiUrl = "http://localhost:4001";
 
 // Function to fetch grinding data from the server
 export const fetchMediaData = async (): Promise<IMedia[]> => {

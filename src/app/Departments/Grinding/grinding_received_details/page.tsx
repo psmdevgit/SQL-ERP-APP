@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { z } from 'zod';
 
 
-const apiBaseUrl = "http://localhost:4001"; // Replace with your actual API base URL
+// const apiBaseUrl = "http://localhost:4001"; 
 
-// const apiBaseUrl = "https://kalash.app"; 
+const apiBaseUrl = "https://kalash.app"; 
 
 interface Details {
   Id: string;
@@ -86,6 +86,15 @@ const GrindingDetailsPage = () => {
       return newWeights;
     });
   };
+
+
+  useEffect(() => {
+    if (!data) return;
+  
+    // Total Finding Weight = Pouch Received + Finding Weight
+    const totalFindingWeight = ornamentWeight + findingReceived;
+    setTotalReceivedWeight(totalFindingWeight);
+  }, [ornamentWeight, findingReceived]);
 
   // Update total weight calculation
   useEffect(() => {
@@ -510,7 +519,7 @@ const GrindingDetailsPage = () => {
                     disabled={data?.grinding.Status__c === 'Completed'}
                   />
                 </div>
-                 <div>
+                 {/* <div>
                   <label className="text-sm text-gray-600 block mb-1.5">
                     Finding Weight (g)
                   </label>
@@ -522,7 +531,7 @@ const GrindingDetailsPage = () => {
                     className="w-full h-9"
                     disabled={data?.grinding.Status__c === 'Completed'}
                   />
-                </div>
+                </div> */}
                 <div>
                   <label className="text-sm text-gray-600 block mb-1.5">
                     Grinding Loss (g)
@@ -535,6 +544,56 @@ const GrindingDetailsPage = () => {
                   />
                 </div>
               </div>
+
+
+                <div className="pt-5">
+                                <h2 className="text-xl font-semibold mb-4">Finding Weight</h2>
+              
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                  {/* Finding Weight Input */}
+                                  <div>
+                                    <label className="text-sm text-gray-600 block mb-1.5">
+                                      Finding Weight (g)
+                                    </label>
+                                    <Input
+                                      type="number"
+                                      step="0.0001"
+                                      value={findingReceived || ''}
+                                      onChange={(e) => setfindingReceived(parseFloat(e.target.value) || 0)}
+                                      className="w-full h-9"
+                                      placeholder="Enter finding weight"
+                                    />
+                                  </div>
+              
+                                  {/* Pouch Received Total */}
+                                  <div>
+                                    <label className="text-sm text-gray-600 block mb-1.5">
+                                      Pouch Received Total (g)
+                                    </label>
+                                    <Input
+                                      type="number"
+                                      value={ornamentWeight.toFixed(4)}
+                                      className="w-full h-9 bg-gray-50"
+                                      disabled
+                                    />
+                                  </div>
+              
+                                  {/* Total Received Weight (Finding + Pouch) */}
+                                  <div>
+                                    <label className="text-sm text-gray-600 block mb-1.5">
+                                      Total (Finding + Pouch) (g)
+                                    </label>
+                                    <Input
+                                      type="number"
+                                      value={totalReceivedWeight.toFixed(4)}
+                                      className="w-full h-9 bg-gray-50"
+                                      disabled
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+              
+
               <div className="mt-4 text-right">
                 <Button 
                   type="submit" 

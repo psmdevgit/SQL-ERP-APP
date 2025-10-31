@@ -37,9 +37,9 @@ export default function AddCuttingDetails() {
 
 
 
-//const apiBaseUrl = "https://kalash.app";
+const apiBaseUrl = "https://kalash.app";
 
-const apiBaseUrl = "http://localhost:4001";
+// const apiBaseUrl = "http://localhost:4001";
   
   useEffect(() => {
     const initializeCutting = async () => {
@@ -148,13 +148,13 @@ const apiBaseUrl = "http://localhost:4001";
       const cuttingWeight = pouchWeights[pouch.Id] || 0;
       const receivedWeight = pouch.Received_Weight_Plating__c || 0;
 
-      if (cuttingWeight > receivedWeight) {
-        alert(
-          `Cutting weight (${cuttingWeight.toFixed(4)}g) for pouch ${pouch.Name} exceeds the received weight (${receivedWeight.toFixed(4)}g) from plating.`
-        );
-        setIsSubmitting(false);
-        return; // Stop form submission
-      }
+      // if (cuttingWeight > receivedWeight) {
+      //   alert(
+      //     `Cutting weight (${cuttingWeight.toFixed(4)}g) for pouch ${pouch.Name} exceeds the received weight (${receivedWeight.toFixed(4)}g) from plating.`
+      //   );
+      //   setIsSubmitting(false);
+      //   return; // Stop form submission
+      // }
     }
     
 

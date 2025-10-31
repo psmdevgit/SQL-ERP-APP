@@ -39,8 +39,8 @@ export default function AddGrindingDetails() {
 
 
   
-  // const apiBaseUrl = "https://kalash.app"; 
-  const apiBaseUrl = "http://localhost:4001"; 
+  const apiBaseUrl = "https://kalash.app"; 
+  // const apiBaseUrl = "http://localhost:4001"; 
 
   useEffect(() => {
     const initializeGrinding = async () => {

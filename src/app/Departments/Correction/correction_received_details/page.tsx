@@ -6,10 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { z } from 'zod';
 
-const apiBaseUrl ='http://localhost:4001'
+// const apiBaseUrl ='http://localhost:4001'
 
 
-//const apiBaseUrl ='https://kalash.app'
+const apiBaseUrl ='https://kalash.app'
 
 
 
@@ -501,7 +501,7 @@ useEffect(() => {
                     disabled={data?.grinding.Status__c === 'Completed'}
                   />
                 </div>
-                 <div>
+                 {/* <div>
                   <label className="text-sm text-gray-600 block mb-1.5">
                     Findings Weight (g)
                   </label>
@@ -513,7 +513,7 @@ useEffect(() => {
                     className="w-full h-9"
                     disabled={data?.grinding.Status__c === 'Completed'}
                   />
-                </div>
+                </div> */}
                 <div>
                   <label className="text-sm text-gray-600 block mb-1.5">
                     Grinding Loss (g)
