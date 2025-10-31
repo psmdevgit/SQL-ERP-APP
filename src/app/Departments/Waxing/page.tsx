@@ -11,10 +11,9 @@ import { toast } from "react-hot-toast";
 import { Portal } from "@radix-ui/react-portal"; // ✅
 
 
-const apiUrl = "http://localhost:4001";
+//const apiUrl = "http://localhost:4001";
 
-
-//const apiUrl = "https://kalash.app";
+const apiUrl = "https://kalash.app";
 
 
 

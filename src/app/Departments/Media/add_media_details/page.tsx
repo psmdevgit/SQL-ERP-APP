@@ -42,9 +42,9 @@ export default function AddSettingDetails() {
     const [mediaWT,setmediaWt ] = useState<number>(0);
 
   
-// const apiBaseUrl = "https://kalash.app"; 
+const apiBaseUrl = "https://kalash.app"; 
 
-const apiBaseUrl = "http://localhost:4001";
+//const apiBaseUrl = "http://localhost:4001";
 
   useEffect(() => {
     const initializeSetting = async () => {

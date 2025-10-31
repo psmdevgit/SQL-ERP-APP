@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { z } from 'zod';
 
 
-// const apiBaseUrl = "https://kalash.app";
+const apiBaseUrl = "https://kalash.app";
 
-const apiBaseUrl = "http://localhost:4001";
+//const apiBaseUrl = "http://localhost:4001";
 
 
 interface CastingDetails {
@@ -21,7 +21,7 @@ interface CastingDetails {
   Required_Pure_Metal_Casting_c: number;
   Required_Alloy_for_Casting_c: number;  
   Issud_weight_c: number;
-}
+}0
 
 interface OrderDetails {
   Order_Id_c: string;
