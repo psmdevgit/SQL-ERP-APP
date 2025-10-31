@@ -253,15 +253,18 @@ export default function ImageShowPage() {
 
     const model = models.find((m) => m.Name === selectedModel);
     if (model) {
-      // If backend returns filename (e.g. Model123.jpg)
-      if (model.Image_URL_c && model.Image_URL_c.includes(".")) {
-        setImageUrl(model.Image_URL_c);
-        console.log("👉 Using image URL from DB:", model.Image_URL_c);
-      } else {
-        // Otherwise, assume it’s the name and try .png
-        setImageUrl(model.Name);
+       setImageUrl(model.Name);
         console.log("👉 Constructed image name:", model.Name);
-      }
+
+      // If backend returns filename (e.g. Model123.jpg)
+      // if (model.Image_URL_c && model.Image_URL_c.includes(".")) {
+      //   setImageUrl(model.Image_URL_c);
+      //   console.log("👉 Using image URL from DB:", model.Image_URL_c);
+      // } else {
+      //   // Otherwise, assume it’s the name and try .png
+      //   setImageUrl(model.Name);
+      //   console.log("👉 Constructed image name:", model.Name);
+      // }
     } else {
       setImageUrl("");
     }
