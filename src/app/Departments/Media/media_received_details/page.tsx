@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { z } from 'zod';
 
 
-// const apiBaseUrl = "https://kalash.app";
+const apiBaseUrl = "https://kalash.app";
 
-const apiBaseUrl = "http://localhost:4001";
+// const apiBaseUrl = "http://localhost:4001";
 
 interface Details {
   Id: string;
@@ -514,7 +514,7 @@ if (invalidPouch) {
                     disabled={data?.grinding.Status__c === 'Completed'}
                   />
                 </div>
-                 <div>
+                 {/* <div>
                   <label className="text-sm text-gray-600 block mb-1.5">
                     Findings Weight (g)
                   </label>
@@ -526,7 +526,7 @@ if (invalidPouch) {
                     className="w-full h-9"
                     disabled={data?.grinding.Status__c === 'Completed'}
                   />
-                </div>
+                </div> */}
                 <div>
                   <label className="text-sm text-gray-600 block mb-1.5">
                     Media Loss (g)

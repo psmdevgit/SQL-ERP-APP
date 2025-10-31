@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { z } from 'zod';
 import { Label } from "@/components/ui/label";
 
-// const apiBaseUrl = "https://kalash.app"; 
+const apiBaseUrl = "https://kalash.app"; 
 
 
-const apiBaseUrl = "http://localhost:4001"; 
+// const apiBaseUrl = "http://localhost:4001"; 
 
 
 type Plating= {
@@ -401,7 +401,7 @@ const platingDetails = plating?.[0];
                     />
                   </div>
 
-                    <div>
+                    {/* <div>
                                                <label className="text-sm text-gray-600 block mb-1.5">
                                                  Finding Weight (g)
                                                </label>
@@ -412,7 +412,7 @@ const platingDetails = plating?.[0];
                                                  onChange={(e) => setfindingReceived(parseFloat(e.target.value) || 0)}
                                                  className="w-full h-9"
                                                />
-                                </div>
+                                </div> */}
                                 
 
                   <div>

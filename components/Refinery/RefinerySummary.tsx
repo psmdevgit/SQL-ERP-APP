@@ -24,7 +24,7 @@ const RefinerySummary: React.FC = () => {
   const [showCustomDatePicker, setShowCustomDatePicker] = useState<boolean>(false);
 
   
-const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+const apiBaseUrl = "https://kalash.app"; 
 
   const fetchSummaryData = async (startDate: Date, endDate: Date) => {
     try {

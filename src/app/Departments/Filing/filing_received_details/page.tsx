@@ -11,10 +11,10 @@ import { Label } from "@/components/ui/label";
 // const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://erp-server-r9wh.onrender.com";
 
 
-//const apiBaseUrl = "https://kalash.app"; 
+const apiBaseUrl = "https://kalash.app"; 
 
 
-const apiBaseUrl = "http://locaLhost:4001"; 
+// const apiBaseUrl = "http://locaLhost:4001"; 
 
 
 interface Details {
@@ -90,6 +90,14 @@ const FilingDetailsPage = () => {
       //   [pouch.Id]: "" // 🔥 clear this field
       // }))
 };
+
+useEffect(() => {
+  if (!data) return;
+
+  // Total Finding Weight = Pouch Received + Finding Weight
+  const totalFindingWeight = ornamentWeight + findingReceived;
+  setTotalReceivedWeight(totalFindingWeight);
+}, [ornamentWeight, findingReceived]);
 
 
   useEffect(() => {
@@ -267,6 +275,9 @@ const FilingDetailsPage = () => {
         issuedTime: issuedTime
       };
 
+      console.log(formData);
+      // return;
+
       const result = await updateFiling(data.filing.Name, formData);
       console.log('[FilingReceived] API response:', result);
 
@@ -371,7 +382,7 @@ const FilingDetailsPage = () => {
                           step="0.0001"
                           min="0"
                           value={pouchReceivedWeights[pouch.Id] || '0'}
-                          onChange={(e) => {handlePouchWeightChange(pouch.Id, parseFloat(e.target.value) || 0); checkWeight(e.target.value);}}
+                          onChange={(e) => {handlePouchWeightChange(pouch.Id, parseFloat(e.target.value) || 0); }}    //checkWeight(e.target.value)
                           className="w-32 h-8"
                           placeholder="Enter weight"
                           disabled={isSubmitting}
@@ -498,7 +509,7 @@ const FilingDetailsPage = () => {
                   )}
                 </div>
 
-                 <div>
+                 {/* <div>
                                <label className="text-sm text-gray-600 block mb-1.5">
                                  Finding Weight (g)
                                </label>
@@ -509,7 +520,7 @@ const FilingDetailsPage = () => {
                                  onChange={(e) => setfindingReceived(parseFloat(e.target.value) || 0)}
                                  className="w-full h-9"
                                />
-                </div>
+                </div> */}
 
 
                 <div>
@@ -524,6 +535,54 @@ const FilingDetailsPage = () => {
                   />
                 </div>
               </div>
+
+               <div className="pt-5">
+                  <h2 className="text-xl font-semibold mb-4">Finding Weight</h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Finding Weight Input */}
+                    <div>
+                      <label className="text-sm text-gray-600 block mb-1.5">
+                        Finding Weight (g)
+                      </label>
+                      <Input
+                        type="number"
+                        step="0.0001"
+                        value={findingReceived || ''}
+                        onChange={(e) => setfindingReceived(parseFloat(e.target.value) || 0)}
+                        className="w-full h-9"
+                        placeholder="Enter finding weight"
+                      />
+                    </div>
+
+                    {/* Pouch Received Total */}
+                    <div>
+                      <label className="text-sm text-gray-600 block mb-1.5">
+                        Pouch Received Total (g)
+                      </label>
+                      <Input
+                        type="number"
+                        value={ornamentWeight.toFixed(4)}
+                        className="w-full h-9 bg-gray-50"
+                        disabled
+                      />
+                    </div>
+
+                    {/* Total Received Weight (Finding + Pouch) */}
+                    <div>
+                      <label className="text-sm text-gray-600 block mb-1.5">
+                        Total (Finding + Pouch) (g)
+                      </label>
+                      <Input
+                        type="number"
+                        value={totalReceivedWeight.toFixed(4)}
+                        className="w-full h-9 bg-gray-50"
+                        disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+
               <div className="mt-4 text-right">
                 <Button 
                   type="submit" 
@@ -536,6 +595,17 @@ const FilingDetailsPage = () => {
             </form>
           </div>
         </div>
+
+        {/* finding weight */}
+
+          {/* Finding Weight Section
+              <div className="bg-white shadow rounded-lg mb-6">
+               
+              </div> */}
+
+
+
+
       </div>
     </div>
   );

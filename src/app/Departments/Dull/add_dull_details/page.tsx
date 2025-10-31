@@ -40,11 +40,11 @@ export default function AddDullDetails() {
   const [orderId, setOrderId] = useState<string>('');
   const router = useRouter();
 
-//const apiBaseUrl = "https://kalash.app"; 
+const apiBaseUrl = "https://kalash.app"; 
 
 //const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
 
-const apiBaseUrl = "http://localhost:4001"; 
+// const apiBaseUrl = "http://localhost:4001"; 
 
   useEffect(() => {
     const initializeDull = async () => {
@@ -197,13 +197,13 @@ console.log(`[Add Dull] Fetching pouches from ${sourceType}:`, { url: apiEndpoin
       return enteredWeight > receivedWeight;
     });
 
-    if (invalidPouch) {
-      alert(
-        `Error: Entered Dull weight for pouch ${invalidPouch.Name} is greater than its received weight!`
-      );
-      setIsSubmitting(false);
-      return; // ⛔ Stop submission
-    }
+    // if (invalidPouch) {
+    //   alert(
+    //     `Error: Entered Dull weight for pouch ${invalidPouch.Name} is greater than its received weight!`
+    //   );
+    //   setIsSubmitting(false);
+    //   return; // ⛔ Stop submission
+    // }
 
 
       // Prepare pouch data

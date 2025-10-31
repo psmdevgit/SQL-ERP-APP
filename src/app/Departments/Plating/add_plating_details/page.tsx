@@ -36,9 +36,9 @@ export default function AddPlatingDetails() {
   const router = useRouter();
 
   
-//const apiBaseUrl = "https://kalash.app"; 
+const apiBaseUrl = "https://kalash.app"; 
 
-const apiBaseUrl = "http://localhost:4001";  
+// const apiBaseUrl = "http://localhost:4001";  
 useEffect(() => {
     const initializePlating = async () => {
       if (!dullId) {
@@ -148,10 +148,10 @@ useEffect(() => {
     const platingWeight = pouchWeights[pouch.Id] || 0;
     const receivedWeight = pouch.Received_Weight_Grinding__c || 0;
 
-    if (platingWeight > receivedWeight) {
-      alert(`Plating weight for pouch ${pouch.Name} cannot be greater than received weight (${receivedWeight.toFixed(4)}g)`);
-      return; // Stop submission
-    }
+    // if (platingWeight > receivedWeight) {
+    //   alert(`Plating weight for pouch ${pouch.Name} cannot be greater than received weight (${receivedWeight.toFixed(4)}g)`);
+    //   return; // Stop submission
+    // }
   }
   
 

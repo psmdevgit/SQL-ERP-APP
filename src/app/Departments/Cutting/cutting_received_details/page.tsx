@@ -9,9 +9,9 @@ import { Label } from "@/components/ui/label";
 
 // const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
 
-//const apiBaseUrl = "https://kalash.app";
+const apiBaseUrl = "https://kalash.app";
 
-const apiBaseUrl = "http://localhost:4001";
+// const apiBaseUrl = "http://localhost:4001";
 
 interface Cutting {
   Id: string;
@@ -424,7 +424,7 @@ const CuttingDetailsPage = () => {
                   </div>
 
 
-                      <div>
+                      {/* <div>
                                                <label className="text-sm text-gray-600 block mb-1.5">
                                                  Finding Weight (g)
                                                </label>
@@ -435,7 +435,7 @@ const CuttingDetailsPage = () => {
                                                  onChange={(e) => setfindingReceived(parseFloat(e.target.value) || 0)}
                                                  className="w-full h-9"
                                                />
-                                </div>
+                                </div> */}
 
                                 
 
