@@ -11,10 +11,10 @@ import { toast } from "react-hot-toast";
 import { Portal } from "@radix-ui/react-portal"; // ✅
 
 
-const apiUrl = "http://localhost:4001";
+// const apiUrl = "http://localhost:4001";
 
 
-//const apiUrl = "https://kalash.app";
+const apiUrl = "https://kalash.app";
 
 
 
@@ -192,24 +192,24 @@ const handleSubmit = async (e?: React.FormEvent) => {
     return;
   }
 
-  if (stoneRows.length === 0) {
-    alert("Please add at least one stone");
-    return;
-  }
+  // if (stoneRows.length === 0) {
+  //   alert("Please add at least one stone");
+  //   return;
+  // }
 
   // ✅ Validate each stone row
-  for (let i = 0; i < stoneRows.length; i++) {
-    const row = stoneRows[i];
-    if (!row.type || !row.color || !row.shape || !row.size || !row.weight) {
-      alert(`Row ${i + 1}: All fields (Type, Color, Shape, Size, Weight) are mandatory`);
-      return;
-    }
+  // for (let i = 0; i < stoneRows.length; i++) {
+  //   const row = stoneRows[i];
+  //   if (!row.type || !row.color || !row.shape || !row.size || !row.weight) {
+  //     alert(`Row ${i + 1}: All fields (Type, Color, Shape, Size, Weight) are mandatory`);
+  //     return;
+  //   }
 
-    if (parseFloat(row.weight) <= 0) {
-      alert(`Row ${i + 1}: Weight must be greater than 0`);
-      return;
-    }
-  }
+  //   if (parseFloat(row.weight) <= 0) {
+  //     alert(`Row ${i + 1}: Weight must be greater than 0`);
+  //     return;
+  //   }
+  // }
 
   // ✅ Calculate total stone weight
   const totalStoneWeight = stoneRows.reduce(
