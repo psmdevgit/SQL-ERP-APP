@@ -77,7 +77,7 @@ const apiBaseUrl = "https://kalash.app";
         toast.error('No grinding ID provided');
         setLoading(false);
         return;
-      }.
+      }
        {
         const [prefix, date, month, year, number,subnumber] = grindingId.split('/');
         const response = await fetch(
