@@ -56,84 +56,112 @@ export default function CreateSettingFromDepartment() {
 
   
 
-const apiBaseUrl ="https://kalash.app"; 
+//const apiBaseUrl ="https://kalash.app"; 
+//const apiBaseUrl = "http://localhost:4001";
 
+// Fetch department records when department changes
+const apiBaseUrl = "http://localhost:4001";
 
-  // Fetch department records when department changes
-  useEffect(() => {
-    const fetchDepartmentRecords = async () => {
-      if (!selectedDepartment) return;
+// Fetch department records when department changes
+useEffect(() => {
+  const fetchDepartmentRecords = async () => {
+    if (!selectedDepartment) return;
 
-      try {
-        setLoading(true);
-        const endpoint = `${apiBaseUrl}/api/${selectedDepartment.toLowerCase()}`;
-        console.log('Fetching from endpoint:', endpoint);
-        
-        const response = await fetch(endpoint);
-        const result = await response.json();
+    try {
+      setLoading(true);
+      const endpoint = `${apiBaseUrl}/api/${selectedDepartment.toLowerCase()}`;
+      console.log("Fetching department data from:", endpoint);
 
-        if (result.success) {
-          // Filter for received records
-          const receivedRecords = result.data
-            .filter((record: DepartmentRecord) => 
-              // Check for 'Finished' status instead of 'Received'
-              record.status__c === 'Finished'
-            );
-          
-          console.log('Received records:', receivedRecords);
-          setDepartmentRecords(receivedRecords);
-        } else {
-          toast.error(`Failed to fetch ${selectedDepartment} records`);
-          // alert(`Failed to fetch ${selectedDepartment} records`);
-        }
-      } catch (error) {
-        console.error(`Error fetching ${selectedDepartment} records:`, error);
-        toast.error('Failed to fetch records');
-      } finally {
-        setLoading(false);
+      const response = await fetch(endpoint);
+      if (!response.ok) {
+        console.error(`HTTP error: ${response.status}`);
+        toast.error(`Failed to fetch ${selectedDepartment} records`);
+        return;
       }
-    };
 
-    fetchDepartmentRecords();
-  }, [selectedDepartment]);
+      const result = await response.json();
+      console.log(`${selectedDepartment} result:`, result);
 
-  // Fetch pouches when record is selected
-  useEffect(() => {
-    const fetchPouches = async () => {
-      if (!selectedRecord || !selectedDepartment) return;
+      if (result.success && Array.isArray(result.data)) {
+        // Normalize key casing + trim status values
+        const receivedRecords = result.data.filter((record: any) => {
+          const normalized = Object.keys(record).reduce(
+            (acc, key) => ({ ...acc, [key.toLowerCase()]: record[key] }),
+            {}
+          );
 
-      try {
-        setLoading(true);
-        const [prefix, date, month, year, number,  subnumber] = selectedRecord.split('/');
-        // Use the standard API pattern for pouches
-        const endpoint = `${apiBaseUrl}/api/${selectedDepartment.toLowerCase()}/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`;
-        console.log('Fetching pouches from:', endpoint);
-        
-        const response = await fetch(endpoint);
-        const result = await response.json();
+          const status = (normalized["status__c"] || "").trim().toLowerCase();
+          return status === "finished" || status === "completed";
+        });
 
-        if (result.success) {
-          console.log('Fetched pouches:', result.data.pouches);
-          setPouches(result.data.pouches);
-          // Initialize weights to 0
-          const weights: { [key: string]: number } = {};
-          result.data.pouches.forEach((pouch: Pouch) => {
-            weights[pouch.Id] = 0;
-          });
-          setPouchWeights(weights);
-        } else {
-          toast.error('Failed to fetch pouches');
-        }
-      } catch (error) {
-        console.error('Error fetching pouches:', error);
-        toast.error('Failed to fetch pouches');
-      } finally {
-        setLoading(false);
+        console.log("✅ Filtered received records:", receivedRecords);
+        setDepartmentRecords(receivedRecords);
+      } else {
+        toast.error(`Failed to fetch ${selectedDepartment} records`);
       }
-    };
+    } catch (error) {
+      console.error(`❌ Error fetching ${selectedDepartment} records:`, error);
+      toast.error("Failed to fetch records");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchPouches();
-  }, [selectedRecord, selectedDepartment]);
+  fetchDepartmentRecords();
+}, [selectedDepartment]);
+
+// Fetch pouches when a record is selected
+useEffect(() => {
+  const fetchPouches = async () => {
+    if (!selectedRecord || !selectedDepartment) return;
+
+    try {
+      setLoading(true);
+      const parts = selectedRecord.split("/");
+      if (parts.length < 6) {
+        console.error("Invalid record format:", selectedRecord);
+        toast.error("Invalid record format");
+        return;
+      }
+
+      const [prefix, date, month, year, number, subnumber] = parts;
+      const endpoint = `${apiBaseUrl}/api/${selectedDepartment.toLowerCase()}/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`;
+      console.log("Fetching pouches from:", endpoint);
+
+      const response = await fetch(endpoint);
+      if (!response.ok) {
+        console.error(`HTTP error fetching pouches: ${response.status}`);
+        toast.error("Failed to fetch pouches");
+        return;
+      }
+
+      const result = await response.json();
+      console.log("Pouches result:", result);
+
+      if (result.success && result.data?.pouches) {
+        setPouches(result.data.pouches);
+
+        // Initialize pouch weights
+        const weights: { [key: string]: number } = {};
+        result.data.pouches.forEach((pouch: any) => {
+          weights[pouch.Id] = 0;
+        });
+        setPouchWeights(weights);
+
+        console.log("✅ Pouches set successfully:", result.data.pouches.length);
+      } else {
+        toast.error("Failed to fetch pouches");
+      }
+    } catch (error) {
+      console.error("❌ Error fetching pouches:", error);
+      toast.error("Failed to fetch pouches");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchPouches();
+}, [selectedRecord, selectedDepartment]);
 
   // Update the useEffect for ID generation
   useEffect(() => {
@@ -200,56 +228,162 @@ const apiBaseUrl ="https://kalash.app";
   };
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
     
-    try {
-      setLoading(true);
+  //   try {
+  //     setLoading(true);
       
-      if (!selectedRecordData) {
-        toast.error('No record selected');
-        // alert('No record selected');
-        return;
-      }
+  //     if (!selectedRecordData) {
+  //       toast.error('No record selected');
+  //       // alert('No record selected');
+  //       return;
+  //     }
 
-      // Create pouch data with new IDs
-      const pouchData = Object.entries(selectedPouches)
-        .filter(([_, isSelected]) => isSelected)
-        .map(([pouchId]) => {
-          const sourcePouch = pouches.find(p => p.Id === pouchId);
-          if (!sourcePouch) return null;
+  //     // Create pouch data with new IDs
+  //     const pouchData = Object.entries(selectedPouches)
+  //       .filter(([_, isSelected]) => isSelected)
+  //       .map(([pouchId]) => {
+  //         const sourcePouch = pouches.find(p => p.Id === pouchId);
+  //         if (!sourcePouch) return null;
 
-          // Get the pouch number from the source pouch name
-          const sourcePouchNumber = sourcePouch.Name.split('/').pop()?.replace('P', '') || '';
-          // Ensure the pouch number is padded to 2 digits
-          const paddedPouchNumber = sourcePouchNumber.padStart(2, '0');
-          // Construct the new pouch ID with the correct format
-          const newPouchId = `${filingId}/P${paddedPouchNumber}`;
+  //         // Get the pouch number from the source pouch name
+  //         const sourcePouchNumber = sourcePouch.Name.split('/').pop()?.replace('P', '') || '';
+  //         // Ensure the pouch number is padded to 2 digits
+  //         const paddedPouchNumber = sourcePouchNumber.padStart(2, '0');
+  //         // Construct the new pouch ID with the correct format
+  //         const newPouchId = `${filingId}/P${paddedPouchNumber}`;
 
-          // Get the weight for this pouch
-          const weight = pouchWeights[pouchId] || 0;
+  //         // Get the weight for this pouch
+  //         const weight = pouchWeights[pouchId] || 0;
 
-          // Get categories if they exist in the source pouch
-          const categories = sourcePouch.categories || [];
+  //         // Get categories if they exist in the source pouch
+  //         const categories = sourcePouch.categories || [];
 
-          return {
-            pouchId: newPouchId,
-            orderId: sourcePouch.Order_Id__c,
-            name: sourcePouch.Product__c,
-            quantity: sourcePouch.Quantity__c,
-            weight: parseFloat(weight.toFixed(4)),
-            categories: categories.map(cat => ({
-              category: cat.Category__c,
-              quantity: cat.Quantity__c
-            }))
-          };
-        })
-        .filter(Boolean);
+  //         return {
+  //           pouchId: newPouchId,
+  //           orderId: sourcePouch.Order_Id__c,
+  //           name: sourcePouch.Product__c,
+  //           quantity: sourcePouch.Quantity__c,
+  //           weight: parseFloat(weight.toFixed(4)),
+  //           categories: categories.map(cat => ({
+  //             category: cat.Category__c,
+  //             quantity: cat.Quantity__c
+  //           }))
+  //         };
+  //       })
+  //       .filter(Boolean);
 
-      // Get the first pouch data for the main record
-      const firstPouch = pouchData.length > 0 ? pouchData[0] : null;
+  //     // Get the first pouch data for the main record
+  //     const firstPouch = pouchData.length > 0 ? pouchData[0] : null;
 
-      const requestData = {
+  //     const requestData = {
+  //       polishingId: filingId,
+  //       issuedWeight: parseFloat(totalWeight.toFixed(4)),
+  //       issuedDate: new Date().toISOString(),
+  //       // Include orderId, name, and quantity in the main request data
+  //       orderId: firstPouch?.orderId || null,
+  //       name: firstPouch?.name || null,
+  //       quantity: firstPouch?.quantity || null,
+  //       pouches: pouchData
+  //     };
+
+  //     console.log('Full Request Payload:', JSON.stringify(requestData, null, 2));
+
+  //     const response = await fetch(`${apiBaseUrl}/api/polishing-record/create`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(requestData)
+  //     });
+
+  //     const result = await response.json();
+      
+  //     console.log('Server Response:', result);
+
+  //     if (result.success) {
+  //       toast.success('Polishing record created successfully');
+  //       alert('Polishing record created successfully');
+  //       router.push('/Departments/Polishing');
+  //     } else {
+  //       throw new Error(result.message || 'Failed to create polishing record');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error creating polishing:', error);
+  //     toast.error(error.message || 'Failed to create polishing record');
+  //     alert(error.message || 'Failed to create polishing record');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    setLoading(true);
+
+    if (!selectedRecordData) {
+      toast.error("No record selected");
+      return;
+    }
+
+    console.log("✅ Selected Pouches:", selectedPouches);
+    console.log("✅ Available Pouches:", pouches);
+
+    // --- STEP 1: Create pouch data ---
+    const pouchData = Object.entries(selectedPouches)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([pouchId]) => {
+        // Match ID safely (number/string)
+        const sourcePouch = pouches.find(p => String(p.Id) === String(pouchId));
+        if (!sourcePouch) {
+          console.warn("⚠️ Pouch not found for ID:", pouchId);
+          return null;
+        }
+
+        // Extract pouch number from name
+        const sourcePouchNumber = sourcePouch.Name.split("/").pop()?.replace("POUCH", "") || "1";
+        const paddedPouchNumber = sourcePouchNumber.padStart(2, "0");
+        const newPouchId = `${filingId}/POUCH${paddedPouchNumber}`;
+
+        // Weight handling
+        const weight = parseFloat(
+          (pouchWeights[pouchId] ?? sourcePouch.Received_Weight_Setting__c ?? 0).toFixed(4)
+        );
+
+        // Categories fallback
+        const categories = Array.isArray(sourcePouch.categories) ? sourcePouch.categories : [];
+
+        console.log("📦 Processing Pouch:", {
+          sourcePouch: sourcePouch.Name,
+          newId: newPouchId,
+          orderId: sourcePouch.Order_Id__c,
+          product: sourcePouch.Product__c,
+          quantity: sourcePouch.Quantity__c,
+          weight,
+          categoriesCount: categories.length
+        });
+
+        return {
+          pouchId: newPouchId,
+          orderId: sourcePouch.Order_Id__c,
+          name: sourcePouch.Product__c,
+          quantity: sourcePouch.Quantity__c,
+          weight,
+          categories: categories.map(cat => ({
+            category: cat.Category__c,
+            quantity: cat.Quantity__c
+          }))
+        };
+      })
+      .filter(Boolean); // Remove nulls
+
+    // --- STEP 2: Build main record ---
+    const firstPouch = pouchData.length > 0 ? pouchData[0] : null;
+
+    const requestData = {
         polishingId: filingId,
         issuedWeight: parseFloat(totalWeight.toFixed(4)),
         issuedDate: new Date().toISOString(),
@@ -260,35 +394,44 @@ const apiBaseUrl ="https://kalash.app";
         pouches: pouchData
       };
 
-      console.log('Full Request Payload:', JSON.stringify(requestData, null, 2));
 
-      const response = await fetch(`${apiBaseUrl}/api/polishing-record/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData)
-      });
+    console.log("🚀 Grinding Submission Payload:", JSON.stringify(requestData, null, 2));
 
-      const result = await response.json();
-      
-      console.log('Server Response:', result);
+    // --- STEP 3: Send to server ---
+    const response = await fetch(`${apiBaseUrl}/api/polishing-record/create`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestData)
+    });
 
-      if (result.success) {
-        toast.success('Polishing record created successfully');
-        alert('Polishing record created successfully');
-        router.push('/Departments/Polishing');
-      } else {
-        throw new Error(result.message || 'Failed to create polishing record');
+    const result = await response.json();
+    console.log("✅ Server Response:", result);
+
+    // --- STEP 4: Handle response ---
+    if (result.success) {
+      if (result.data) {
+        if (Array.isArray(result.data) && result.data.length > 0) {
+          const recordData = result.data[0];
+          console.log("Record data from server:", recordData);
+        } else {
+          console.log("Record data (object):", result.data);
+        }
       }
-    } catch (error) {
-      console.error('Error creating polishing:', error);
-      toast.error(error.message || 'Failed to create polishing record');
-      alert(error.message || 'Failed to create polishing record');
-    } finally {
-      setLoading(false);
+
+      toast.success("Grinding record created successfully");
+      alert("Grinding record created successfully");
+      router.push("/Departments/Grinding");
+    } else {
+      throw new Error(result.message || "Failed to create grinding record"); 
     }
-  };
+  } catch (error: any) {
+    console.error("❌ Error creating grinding record:", error);
+    toast.error(error.message || "Failed to create grinding record");
+    alert(error.message || "Failed to create grinding record");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="p-6">
