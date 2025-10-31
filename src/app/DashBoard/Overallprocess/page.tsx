@@ -36,15 +36,24 @@ interface ProcessDetailRow {
 }
 
 const LOSS_FIELD_MAP: Record<string, string> = {
-  casting: "casting_loss",
-  filing: "loss",
-  polishing: "polish_loss",
+  casting: "Casting_Loss",
+  filing: "Filing_Loss",
+  grinding:"Grinding_loss__c",
+  polishing: "Polishing_loss__c",
+  media:"Grinding_loss__c",
+  correction:"Grinding_loss__c",
+  setting:"Setting__c",
+  dull:"Dull_loss__c",  
+  plating:"plating_loss__c",
+  cutting:"Cutting_loss__c"
 };
 
 const ISSUED_FIELD_MAP: Record<string, string> = {
   casting: "Issued_weight",
-  filing: "Issued_weight",
+  filing: "Issued_Weight",
   grinding: "Issued_Weight__c",
+  media:"Issued_Weight__c",
+  correction:"Issued_Weight__c",
   setting: "Issued_Weight__c",  
   polishing: "Issued_Weight__c",
   dull: "Issued_Weight__c",
@@ -56,10 +65,12 @@ const RECEIVED_FIELD_MAP: Record<string, string> = {
   casting: "Received_Weight",
   filing: "Received_Weight",
   grinding: "Received_Weight__c",
+  media:"Received_Weight__c",
+  correction:"Received_Weight__c",
   setting: "Returned_weight__c",  
   polishing: "Received_Weight__c",
   dull: "Returned_weight__c",
-  plating: "Returned_Weight__c",  
+  plating: "Returned_weight__c",  
   cutting: "Returned_weight__c",
 };
 
@@ -67,6 +78,8 @@ const ISSUED_DATE_FIELD_MAP: Record<string, string> = {
   casting: "Issued_Date",
   filing: "Issued_Date",
   grinding: "Issued_Date__c",
+  media: "Issued_Date__c",
+  correction: "Issued_Date__c",
   setting: "Issued_Date__c",  
   polishing: "Issued_Date__c",
   dull: "Issued_Date__c",
@@ -78,6 +91,8 @@ const RECEIVED_DATE_FIELD_MAP: Record<string, string> = {
   casting: "Received_Date",
   filing: "Received_Date",
   grinding: "Received_Date__c",
+  media: "Received_Date__c",
+  correction: "Received_Date__c",
   setting: "Received_Date__c",  
   polishing: "Received_Date__c",
   dull: "Received_Date__c",
@@ -87,7 +102,9 @@ const RECEIVED_DATE_FIELD_MAP: Record<string, string> = {
 const STATUS_FIELD_MAP: Record<string, string> = {
   casting: "status",
   filing: "Status",
-  grinding: "status__c",
+  grinding: "Status__c",
+  media: "Status__c", 
+   correction: "Status__c",
   setting: "status__c",  
   polishing: "status__c",
   dull: "status__c",

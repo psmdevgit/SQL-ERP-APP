@@ -717,12 +717,14 @@ const apiBaseUrl = "http://localhost:4001";
   //         const sourcePouch = pouches.find(p => p.Id === pouchId);
   //         if (!sourcePouch) return null;
 
+
   //         // Get the pouch number from the source pouch name
   //         const sourcePouchNumber = sourcePouch.Name.split('/').pop()?.replace('P', '') || '';
   //         // Ensure the pouch number is padded to 2 digits
   //         const paddedPouchNumber = sourcePouchNumber.padStart(2, '0');
   //         // Construct the new pouch ID with the correct format
   //         const newPouchId = `${filingId}/P${paddedPouchNumber}`;
+
 
   //         // Get the weight for this pouch
   //         const weight = pouchWeights[pouchId] || 0;
