@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// const apiBaseUrl = "http://localhost:4001";
+const apiBaseUrl = "http://localhost:4001";
 
-  const apiBaseUrl = "https://kalash.app";
+  // const apiBaseUrl = "https://kalash.app";
 
 const StoneMaster = () => {
   
@@ -38,6 +38,7 @@ const StoneMaster = () => {
       if (data.success) {
         setInventory(data.summary);
       }
+      console.log(data.summary)
     } catch (err) {
       console.error("Failed to load stone summary", err);
     }
@@ -254,7 +255,9 @@ const handleSubmit = async (e: React.FormEvent) => {
             <tr className="text-white" style={{background:"#1A7A75"}}>
               <th className="border p-2">Type</th>
               <th className="border p-2">Color</th>
+              <th className="border p-2">Shape</th>
               <th className="border p-2">Size</th>
+              <th className="border p-2">Pieces</th>
               {/* <th className="border p-2">Total Pieces</th> */}
               <th className="border p-2">Total Weight (grams)</th>
             </tr>
@@ -264,8 +267,9 @@ const handleSubmit = async (e: React.FormEvent) => {
               <tr key={index} style={{textAlign:"center"}}>
                 <td className="border p-2">{item.type}</td>
                 <td className="border p-2">{item.colour}</td>
+                <td className="border p-2">{item.shape}</td>
                 <td className="border p-2">{item.size}</td>
-                {/* <td className="border p-2">{item.totalPieces}</td> */}
+                <td className="border p-2">{item.totalPieces}</td>
                 <td className="border p-2">{item.totalWeight}</td>
               </tr>
             ))}
