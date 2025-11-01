@@ -617,7 +617,8 @@ const handleScrapUpSubmit = async () => {
                             size="small"
                           />
                         </TableCell>
-                        <TableCell>ID</TableCell>
+                        <TableCell>ID</TableCell>                                 
+                        <TableCell>Order-ID</TableCell>
                         <TableCell>Issued Weight</TableCell>
                         <TableCell>Received Weight</TableCell>
                         <TableCell>Issued Date</TableCell>
@@ -648,6 +649,7 @@ const handleScrapUpSubmit = async () => {
                                 />
                               </TableCell>
                               <TableCell>{deal.id}</TableCell>
+                               <TableCell>{deal.orderid}</TableCell>
                               <TableCell>{deal.issuedWeight}</TableCell>
                               <TableCell>
                                 <div 
