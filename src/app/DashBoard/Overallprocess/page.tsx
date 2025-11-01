@@ -37,7 +37,7 @@ interface ProcessDetailRow {
 
 const LOSS_FIELD_MAP: Record<string, string> = {
   casting: "Casting_Loss",
-  filing: "Filing_Loss",
+  "pouch creation": "Filing_Loss",
   grinding:"Grinding_loss__c",
   polishing: "Polishing_loss__c",
   media:"Grinding_loss__c",
@@ -50,7 +50,7 @@ const LOSS_FIELD_MAP: Record<string, string> = {
 
 const ISSUED_FIELD_MAP: Record<string, string> = {
   casting: "Issued_weight",
-  filing: "Issued_Weight",
+  "pouch creation": "Issued_Weight",
   grinding: "Issued_Weight__c",
   media:"Issued_Weight__c",
   correction:"Issued_Weight__c",
@@ -63,7 +63,7 @@ const ISSUED_FIELD_MAP: Record<string, string> = {
 
 const RECEIVED_FIELD_MAP: Record<string, string> = {
   casting: "Received_Weight",
-  filing: "Received_Weight",
+  "pouch creation": "Received_Weight",
   grinding: "Received_Weight__c",
   media:"Received_Weight__c",
   correction:"Received_Weight__c",
@@ -76,7 +76,7 @@ const RECEIVED_FIELD_MAP: Record<string, string> = {
 
 const ISSUED_DATE_FIELD_MAP: Record<string, string> = {
   casting: "Issued_Date",
-  filing: "Issued_Date",
+  "pouch creation": "Issued_Date",
   grinding: "Issued_Date__c",
   media: "Issued_Date__c",
   correction: "Issued_Date__c",
@@ -89,7 +89,7 @@ const ISSUED_DATE_FIELD_MAP: Record<string, string> = {
 
 const RECEIVED_DATE_FIELD_MAP: Record<string, string> = {
   casting: "Received_Date",
-  filing: "Received_Date",
+  "pouch creation": "Received_Date",
   grinding: "Received_Date__c",
   media: "Received_Date__c",
   correction: "Received_Date__c",
@@ -101,7 +101,7 @@ const RECEIVED_DATE_FIELD_MAP: Record<string, string> = {
 };
 const STATUS_FIELD_MAP: Record<string, string> = {
   casting: "status",
-  filing: "Status",
+  "pouch creation": "Status",
   grinding: "Status__c",
   media: "Status__c", 
    correction: "Status__c",
