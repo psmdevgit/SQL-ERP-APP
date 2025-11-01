@@ -32,7 +32,8 @@ export const fetchDealData = async (): Promise<ICasting[]> => {
         ornamentWeight: casting.Ornament_Weight || 0,
         scrapWeight: casting.Scrap_Weight || 0,
         dustWeight: casting.Dust_Weight || 0,
-        movedstatus: casting.movedstatus || 0,
+        movedstatus: casting.movedstatus || 0,        
+        orderid: casting.Order_ID || "-",
       }));
 
     } else {
