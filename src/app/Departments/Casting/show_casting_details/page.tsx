@@ -75,7 +75,7 @@ const CastingAllDetailsPage = () => {
       }
 
       // Construct API URL in the correct order: date/month/year/number
-      const apiUrl = `${apiBaseUrl}/api/casting/all/${date}/${month}/${year}/${number}`;
+      const apiUrl = `${apiBaseUrl}/api/casting/view/${date}/${month}/${year}/${number}`;
       console.log('Fetching from:', apiUrl);
 
       try {
