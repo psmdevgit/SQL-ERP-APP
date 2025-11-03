@@ -212,13 +212,13 @@ console.log('[AddPolishing] Using weight field:', weightField);
       return enteredWeight > receivedWeight; // ❌ Invalid if entered > received
     });
 
-    if (invalidPouch) {
-      alert(
-        `Error: Entered polishing weight for pouch ${invalidPouch.Name} is greater than its received weight!`
-      );
-      setIsSubmitting(false);
-      return; // ⛔ Stop submission
-    }
+    // if (invalidPouch) {
+    //   alert(
+    //     `Error: Entered polishing weight for pouch ${invalidPouch.Name} is greater than its received weight!`
+    //   );
+    //   setIsSubmitting(false);
+    //   return; // ⛔ Stop submission
+    // }
 
 
       // Combine date and time for issued datetime
