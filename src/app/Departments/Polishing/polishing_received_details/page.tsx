@@ -199,12 +199,12 @@ useEffect(() => {
       setIsSubmitting(true);
 
        // 1. Check if total received weight is greater than issued weight
-    if (polishing && totalReceivedWeight > polishing.Issued_Weight__c) {
-      alert("received weight cannot be greater than issued weight!");
-      toast.error("Total received weight cannot be greater than issued weight!");
-      setIsSubmitting(false);
-      return;
-    }
+    // if (polishing && totalReceivedWeight > polishing.Issued_Weight__c) {
+    //   alert("received weight cannot be greater than issued weight!");
+    //   toast.error("Total received weight cannot be greater than issued weight!");
+    //   setIsSubmitting(false);
+    //   return;
+    // }
 
     // 2. Check if any pouch received weight is greater than its issued weight
     // for (const pouch of pouches) {
@@ -257,12 +257,13 @@ useEffect(() => {
           window.location.href = '/Departments/Polishing/Polishing_Table';
         }, 1000);
       } else {
-        throw new Error(result.message || 'Failed to update polishing details');
+        console.log(result.message);
+        alert('Failed to update polishing details');
       }
     } catch (error) {
       console.error('[Polishing Update] Error:', error);
-      toast.error(error.message || 'Failed to update polishing details');
-      alert(error.message || 'Failed to update polishing details');
+      // toast.error(error.message || 'Failed to update polishing details');
+      alert('Failed to update polishing details');
     } finally {
       setIsSubmitting(false);
     }
