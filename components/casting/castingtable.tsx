@@ -45,9 +45,9 @@ import {
 import { Input } from "@/components/ui/input";
 
 
-// const apiBaseUrl = "http:localhost:4001"; 
+const apiBaseUrl = "http:localhost:4001"; 
 
-const apiBaseUrl = "https://kalash.app"; 
+// const apiBaseUrl = "https://kalash.app"; 
 
 
 
@@ -684,7 +684,7 @@ const handleScrapUpSubmit = async () => {
                                 </span>
                               </TableCell>
                               <TableCell>{deal.castingLoss}</TableCell>
-                              <TableCell className="table__icon-box" >
+                              <TableCell className="table__icon-box">
                                 <div className="flex items-center justify-start gap-[10px]">
                                   <Link href={`/Departments/Casting/show_casting_details?castingId=${deal.id}`} passHref>
                                     <button

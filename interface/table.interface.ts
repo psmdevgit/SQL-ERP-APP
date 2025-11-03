@@ -431,6 +431,7 @@ export interface ICasting {
   scrapWeight: number;
   dustWeight: number;  
   movedstatus: number;
+  orderid:string;
 }
 
 // Define an interface for the casting form data

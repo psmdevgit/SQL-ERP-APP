@@ -349,7 +349,7 @@ let [partycode, order] = selectedOrders.length > 0 ? selectedOrders[0].split("/"
 
   // Default percentages with corrected 22K gold percentage
   const defaultPercentages = {
-    '22K': { pureGold: 91.7, alloy: 8.3 },
+    '22K': { pureGold: 91.65, alloy: 8.3 },
     '18K': { pureGold: 75.0, alloy: 25.0 },
     '14K': { pureGold: 58.5, alloy: 41.5 },
     '92.5%': { pureGold: 92.5, alloy: 7.5 }

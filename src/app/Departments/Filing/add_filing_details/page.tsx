@@ -9,9 +9,9 @@ import { toast } from "react-hot-toast";
 
 
 
-// const apiBaseUrl = "http://localhost:4001"; 
+ const apiBaseUrl = "http://localhost:4001"; 
 
-const apiBaseUrl = "https://kalash.app";
+//const apiBaseUrl = "https://kalash.app";
 
 
 interface Order {
@@ -253,14 +253,14 @@ const handleAddBag = (e: React.FormEvent) => {
 
   // Ensure orders is an array
   const ordersArray: any[] = Array.isArray(castingDetails?.orders) ? castingDetails.orders : [];
-
+console.log(selectedOrder)
   // Normalize selectedOrder to a string we can compare (supports string or object)
   const selectedOrderStr = (() => {
     if (typeof selectedOrder === "string") return selectedOrder.trim();
     if (typeof selectedOrder === "number") return String(selectedOrder).trim();
     if (typeof selectedOrder === "object" && selectedOrder !== null) {
       return String(
-        selectedOrder.Order_Id_c ??
+        selectedOrder.Order_Id__c ??
         selectedOrder.Order_Id ??
         selectedOrder.OrderId ??
         selectedOrder.Id ??

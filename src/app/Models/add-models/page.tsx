@@ -408,7 +408,7 @@ const AddJewelryModel = () => {
                 required
               >
                 <option value="">Select Design Source</option>
-                <option value="in-house">In-house</option>
+                <option value="in-house">In-Source</option>
                 <option value="outsource">Outsource</option>
               </select>
             </div>
