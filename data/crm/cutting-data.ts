@@ -19,7 +19,7 @@ export const fetchcuttingData = async (): Promise<ICutting[]> => {
             id: cutting.Name,
             issuedWeight: cutting.Issued_Weight__c || 0,  // Updated to match server field
             issuedDate: cutting.Issued_Date__c || '-',    // Updated to match server field
-            returnedWeight: cutting.Returned_Weight__c || 0, // Updated to match server field
+            returnedWeight: cutting.Returned_weight__c || 0, // Updated to match server field
             receivedDate: cutting.Received_Date__c || '-',  // Updated to match server field
             status: cutting.status__c,   
             product: cutting.Product__c || 'N/A',
