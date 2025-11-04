@@ -163,14 +163,14 @@ export default function CastingTable() {
 
 const handleScrapUpSubmit = async () => {
 
-  if (!receivedWeight || !updatedBy) {
+  if (!receivedWeight || !partycode) {
     alert("⚠️ Please fill in both Received Weight and Updated By.");
     return; // Stop function here
   }  
   console.log({
     castingScrap,
     receivedWeight,
-    updatedBy,
+    partycode,
   });
 
   try {
@@ -180,10 +180,11 @@ const handleScrapUpSubmit = async () => {
       purity: "91.7%",
       availableWeight: parseFloat(receivedWeight),
       unitOfMeasure: "gram",
-      partyLedger: ""
+      partyLedger: partycode
     };
 
     console.log('Submitting payload:', payload);
+
 
     const response = await fetch(`${apiBaseUrl}/update-inventory`, {
       method: 'POST',
@@ -547,9 +548,9 @@ const handleScrapUpSubmit = async () => {
 
 
               {/* 🔹 New Update Button */}
-       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
   <DialogTrigger asChild>
-    {/* <Button variant="default" style={{background:"#F7DEB1",color:"black"}}>Update Scrap</Button> */}
+    <Button variant="default" style={{background:"#F7DEB1",color:"black"}}>Update Scrap</Button>
   </DialogTrigger>
   <DialogContent className="bg-white"> {/* Solid white background */}
     <DialogHeader>
@@ -579,12 +580,12 @@ const handleScrapUpSubmit = async () => {
       </div>
 
       <div>
-        <label className="text-sm font-medium">Updated By</label>
+        <label className="text-sm font-medium">Party Code</label>
         <Input
           type="text"
-          value={updatedBy}
-          onChange={(e) => setUpdatedBy(e.target.value)}
-          placeholder="Enter Updated By"
+          value={partycode}
+          onChange={(e) => setPartycode(e.target.value)}
+          placeholder="Enter party code"
         />
       </div>
 
