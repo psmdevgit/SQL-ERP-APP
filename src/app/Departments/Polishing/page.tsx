@@ -56,11 +56,11 @@ export default function CreateSettingFromDepartment() {
 
   
 
-//const apiBaseUrl ="https://kalash.app"; 
+const apiBaseUrl ="https://kalash.app"; 
 //const apiBaseUrl = "http://localhost:4001";
 
 // Fetch department records when department changes
-const apiBaseUrl = "http://localhost:4001";
+//const apiBaseUrl = "http://localhost:4001";
 
 // Fetch department records when department changes
 useEffect(() => {
