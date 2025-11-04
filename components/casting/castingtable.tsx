@@ -157,7 +157,7 @@ export default function CastingTable() {
 
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-  const [castingScrap, setCastingScrap] = useState("Casting Scrap");
+  const [castingScrap, setCastingScrap] = useState("Casting Dust");
   const [receivedWeight, setReceivedWeight] = useState("");
   // const [updatedBy, setUpdatedBy] = useState("");
   const [partycode, setPartycode] = useState("");
@@ -166,7 +166,7 @@ export default function CastingTable() {
 const handleScrapUpSubmit = async () => {
 
   if (!receivedWeight || !partycode) {
-    alert("⚠️ Please fill in both Received Weight and Updated By.");
+    alert("⚠️ Please fill in both Received Weight and Party Code.");
     return; // Stop function here
   }  
   console.log({
@@ -212,7 +212,7 @@ const handleScrapUpSubmit = async () => {
   setIsModalOpen(false);
   setCastingScrap("");
   setReceivedWeight("");
-  setUpdatedBy("");
+  setPartycode("");
 };
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -552,22 +552,22 @@ const handleScrapUpSubmit = async () => {
               {/* 🔹 New Update Button */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
   <DialogTrigger asChild>
-    <Button variant="default" style={{background:"#F7DEB1",color:"black"}}>Update Scrap</Button>
+    <Button variant="default" style={{background:"#F7DEB1",color:"black"}}>Update Dust</Button>
   </DialogTrigger>
   <DialogContent className="bg-white">
     <DialogHeader>
-      <DialogTitle>Update Casting Scrap</DialogTitle>
+      <DialogTitle>Update Casting Dust</DialogTitle>
     </DialogHeader>
 
     <div className="flex flex-col gap-4 mt-4">
       <div>
-        <label className="text-sm font-medium">Casting Scrap</label>
+        <label className="text-sm font-medium">Casting Dust</label>
         <Input
           type="text"
           disabled
           value={castingScrap}
           onChange={(e) => setCastingScrap(e.target.value)}
-          placeholder="Enter Casting Scrap"
+          placeholder="Enter Casting Dust"
         />
       </div>
 
