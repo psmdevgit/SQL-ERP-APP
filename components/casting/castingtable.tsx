@@ -174,8 +174,7 @@ const handleScrapUpSubmit = async () => {
   });
 
   try {
-    // Prepare the payload without weight conversion
-    const payload = {
+    // Prepare the payload without weight conve
       itemName: castingScrap,
       purity: "91.7%",
       availableWeight: parseFloat(receivedWeight),
@@ -550,7 +549,7 @@ const handleScrapUpSubmit = async () => {
               {/* 🔹 New Update Button */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
   <DialogTrigger asChild>
-    <Button variant="default" style={{background:"#F7DEB1",color:"black"}}>Update Scrap</Button>
+    {/* <Button variant="default" style={{background:"#F7DEB1",color:"black"}}>Update Scrap</Button>
   </DialogTrigger>
   <DialogContent className="bg-white"> {/* Solid white background */}
     <DialogHeader>
