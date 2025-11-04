@@ -159,7 +159,9 @@ export default function CastingTable() {
     const [isModalOpen, setIsModalOpen] = useState(false);
   const [castingScrap, setCastingScrap] = useState("Casting Scrap");
   const [receivedWeight, setReceivedWeight] = useState("");
-  const [updatedBy, setUpdatedBy] = useState("");
+  // const [updatedBy, setUpdatedBy] = useState("");
+  const [partycode, setPartycode] = useState("");
+
 
 const handleScrapUpSubmit = async () => {
 
@@ -174,13 +176,14 @@ const handleScrapUpSubmit = async () => {
   });
 
   try {
-    // Prepare the payload without weight conve
-      itemName: castingScrap,
-      purity: "91.7%",
-      availableWeight: parseFloat(receivedWeight),
-      unitOfMeasure: "gram",
-      partyLedger: partycode
-    };
+  const payload = {
+  itemName: castingScrap,
+  purity: "91.7%",
+  availableWeight: parseFloat(receivedWeight),
+  unitOfMeasure: "gram",
+  partyLedger: partycode
+};
+
 
     console.log('Submitting payload:', payload);
 
