@@ -219,17 +219,17 @@ const GrindingDetailsPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    for (const pouch of data?.pouches || []) {
-    const issued = pouch.Issued_Weight__c || 0;
-    const received = pouchReceivedWeights[pouch.Id] || 0;
+  //   for (const pouch of data?.pouches || []) {
+  //   const issued = pouch.Issued_Weight__c || 0;
+  //   const received = pouchReceivedWeights[pouch.Id] || 0;
 
-    if (received > issued) {
-      alert(
-        `Received weight (${received}g) cannot be greater than issued weight (${issued}g) for pouch ${pouch.Name}`
-      );
-      return; // ❌ Stop form submission
-    }
-  }
+  //   if (received > issued) {
+  //     alert(
+  //       `Received weight (${received}g) cannot be greater than issued weight (${issued}g) for pouch ${pouch.Name}`
+  //     );
+  //     return; // ❌ Stop form submission
+  //   }
+  // }
 
     try {
       setIsSubmitting(true);
@@ -255,7 +255,7 @@ const GrindingDetailsPage = () => {
       const pouchData = data.pouches.map(pouch => ({
         pouchId: pouch.Id,
         issuedWeight: newissuedWeight,
-        receivedWeight: pouchReceivedWeights[pouch.Id] || 0,
+        receivedWeight: totalWeight + findingReceived,
         receivedDate: currentDateTime
       }));
 
@@ -264,7 +264,11 @@ const GrindingDetailsPage = () => {
         grindingId: data.grinding.Id,
         sourceDepartment: data.grinding.Source_Department__c,
         issuedWeight: newissuedWeight,
-        receivedWeight: totalWeight,
+        // receivedWeight: totalWeight,
+
+        
+        receivedWeight: totalWeight + findingReceived,
+        
         receivedDate: currentDateTime,
         findingReceived: findingReceived,
         scrapWeight: scrapReceivedWeight || 0,
