@@ -220,11 +220,11 @@ const CuttingDetailsPage = () => {
       if (!data) return;
 
         // Check if total received weight > issued weight
-  if (totalReceivedWeight > data.cutting.Issued_Weight__c) {
-    alert("Received weight cannot be greater than issued weight!");
-    toast.error("Received weight cannot be greater than issued weight!");
-    return; // Stop form submission
-  }
+  // if (totalReceivedWeight > data.cutting.Issued_Weight__c) {
+  //   alert("Received weight cannot be greater than issued weight!");
+  //   toast.error("Received weight cannot be greater than issued weight!");
+  //   return; // Stop form submission
+  // }
   
 
       const [prefix, date, month, year, number, subnumber] = cuttingId!.split('/');
@@ -241,7 +241,7 @@ const CuttingDetailsPage = () => {
           },
           body: JSON.stringify({
             receivedDate: receivedDateTime, // Send the full ISO datetime string
-            receivedWeight: parseFloat(totalReceivedWeight.toFixed(4)),
+            receivedWeight: parseFloat(ornamentWeight.toFixed(4)),
             ornamentWeight: parseFloat(ornamentWeight.toFixed(4)),
             scrapReceivedWeight: parseFloat(scrapReceivedWeight.toFixed(4)),
             dustReceivedWeight: parseFloat(dustReceivedWeight.toFixed(4)),
