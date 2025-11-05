@@ -257,7 +257,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               <th className="border p-2">Color</th>
               <th className="border p-2">Shape</th>
               <th className="border p-2">Size</th>
-              <th className="border p-2">Pieces</th>
+              {/* <th className="border p-2">Pieces</th> */}
               {/* <th className="border p-2">Total Pieces</th> */}
               <th className="border p-2">Total Weight (grams)</th>
             </tr>
@@ -269,7 +269,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <td className="border p-2">{item.colour}</td>
                 <td className="border p-2">{item.shape}</td>
                 <td className="border p-2">{item.size}</td>
-                <td className="border p-2">{item.totalPieces}</td>
+                {/* <td className="border p-2">{item.totalPieces}</td> */}
                 <td className="border p-2">{item.totalWeight}</td>
               </tr>
             ))}
