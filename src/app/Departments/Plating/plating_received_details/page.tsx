@@ -215,11 +215,11 @@ const platingDetails = plating?.[0];
       if (!data || !platingId) return;
 
          // 🔥 Validation: Stop if total received weight is greater than issued weight
-    if (totalReceivedWeight > (platingDetails.Issued_Weight__c || 0)) {
-      alert("Received Weight cannot be greater than Issued Weight!");
-      setIsSubmitting(false);
-      return; // Stop execution
-    }
+    // if (totalReceivedWeight > (platingDetails.Issued_Weight__c || 0)) {
+    //   alert("Received Weight cannot be greater than Issued Weight!");
+    //   setIsSubmitting(false);
+    //   return; // Stop execution
+    // }
 
       // Use the Salesforce ID directly for the update
       const response = await fetch(
