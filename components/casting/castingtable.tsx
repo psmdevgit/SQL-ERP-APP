@@ -208,6 +208,27 @@ const handleScrapUpSubmit = async () => {
     alert("Error updating inventory!");
   }
 
+      //minus in losss
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/adjust-dust-loss`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ castingDustWeight: parseFloat(receivedWeight) }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      alert(`Casting Los adjusted successfully! `);
+    } else {
+      alert(data.message);
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error adjusting casting dust");
+  }
+  
   // Reset modal and fields
   setIsModalOpen(false);
   setCastingScrap("");
