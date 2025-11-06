@@ -421,7 +421,7 @@ useEffect(() => {
                   />
                 </div>
 
-                      {/* <div>
+                    <div>
                                                <label className="text-sm text-gray-600 block mb-1.5">
                                                  Finding Weight (g)
                                                </label>
@@ -432,7 +432,7 @@ useEffect(() => {
                                                  onChange={(e) => setfindingReceived(parseFloat(e.target.value) || 0)}
                                                  className="w-full h-9"
                                                />
-                                </div> */}
+                                </div> 
                                 
 
                 <div>
