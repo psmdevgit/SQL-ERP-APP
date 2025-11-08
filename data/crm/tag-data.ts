@@ -4,7 +4,7 @@ import { ITag } from "@/interface/table.interface";
 const apiUrl = "https://kalash.app";
 
 // Function to fetch tagging data
-export const fetchTaggingData = async (): Promise<ITag[]> => {
+export const fetchTagData = async (): Promise<ITag[]> => {
   try {
     const response = await fetch(`${apiUrl}/api/Tag`);
     const result = await response.json();
@@ -40,4 +40,5 @@ export const fetchTaggingData = async (): Promise<ITag[]> => {
   }
 };
 
-export default fetchTaggingData;
+export default fetchTagData;
+
