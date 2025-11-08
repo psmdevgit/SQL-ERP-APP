@@ -100,7 +100,7 @@ const sidebarData: SidebarCategory[] = [
           { label: "Dull", link: "/Departments/Dull/Dull_Table" },
           {label: "Plating", link: "/Departments/Plating/Plating_Table"},
           {label: "Cutting", link: "/Departments/Cutting/Cutting_Table"},
-          {label: "Tagging", link: "/Departments/Tagging/Tagging_Table"},
+          // {label: "Tagging", link: "/Departments/Tagging/Tagging_Table"},
           { label: "Refinery", link: "/Refinery" },
         ],
       },
