@@ -55,7 +55,6 @@ const TaggingTable = () => {
       try {
         setLoading(true);
         const data = await fetchTaggingData();
-        console.log("data",data);
         setTags(data);
       } catch (err) {
         console.error("Error loading tagging data:", err);
@@ -255,4 +254,3 @@ const TaggingTable = () => {
 };
 
 export default TaggingTable;
-
