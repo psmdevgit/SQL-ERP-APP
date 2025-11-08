@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 
 import { ITag } from "@/interface/table.interface";
-import { fetchTaggingData } from "@/data/crm/tag-data";
+import { fetchTagData } from "@/data/crm/tag-data";
 import TableControls from "@/components/elements/SharedInputs/TableControls";
 import useMaterialTableHook from "@/hooks/useMaterialTableHook";
 import { useTableStatusHook } from "@/hooks/use-condition-class";
@@ -54,7 +54,7 @@ const TaggingTable = () => {
     const loadTags = async () => {
       try {
         setLoading(true);
-        const data = await fetchTaggingData();
+        const data = await fetchTagData();
         setTags(data);
       } catch (err) {
         console.error("Error loading tagging data:", err);
@@ -254,3 +254,4 @@ const TaggingTable = () => {
 };
 
 export default TaggingTable;
+
