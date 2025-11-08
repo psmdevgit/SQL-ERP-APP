@@ -534,6 +534,16 @@ export interface ITagging {
   excelUrl: string;
 }
 
+export interface ITag {
+  id: string;
+  taggingId: string;
+  orderId: string;
+  product: string;
+  quantity: number;
+  receivedWeight: number;
+  receivedDate: string;
+  status: string;
+}
 export interface Billing {
   id: string;
   PartyName: string;
