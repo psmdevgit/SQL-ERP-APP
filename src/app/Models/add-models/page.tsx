@@ -407,9 +407,9 @@ const AddJewelryModel = () => {
                 className="w-full border p-2 rounded"
                 required
               >
-                <option value="">Select Design Source</option>
-                <option value="in-house">In-Source</option>
-                <option value="outsource">Outsource</option>
+                 <option value="">Select Design Source</option>
+                <option value="In-Source">In-Source</option>
+                <option value="Out-Source">Out-Source</option>
               </select>
             </div>
 
