@@ -2878,7 +2878,7 @@ function drawWrappedText(
         >
           Submit Order
         </button>
-        <button
+        <button style={{display:"none"}}
           type="button"
             className={
               isOrderSaved && (orderItems.length > 0 || orderSelectedItems.length > 0)
