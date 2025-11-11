@@ -1235,109 +1235,76 @@ const handleSubmitOrder = async () => {
 
 
         // Generate PDFs with proper instances
-         const detailedPdfDoc = await PDFDocument.create();
-         const imagesPdfDoc = await PDFDocument.create();
+         // const detailedPdfDoc = await PDFDocument.create();
+         // const imagesPdfDoc = await PDFDocument.create();
     
-         await generateOrderPDF(detailedPdfDoc);
-         await generateImagesOnlyPDF(imagesPdfDoc);
+         // await generateOrderPDF(detailedPdfDoc);
+         // await generateImagesOnlyPDF(imagesPdfDoc);
 
      // Convert PDFs to base64
-     const detailedPdfBytes = await detailedPdfDoc.save();
-     const imagesPdfBytes = await imagesPdfDoc.save();
+     // const detailedPdfBytes = await detailedPdfDoc.save();
+     // const imagesPdfBytes = await imagesPdfDoc.save();
 
        // Convert to base64 without data URL prefix
-     const detailedPdf = Buffer.from(detailedPdfBytes).toString('base64');
-     const imagesPdf = Buffer.from(imagesPdfBytes).toString('base64');
+     // const detailedPdf = Buffer.from(detailedPdfBytes).toString('base64');
+     // const imagesPdf = Buffer.from(imagesPdfBytes).toString('base64');
 
     // design bank upload =================================================================================================
 
-  if (activeTab == "designBank") {    
+ if (activeTab == "designBank") {
+    alert('Order submitting... please wait.');
 
+    if (!orderInfo || orderSelectedItems.length === 0) {
+      alert("Please save order info and add at least one item.");
+      return;
+    }
 
-    alert('order submitting  wait..... ');
-  if (!orderInfo || orderSelectedItems.length === 0) {
-    alert("Please save order info and add at least one item.");
-    return;
-  }
-
-
-      let pdfBlob; // ✅ Declare outside so it's accessible later
-      
-      pdfBlob = await createOrderWithItemPDF(orderInfo, orderSelectedItems);
-    
-    setOrderInfo(prevInfo => 
-      prevInfo 
-        ? { ...prevInfo, pdfBlob } 
-        : null
-    );
-
-  // Create FormData for file + JSON together
-  const formData = new FormData();
+    // Calculate total quantity
     const totalQuantity = orderSelectedItems.reduce(
-        (sum, item) => sum + parseInt(item.quantity || "0", 10),
-        0
-      );
-  // Build JSON part (without pdf)
-  const jsonPayload = {
-    orderNo: orderNumber,
-    TotalQuantity: totalQuantity,
-    orderInfo: orderInfo, // saved from form
-    items: orderSelectedItems.map((item) => ({
-      modelName: item.modelName,
-      category: item.category,
-      quantity: item.quantity,
-      size: item.size,
-      grossWeight: item.grossWeight,
-      netWeight: item.netWeight,
-      stoneWeight: item.stoneWeight,
-      itemRemark: item.itemRemark,
-      designImage: item.designImage
-    })),
-  };
-
-
-
-  // Append JSON as a string
-  formData.append("data", JSON.stringify(jsonPayload));
-  
-formData.append("imagesPdf", imagesPdf);
-
-formData.append("detailedPdf", detailedPdf);
-
-
-  // Append PDF file (if present)
-  if (orderInfo.pdfBlob) {
-    console.log("Adding PDF to form data");
-    formData.append(
-      "pdfFile",
-      orderInfo.pdfBlob,
-      `Order_${orderInfo.orderNo}.pdf`
+      (sum, item) => sum + parseInt(item.quantity || "0", 10),
+      0
     );
+
+    // Build JSON data
+    const jsonPayload = {
+      orderNo: orderNumber,
+      TotalQuantity: totalQuantity,
+      orderInfo: orderInfo, // full order info
+      items: orderSelectedItems.map((item) => ({
+        modelName: item.modelName,
+        category: item.category,
+        quantity: item.quantity,
+        size: item.size,
+        grossWeight: item.grossWeight,
+        netWeight: item.netWeight,
+        stoneWeight: item.stoneWeight,
+        itemRemark: item.itemRemark,
+        designImage: item.designImage, // optional string URL/base64
+      })),
+    };
+
+    try {
+      const res = await fetch(`${apiBaseUrl}/api/orderItemsTest`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json", // ✅ plain JSON
+        },
+        body: JSON.stringify({ data: JSON.stringify(jsonPayload) }), // match backend format
+      });
+
+      if (!res.ok) throw new Error("Failed to submit order");
+
+      const data = await res.json();
+      alert("Order submitted successfully!");
+
+      setOrderSelectedItems([]);
+      setOrderInfo(null);
+      router.push(`/Orders`);
+    } catch (err) {
+      console.error(err);
+      alert("Error submitting order. Check server logs.");
+    }
   }
-  console.log("detailedPdf",detailedPdf);
-
-  console.log(formData);
-
-  try {
-    const res = await fetch(`${apiBaseUrl}/api/orderItems`, {
-      method: "POST",
-      body: formData, // ✅ don't set Content-Type manually, browser will handle it
-    });
-
-    if (!res.ok) throw new Error("Failed to submit order");
-
-    const data = await res.json();
-    alert(`Order submitted successfully!`);
-
-    // Reset
-    setOrderSelectedItems([]);
-    setOrderInfo(null);
-    router.push(`/Orders`);
-  } catch (err) {
-    console.error(err);
-    alert("Error submitting order. Check server logs.");
-  }
-}
 
     else{
       
