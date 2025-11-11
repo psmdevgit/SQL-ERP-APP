@@ -1,12 +1,16 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation';
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';import { PDFDocument, StandardFonts, rgb, degrees } from "pdf-lib";
+
+import COMPANY_LOGO from "@/assets/PothysLogo.png"
 
 const apiBaseUrl = "https://kalash.app";
 
 // const apiBaseUrl = "http://localhost:4001";
+const fallbackImage = "/noimage.png"; // put your fallback in /public folder
 
+const imageBaseUrl = "https://psmport.pothysswarnamahalapp.com/FactoryModels/";
 
 interface OrderDetails {
   orderId: string;
@@ -18,6 +22,7 @@ interface OrderDetails {
   remarks: string;
   createdBy: string;
   createdDate: string;
+  category: string;
 }
 
 interface ModelDetails {
@@ -109,6 +114,414 @@ const OrderDetailsPage = () => {
     }
   };
 
+
+async function handleDownloadPDF() {
+  try {
+    console.log("checking data", data);
+
+    const orderInfo: OrderDetails = {
+      orderId: data?.orderDetails?.orderId || "-",
+      partyName: data?.orderDetails?.partyName || "-",
+      deliveryDate: data?.orderDetails?.deliveryDate || "-",
+      advanceMetal: data?.orderDetails?.advanceMetal || "-",
+      status: data?.orderDetails?.status || "-",
+      purity: data?.orderDetails?.purity || "-",
+      remarks: data?.orderDetails?.remarks || "-",
+      createdBy: data?.orderDetails?.createdBy || "-",
+      createdDate: data?.orderDetails?.createdDate || "-",
+      category: data?.orderDetails?.category || "-",
+    };
+
+    const orderItems: ModelDetails[] = data?.regularModels || [];
+
+    // Generate PDF blob
+    const pdfBlob = await createOrderPDF(orderInfo, orderItems);
+
+    // Create blob URL
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+
+    // ✅ Open PDF in new tab
+    window.open(pdfUrl, "_blank");
+
+    // ✅ Trigger automatic download
+    // const link = document.createElement("a");
+    // link.href = pdfUrl;
+    // link.download = `${orderInfo.orderId || "Order"}.pdf`;
+    // link.style.display = "none";
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
+
+    // Optional: revoke URL after a short delay (so tab loads first)
+    setTimeout(() => URL.revokeObjectURL(pdfUrl), 5000);
+  } catch (error) {
+    console.error("PDF generation failed:", error);
+  }
+}
+
+async function handleImagePDF() {
+  try {
+    if (!data?.regularModels?.length) {
+      alert("No models available");
+      return;
+    }
+
+    // 🧾 Step 1: Create a new PDF document
+    const pdfDoc = await PDFDocument.create();
+
+    console.log("models ",data.regularModels)
+
+    // 🖼️ Step 2: Generate all model pages
+    await generateImagesOnlyPDF(pdfDoc, data.regularModels);
+
+    // 💾 Step 3: Save and open the PDF
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const pdfUrl = URL.createObjectURL(blob);
+
+    // Open PDF in a new tab
+    window.open(pdfUrl, "_blank");
+
+    // Trigger auto download
+    // const link = document.createElement("a");
+    // link.href = pdfUrl;
+    // link.download = `${data?.orderDetails?.orderId || "Order"}_Images.pdf`;
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
+
+    // Clean up
+    setTimeout(() => URL.revokeObjectURL(pdfUrl), 5000);
+  } catch (error) {
+    console.error("❌ PDF generation failed:", error);
+  }
+}
+
+async function generateImagesOnlyPDF(pdfDoc, models) {
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  for (const model of models) {
+    if (!model.name) continue;
+
+    try {
+      const page = pdfDoc.addPage([595.28, 841.89]); // A4 size
+      const { width, height } = page.getSize();
+      const margin = 50;
+
+      // Caption
+      const caption = `${model.category || ""} - ${model.name}`;
+      const captionWidth = boldFont.widthOfTextAtSize(caption, 14);
+      page.drawText(caption, {
+        x: (width - captionWidth) / 2,
+        y: height - margin,
+        size: 14,
+        font: boldFont,
+      });
+
+      // 🧩 Step 1: Try fetching model image
+      let imageBytes = null;
+      const extensions = [".png", ".jpg", ".jpeg"];
+      for (const ext of extensions) {
+        const url = `${imageBaseUrl}${model.name}${ext}`;
+        try {
+          const res = await fetch(url);
+          if (res.ok) {
+            imageBytes = await res.arrayBuffer();
+            console.log(`✅ Found image for ${model.name}: ${url}`);
+            break;
+          }
+        } catch (err) {
+          console.warn(`❌ Error fetching ${url}`, err);
+        }
+      }
+
+      // 🧩 Step 2: Fallback to default
+      if (!imageBytes) {
+        console.warn(`⚠️ No valid image found for ${model.name}, using fallback.`);
+        const res = await fetch(fallbackImage);
+        imageBytes = await res.arrayBuffer();
+      }
+
+      // 🧩 Step 3: Embed image
+      let embeddedImage;
+      try {
+        embeddedImage = await pdfDoc.embedPng(imageBytes);
+      } catch {
+        embeddedImage = await pdfDoc.embedJpg(imageBytes);
+      }
+
+      // 🧩 Step 4: Draw image centered
+      const imgWidth = 300;
+      const imgHeight = 300;
+      const xOffset = (width - imgWidth) / 2;
+      const yOffset = (height - imgHeight) / 2 + 40;
+      page.drawImage(embeddedImage, {
+        x: xOffset,
+        y: yOffset,
+        width: imgWidth,
+        height: imgHeight,
+      });
+
+      // 🧩 Step 5: Draw model details
+      const details = [
+        `Model: ${model.name || "-"}`,
+        `Size: ${model.size || "-"}`,
+        `Net Weight: ${model.netWeight || "-"}`,
+        `Stone Weight: ${model.stoneWeight || "-"}`,
+        `Gross Weight: ${model.grossWeight || "-"}`,
+        `Quantity: ${model.quantity || "-"}`,
+      ];
+
+      let yText = yOffset - 40;
+      details.forEach((line) => {
+        const textWidth = font.widthOfTextAtSize(line, 10);
+        page.drawText(line, {
+          x: (width - textWidth) / 2,
+          y: yText,
+          size: 10,
+          font,
+        });
+        yText -= 20;
+      });
+    } catch (err) {
+      console.error(`❌ Error generating page for ${model.name}:`, err);
+    }
+  }
+
+  // 🧩 Step 6: Add page numbers
+  const totalPages = pdfDoc.getPageCount();
+  for (let i = 0; i < totalPages; i++) {
+    const page = pdfDoc.getPage(i);
+    const { width } = page.getSize();
+    page.drawText(`Page ${i + 1} of ${totalPages}`, {
+      x: width - 100,
+      y: 30,
+      size: 10,
+      font,
+    });
+  }
+
+  return pdfDoc;
+}
+async function createOrderPDF(orderInfo: OrderDetails, orderItems: ModelDetails[]) {
+  let totalQuantity = 0;
+  let totalWeight = 0;
+
+  const pdfDoc = await PDFDocument.create();
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  const margin = 35;
+  const lineHeight = 20;
+  const cellPadding = 5;
+
+  function getWrappedTextAndHeight(rawText: any, maxWidth: number, fontSize: number) {
+    const text = String(rawText ?? "");
+    const words = text.split(" ");
+    const lines: string[] = [];
+    let currentLine = words[0] || "";
+
+    for (let i = 1; i < words.length; i++) {
+      const width = font.widthOfTextAtSize(currentLine + " " + words[i], fontSize);
+      if (width < maxWidth - cellPadding * 2) currentLine += " " + words[i];
+      else {
+        lines.push(currentLine);
+        currentLine = words[i];
+      }
+    }
+    lines.push(currentLine);
+    return {
+      lines,
+      height: Math.max(lineHeight, lines.length * (fontSize + 2) + cellPadding * 2),
+    };
+  }
+
+  function drawWrappedText(rawText: any, x: number, y: number, maxWidth: number, fontSize: number, page: PDFPage, isHeader = false, isTotal = false) {
+    const { lines } = getWrappedTextAndHeight(rawText, maxWidth, fontSize);
+    let currentY = y - cellPadding;
+    lines.forEach((line) => {
+      page.drawText(line, {
+        x: x + cellPadding,
+        y: currentY - fontSize,
+        size: fontSize,
+        font: isHeader || isTotal ? boldFont : font,
+      });
+      currentY -= fontSize + 2;
+    });
+  }
+
+  function drawTableCell(x: number, y: number, width: number, height: number, rawText: any, page: PDFPage, isHeader = false, isTotal = false) {
+    page.drawRectangle({
+      x,
+      y: y - height,
+      width,
+      height,
+      borderWidth: 1,
+      borderColor: rgb(0, 0, 0),
+      color: isHeader ? rgb(0.95, 0.95, 0.95) : isTotal ? rgb(0.9, 0.9, 1) : rgb(1, 1, 1),
+    });
+    if (String(rawText ?? "").length > 0) {
+      drawWrappedText(rawText, x, y, width, 10, page, isHeader, isTotal);
+    }
+  }
+
+  function drawWatermark(page: PDFPage, logo?: PDFImage) {
+    const { width, height } = page.getSize();
+    page.drawText("Kalash jewellers Pvd Ltd", {
+      x: width / 2 - 150,
+      y: height / 2,
+      size: 60,
+      font: boldFont,
+      opacity: 0.07,
+      rotate: degrees(-45),
+    });
+    if (logo) {
+      const watermarkWidth = width * 0.7;
+      const watermarkHeight = (watermarkWidth * logo.height) / logo.width;
+      page.drawImage(logo, {
+        x: (width - watermarkWidth) / 2,
+        y: (height - watermarkHeight) / 2,
+        width: watermarkWidth,
+        height: watermarkHeight,
+        opacity: 0.05,
+      });
+    }
+  }
+
+  // --- Company Logo ---
+  const logoImageBytes = await fetch(COMPANY_LOGO.src).then((res) => res.arrayBuffer());
+  const logoImage = await pdfDoc.embedPng(logoImageBytes);
+
+  let page = pdfDoc.addPage([595.28, 841.89]); // A4
+  drawWatermark(page, logoImage);
+
+  let y = 800;
+  const logoWidth = 60;
+  const logoHeight = (logoWidth * logoImage.height) / logoImage.width;
+
+  // Header
+  page.drawImage(logoImage, { x: margin, y: y - logoHeight + 16, width: logoWidth, height: logoHeight });
+  page.drawText("Kalash jewellers Pvd Ltd Order Invoice", { x: margin + logoWidth + 10, y, size: 16, font: boldFont });
+  y -= Math.max(logoHeight, 25);
+
+  // --- Order Details ---
+  const detailsColumnWidths = [150, 350];
+  const orderDetailsTable = [
+    ["Order No:", orderInfo.orderId ?? "-"],
+    ["Party Ledger:", orderInfo.partyName ?? "-"],
+    ["Product:", orderInfo.category ?? "-"],
+    ["Metal Purity:", orderInfo.purity ?? "-"],
+    ["Advance Metal:", orderInfo.advanceMetal ?? "-"],
+    ["Delivery Date:", orderInfo.deliveryDate ?? "-"],
+    ["Created Date:", orderInfo.createdDate ?? "-"],
+    ["Created By:", orderInfo.createdBy ?? "-"],
+    ["Date:", new Date().toLocaleDateString()],
+  ];
+
+  orderDetailsTable.forEach(([label, value]) => {
+    const height = Math.max(
+      getWrappedTextAndHeight(label, detailsColumnWidths[0], 10).height,
+      getWrappedTextAndHeight(value, detailsColumnWidths[1], 10).height
+    );
+    drawTableCell(margin, y, detailsColumnWidths[0], height, label, page, true);
+    drawTableCell(margin + detailsColumnWidths[0], y, detailsColumnWidths[1], height, value, page);
+    y -= height;
+  });
+
+  y -= lineHeight * 2;
+
+  // --- Items Table ---
+  page.drawText("Order Items", { x: margin, y, size: 14, font: boldFont });
+  y -= lineHeight * 1.5;
+
+  const headers = ["Design", "Model Name", "Weight", "Size", "Quantity", "Total Weight", "Remarks"];
+  const columnWidths = [80, 120, 60, 60, 60, 80, 80];
+
+  let currentX = margin;
+  headers.forEach((header, i) => {
+    drawTableCell(currentX, y, columnWidths[i], lineHeight, header, page, true);
+    currentX += columnWidths[i];
+  });
+  y -= lineHeight;
+
+  // --- Iterate Items ---
+  for (const item of orderItems) {
+    const quantity = parseInt(String(item.quantity ?? "0")) || 0;
+    const weightValue = Number(item.netWeight ?? item.grossWeight ?? 0) || 0;
+    const itemTotalWeight = weightValue * quantity;
+
+    totalQuantity += quantity;
+    totalWeight += itemTotalWeight;
+
+    const rowHeight = 60;
+    currentX = margin;
+    drawTableCell(currentX, y, columnWidths[0], rowHeight, "", page);
+
+    // --- ✅ Fetch image directly using item.name ---
+    if (item.name) {
+      try {
+        const imageUrl = `https://psmport.pothysswarnamahalapp.com/FactoryModels/${item.name}.jpg`;
+        const resp = await fetch(imageUrl);
+        if (resp.ok) {
+          const arr = await resp.arrayBuffer();
+          const pdfImage = await pdfDoc.embedJpg(arr);
+          const maxWidth = columnWidths[0] - 10;
+          const maxHeight = rowHeight - 10;
+          const scale = Math.min(maxWidth / pdfImage.width, maxHeight / pdfImage.height);
+          const width = pdfImage.width * scale;
+          const height = pdfImage.height * scale;
+          const xOffset = margin + (columnWidths[0] - width) / 2;
+          const yOffset = y - rowHeight + (rowHeight - height) / 2;
+          page.drawImage(pdfImage, { x: xOffset, y: yOffset, width, height });
+        }
+      } catch (err) {
+        console.error(`Image not found for ${item.name}`);
+      }
+    }
+
+    currentX += columnWidths[0];
+    const values = [
+      item.name ?? "-",
+      String(weightValue),
+      item.size ?? "-",
+      String(quantity),
+      itemTotalWeight.toFixed(2),
+      item.remarks ?? "-",
+    ];
+    values.forEach((val, i) => {
+      drawTableCell(currentX, y, columnWidths[i + 1], rowHeight, val, page);
+      currentX += columnWidths[i + 1];
+    });
+
+    y -= rowHeight;
+
+    if (y < 120) {
+      page = pdfDoc.addPage([595.28, 841.89]);
+      drawWatermark(page, logoImage);
+      y = 800;
+      currentX = margin;
+      headers.forEach((header, idx) => {
+        drawTableCell(currentX, y, columnWidths[idx], lineHeight, header, page, true);
+        currentX += columnWidths[idx];
+      });
+      y -= lineHeight;
+    }
+  }
+
+  // --- Totals row ---
+  currentX = margin;
+  const totalRow = ["", "TOTAL", "", "", String(totalQuantity), totalWeight.toFixed(2), ""];
+  totalRow.forEach((val, idx) => {
+    drawTableCell(currentX, y, columnWidths[idx], lineHeight, val, page, false, true);
+    currentX += columnWidths[idx];
+  });
+
+  const pdfBytes = await pdfDoc.save();
+  return new Blob([pdfBytes], { type: "application/pdf" });
+}
+
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -196,7 +609,43 @@ const OrderDetailsPage = () => {
               </div>
             </div>
           </div>
+          
         </div>
+
+        <div className="mb-6">
+                {data?.regularModels?.[0] && (
+          <button
+            onClick={() => handleDownloadPDF()}
+            style={{
+              padding: '8px 16px',
+              border: 'none',
+              borderRadius: '4px',
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              cursor: 'pointer',
+            }}
+          >
+            <i className="fa-solid fa-file-pdf"></i> Download Order Sheet
+          </button>
+        )}
+         {data?.regularModels?.[0] && (
+          <button className="ms-3"
+            onClick={() => handleImagePDF()}
+            style={{
+              padding: '8px 16px',
+              border: 'none',
+              borderRadius: '4px',
+              backgroundColor: '#3184F7',
+              color: 'white',
+              cursor: 'pointer',
+            }}
+          >
+            <i className="fa-solid fa-file-pdf"></i> Download Image Sheet
+          </button>
+        )}
+
+        </div>
+
 
         {/* Regular Models Table */}
         {regularModels.length > 0 && (
@@ -291,6 +740,10 @@ const OrderDetailsPage = () => {
           padding: '20px 0',
           marginTop: 'auto'
         }}>
+
+
+
+
           {data?.regularModels?.[0]?.orderSheet && (
             <a
               href={ `${apiBaseUrl}${data.regularModels[0].orderSheet}`}
