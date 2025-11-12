@@ -1302,8 +1302,8 @@ const handleSubmitOrder = async () => {
       router.push(`/Orders`);
     } catch (err) {
       console.error(err);
-      alert("Error submitting order. Check server logs.");
-    }
+         console.log(err);
+      alert("Error submitting order.");    }
   }
 
     else{
