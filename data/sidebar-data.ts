@@ -61,6 +61,7 @@ const sidebarData: SidebarCategory[] = [
         icon: "fa-solid fa-gear",
         subItems: [
           { label: "Inventory", link: "/Inventory" },
+          { label: "Category", link: "/Category" },
           { label: "Models", link: "/Models/add-models" },
           { label: "Vendor", link: "/Reports/VendorRep/VendorList" },
           { label: "Stone", link: "/StoneMaster" },
