@@ -11,9 +11,9 @@ export default function CastingReport() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
 
-// const apiUrl = "https://kalash.app";
+const apiUrl = "https://kalash.app";
 
-const apiUrl = "http://localhost:4001";
+// const apiUrl = "http://localhost:4001";
 
 
   useEffect(() => {
@@ -95,3 +95,4 @@ const filteredData = (Array.isArray(data) ? data : []).filter((item) => {
     </div>
   );
 }
+
