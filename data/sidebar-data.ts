@@ -91,7 +91,8 @@ const sidebarData: SidebarCategory[] = [
         icon: "fa-solid fa-arrow-progress",
         subItems: [
           { label: "Waxing", link: "/Departments/Waxing/waxing_table" },
-          { label: "Casting Inventory", link: "/Departments/Casting/casting_table" },
+          { label: "Casting Inventory", link: "/Departments/Casting/casting_table" },        
+          { label: "Assembly", link: "/Departments/Assembly" },
            { label: " Pouch Creation", link: "/Departments/Filing/add_filing_details/Grinding_Table" },
           { label: " Grinding", link: "/Departments/Grinding/Grinding_Table" },
           { label: "Media", link: "/Departments/Media/media_Table" },
