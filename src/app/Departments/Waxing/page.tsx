@@ -80,6 +80,8 @@ const [filteredStones, setFilteredStones] = useState<Stone[]>([]);
   const [purity, setPurity] = useState<string>("");
 
   const [castingLastNumber, setCastingLastNumber] = useState<string>("");
+const [castingDate, setCastingDate] = useState("");
+//const [castingLastNumber, setCastingLastNumber] = useState("");
 
   const [issuedDate, setIssuedDate] = useState<string>(() => {
     const today = new Date();
@@ -159,16 +161,14 @@ useEffect(() => {
 }, [castingLastNumber]); // 👈 re-run whenever castingLastNumber changes
 
 const generateCastingNumber = () => {
-  const today = new Date();
-  const day = String(today.getDate()).padStart(2, "0");
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const year = today.getFullYear();
+  if (!castingDate) return "DD/MM/YYYY/##";
 
-  // Convert to number safely
-  const num = parseInt(castingLastNumber || "0", 10);
+  const dateObj = new Date(castingDate);
+  const day = String(dateObj.getDate()).padStart(2, "0");
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const year = dateObj.getFullYear();
 
-  // Format like 01, 02, 03...
-  const formattedNumber = String(num).padStart(2, "0");
+  const formattedNumber = String(castingLastNumber || "0").padStart(2, "0");
 
   return `${day}/${month}/${year}/${formattedNumber}`;
 };
@@ -307,19 +307,26 @@ const handleSubmit = async (e?: React.FormEvent) => {
               <Label>Issue Time</Label>
               <Input type="time" value={issuedTime} onChange={(e) => setIssuedTime(e.target.value)} />
             </div>
-          <div>
+  <div className="space-y-2">
+  <Label>Casting Date</Label>
+  <Input
+    type="date"
+    value={castingDate}
+    onChange={(e) => setCastingDate(e.target.value)}
+  />
+
   <Label>Casting Number</Label>
   <Input
-    type="number"
+    type="text"
+    placeholder="Enter casting number (e.g. 001)"
     value={castingLastNumber}
     onChange={(e) => setCastingLastNumber(e.target.value)}
   />
+
   <div className="text-xs text-gray-600 mt-1">
     Preview: {castingLastNumber ? generateCastingNumber() : "DD/MM/YYYY/##"}
   </div>
 </div>
-
-
           </div>
 
           {/* Orders Dropdown */}
