@@ -50,8 +50,11 @@ const FilingDetailsPage = () => {
   const [receivedDate, setReceivedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [receivedWeight, setReceivedWeight] = useState<number>(0);
   const [grindingLoss, setGrindingLoss] = useState<number>(0);
+
   
   const [findingReceived,setfindingReceived ] = useState<number>(0);
+  
+  const [receivedFinding,setReceivedFinding ] = useState<number>(0);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Partial<UpdateFormData>>({});
@@ -272,11 +275,14 @@ useEffect(() => {
           receivedWeight: parseFloat(weight.toFixed(4))
         })),
         issuedDate: issuedDate,
-        issuedTime: issuedTime
+        issuedTime: issuedTime,
+        receivedFinding
       };
 
       console.log(formData);
       // return;
+
+      
 
       const result = await updateFiling(data.filing.Name, formData);
       console.log('[FilingReceived] API response:', result);
@@ -534,6 +540,19 @@ useEffect(() => {
                     disabled={true}
                   />
                 </div>
+
+                <div>
+                  <label className="text-sm text-gray-600 block mb-1.5">
+                    Received Finding (g)
+                  </label>
+                  <Input
+                    type="number"
+                    value={receivedFinding}
+                    onChange={(e) => setReceivedFinding(parseFloat(e.target.value) || 0)}
+                    className="w-full h-9 bg-gray-50"
+                  />
+                </div>
+
               </div>
 
                <div className="pt-5">
