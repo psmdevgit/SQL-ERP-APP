@@ -54,6 +54,7 @@ const FilingDetailsPage = () => {
   
   const [findingReceived,setfindingReceived ] = useState<number>(0);
   
+  const [originalGrindingLoss, setOriginalGrindingLoss] = useState(0);
   const [receivedFinding,setReceivedFinding ] = useState<number>(0);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,6 +78,16 @@ const FilingDetailsPage = () => {
   const [selectedDepartment, setSelectedDepartment] = useState<string>("");
   const [departmentRecords, setDepartmentRecords] = useState<any[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<string>("");
+
+
+ const handleReceivedFinding = (value) => {
+  const val = parseFloat(value) || 0;
+  setReceivedFinding(val);
+
+  // Always calculate using ORIGINAL loss
+  const diff = originalGrindingLoss - val;
+  setGrindingLoss(diff);
+};
 
   
   const [checkIsuuedWt, setCheckIsuuedWt] = useState<number>(0);
@@ -146,6 +157,8 @@ useEffect(() => {
           console.log(setCheckIsuuedWt);
       const loss = issuedWeight - totalWeight;
       setGrindingLoss(loss);
+      setOriginalGrindingLoss(loss);
+
     }
   }, [ornamentWeight, scrapReceivedWeight, dustReceivedWeight, data]);
 
@@ -313,6 +326,7 @@ useEffect(() => {
     }
   };
 
+  
   const handleRecordSelection = (value: string) => {
     setSelectedRecord(value);
   };
@@ -548,7 +562,8 @@ useEffect(() => {
                   <Input
                     type="number"
                     value={receivedFinding}
-                    onChange={(e) => setReceivedFinding(parseFloat(e.target.value) || 0)}
+                    // onChange={(e) => setReceivedFinding(parseFloat(e.target.value) || 0)}
+                      onChange={(e) => handleReceivedFinding(e.target.value)}
                     className="w-full h-9 bg-gray-50"
                   />
                 </div>
