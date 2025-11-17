@@ -60,7 +60,12 @@ export default function AddFilingDetailsPage() {
   const [selectedOrder, setSelectedOrder] = useState<any>("");
   const [receivedWeight, setReceivedWeight] = useState<number>(0);
   const [receivedDate, setReceivedDate] = useState<string>("");
+  
   const [pouchWeights, setPouchWeights] = useState<Record<string, number>>({});
+
+const [pouchFindings, setPouchFindings] = useState<Record<string, number>>({});
+
+
   const [bags, setBags] = useState<Array<{ bagName: string; order: string; weight: number }>>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [categorizedModels, setCategorizedModels] = useState<any>({});
@@ -428,14 +433,43 @@ console.log("Fetched casting details:", castingDetailsData);
     return `${formattedId}-${nextPouchNumber.toString().padStart(2, "0")}`;
   };
 
-  const handlePouchWeightChange = (bagNameParam: string, weight: number) => {
-    setPouchWeights((prev) => {
-      const updated = { ...prev, [bagNameParam]: weight };  
-      const totalWeight = Object.values(updated).reduce((sum, w) => sum + (w || 0), 0);
-      setFilingIssuedWeight(totalWeight);
-      return updated;
-    });
-  };
+  // const handlePouchWeightChange = (bagNameParam: string, weight: number) => {
+  //   setPouchWeights((prev) => {
+  //     const updated = { ...prev, [bagNameParam]: weight };  
+  //     const totalWeight = Object.values(updated).reduce((sum, w) => sum + (w || 0), 0);
+  //     setFilingIssuedWeight(totalWeight);
+  //     return updated;
+  //   });
+  // };
+
+  const handleWeightChange = (bagName: string, weight: number) => {
+  setPouchWeights(prev => {
+    const updated = { ...prev, [bagName]: weight };
+    updateTotalIssued(updated, pouchFindings);
+    return updated;
+  });
+};
+
+  const handleFindingsChange = (bagName: string, value: number) => {
+  setPouchFindings(prev => {
+    const updated = { ...prev, [bagName]: value };
+    updateTotalIssued(pouchWeights, updated);
+    return updated;
+  });
+};
+
+const updateTotalIssued = (weights: any, findings: any) => {
+  let total = 0;
+
+  Object.keys(weights).forEach(bagName => {
+    const w = weights[bagName] || 0;
+    const f = findings[bagName] || 0;
+    total += (w + f);
+  });
+
+  setFilingIssuedWeight(total);   // final total
+};
+
 
   // order selection and categories functions (kept similar to your code)
   const processNewBag = (orderDetails: any) => {
@@ -455,6 +489,11 @@ console.log("Fetched casting details:", castingDetailsData);
       ...prev,
       [newBagName]: 0,
     }));
+
+    setPouchFindings((prev) => ({
+  ...prev,
+  [newBagName]: 0,
+}));
 
     setPouchCategories((prev) => {
       const updated = { ...prev };
@@ -621,11 +660,13 @@ console.log("Fetched casting details:", castingDetailsData);
     // Build pouches payload from bags and pouchCategories/pouchWeights
     const pouchesPayload = bags.map((bag, idx) => {
       const weight = parseFloat(String(pouchWeights[bag.bagName] || 0));
+      const Findingweight = parseFloat(String(pouchFindings[bag.bagName] || 0));
       const categoriesForBag = pouchCategories[bag.bagName] || [];
       return {
         pouchId: bag.bagName,
         orderId: bag.order,
         weight,
+        Findingweight,
         name: categoriesForBag[0]?.category ?? "",
         quantity: categoriesForBag[0]?.quantity ?? 0,
         categories: categoriesForBag.map((c) => ({ category: c.category, quantity: c.quantity })),
@@ -654,7 +695,6 @@ console.log("Fetched casting details:", castingDetailsData);
 
     console.log("submit details", payload);
 
- 
 
     try {
       setLoading(true);
@@ -838,7 +878,7 @@ console.log("Fetched casting details:", castingDetailsData);
                             <SelectTrigger className="w-full bg-grey text-black ">
                               <SelectValue placeholder="Select an order" />
                             </SelectTrigger>
-                            <SelectContent className="bg-white text-black">
+                            <SelectContent className="bg-white text-black divide-y h-56 overflow-y-auto">
                               {/* {castingDetails.orders?.map((order: any) => (
                                 <SelectItem key={order.Id} value={order.Id} className="bg-white text-black hover:bg-gray-100">
                                   {order.Order_Id_c}
@@ -937,13 +977,26 @@ console.log("Fetched casting details:", castingDetailsData);
                                     <span className="text-gray-500 ml-2">Order: {orderDetails ? orderDetails.Order_Id_c : bag.order}</span>
                                   </div>
                                   <div className="flex items-center gap-4">
+                                    
+                                    <div>
+                                      <Label>Findings (g)</Label>
+                                      <Input
+                                        type="number"
+                                        step="0.0001"
+                                        value={pouchFindings[bag.bagName] || ""}
+                                        onChange={(e) => handleFindingsChange(bag.bagName, parseFloat(e.target.value) || 0)}
+                                        placeholder="Enter weight"
+                                      />
+                                    </div>
+
+
                                     <div>
                                       <Label>Weight (g)</Label>
                                       <Input
                                         type="number"
                                         step="0.0001"
                                         value={pouchWeights[bag.bagName] || ""}
-                                        onChange={(e) => handlePouchWeightChange(bag.bagName, parseFloat(e.target.value) || 0)}
+                                        onChange={(e) => handleWeightChange(bag.bagName, parseFloat(e.target.value) || 0)}
                                         placeholder="Enter weight"
                                       />
                                     </div>
@@ -980,9 +1033,20 @@ console.log("Fetched casting details:", castingDetailsData);
                             );
                           })}
                         </div>
+                        {/* <div className="mt-2 text-right text-sm text-gray-600">
+                          Total Weight: {Object.values(pouchWeights+pouchFindings).reduce((sum, w) => sum + (w || 0), 0).toFixed(2)}g
+                        </div> */}
+
                         <div className="mt-2 text-right text-sm text-gray-600">
-                          Total Weight: {Object.values(pouchWeights).reduce((sum, w) => sum + (w || 0), 0).toFixed(2)}g
-                        </div>
+  Total Weight: {
+    Object.keys(pouchWeights).reduce((sum, bagName) => {
+      const w = pouchWeights[bagName] || 0;
+      const f = pouchFindings[bagName] || 0;
+      return sum + (w + f);
+    }, 0).toFixed(2)
+  }g
+</div>
+
                       </div>
                     )}
 
