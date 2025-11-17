@@ -1,6 +1,8 @@
 // pages/reports/casting.tsx
 import { useEffect, useState } from "react";
 import { Table, Input, DatePicker, Select, Button, Tag } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
+
 import dayjs from "dayjs";
 import dataAxios from "@/src/axios";
 const { RangePicker } = DatePicker;
@@ -13,6 +15,8 @@ export default function CastingReport() {
 
 const apiUrl = "https://kalash.app";
 
+// const apiUrl = "http://localhost:4001";
+
   useEffect(() => {
   const fetchData = async () => {
     setLoading(true);
@@ -24,6 +28,38 @@ const apiUrl = "https://kalash.app";
   };
   fetchData();
 }, []);
+
+// delete the wax tree
+
+const handleDelete = async (id: string) => {
+  if (!confirm("Are you sure you want to delete this?")) return;
+
+  try {
+    const response = await fetch(`${apiUrl}/casting-tree/delete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      alert("Deletion failed");
+      console.log(result.message);
+      return;
+    }
+
+    alert("Wax Tree Deleted successfully!");
+
+    // window.location.reload();
+
+    // Refresh table after delete
+    setData((prev) => prev.filter((item) => item.Name !== id));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 
   // Apply filters
 const filteredData = (Array.isArray(data) ? data : []).filter((item) => {
@@ -55,6 +91,30 @@ const filteredData = (Array.isArray(data) ? data : []).filter((item) => {
         <Tag color={text === "Finished" ? "green" : "orange"}>{text}</Tag>
       ),
     },
+     {
+        title: "Action",
+        key: "action",
+        render: (_: any, record: any) => {
+          const isFinished = record.status_c === "Completed";
+
+          return (
+           <Button
+  danger
+  type="text"
+  disabled={isFinished}
+  onClick={() => handleDelete(record.Name)}
+  icon={<DeleteOutlined />}
+  style={{
+    color: isFinished ? "#000" : "white",            // icon & text color
+    backgroundColor: isFinished ? "#ddd" : "red", // button bg
+    cursor: isFinished ? "not-allowed" : "pointer",
+  }}
+/>
+
+          );
+        },
+      },
+
   ];
 
   return (
