@@ -424,7 +424,7 @@ console.log("Deals State:", deals);
                             size="small"
                           />
                         </TableCell>
-                        <TableCell>Pouch Id</TableCell>
+                        <TableCell>Filing Id</TableCell>
                         <TableCell>Issued Weight</TableCell>
                         <TableCell>Received Weight</TableCell>
                         <TableCell>Issued Date</TableCell>
@@ -433,7 +433,7 @@ console.log("Deals State:", deals);
                         <TableCell>Product</TableCell>
                         <TableCell>Quantity</TableCell>
                         <TableCell>Status</TableCell>
-                        <TableCell>Pouch Loss</TableCell>
+                        <TableCell>Filing Loss</TableCell>
                         <TableCell>Actions</TableCell>
                       </TableRow>
                     </TableHead>
