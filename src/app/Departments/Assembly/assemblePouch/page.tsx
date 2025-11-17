@@ -1002,3 +1002,4 @@ console.log("Fetched casting details:", castingDetailsData);
     </div>
   );
 }
+
