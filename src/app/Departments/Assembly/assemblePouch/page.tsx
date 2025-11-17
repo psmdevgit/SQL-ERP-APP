@@ -701,7 +701,7 @@ console.log("Fetched casting details:", castingDetailsData);
           {/* --- Top: Multi-casting selection and merged ID generator --- */}
           <div className="mb-6">
             <h2 className="text-lg font-semibold mb-3">Multi-Casting Selection</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 ">
               <div className="col-span-2">
                 <div className="border rounded divide-y h-64 overflow-y-auto">
                   {loading ? (
