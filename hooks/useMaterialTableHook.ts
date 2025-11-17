@@ -12,6 +12,11 @@ export default function useMaterialTableHook<T>(initialRows: T[] = [], initialRo
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
 
+
+  // const apiurl = "http://localhost:4001";
+  
+  const apiurl = "https://kalash.app";
+
   // Update filtered rows when rows or search query changes
   useEffect(() => {
     // Ensure rows is an array before spreading
@@ -92,11 +97,32 @@ export default function useMaterialTableHook<T>(initialRows: T[] = [], initialRo
     setPage(1); // Reset to first page when search changes
   };
 
-  const handleDelete = async (id: number | string) => {
-    // Handle delete if needed
-    console.log(`Deleting item with ID: ${id}`);
-    // After deletion, you might want to refresh data
-  };
+const handleDelete = async (id: number | string) => {
+  console.log(`Deleting item with ID: ${id}`);
+
+  try {
+    const response = await fetch(`${apiurl}/order-delete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      console.log(data.message);
+      alert("Order Deletion Failed");
+      return;
+    }
+
+    alert("Deleted successfully!");
+    window.location.reload();
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong");
+  }
+};
+
 
   return {
     order,
