@@ -703,7 +703,7 @@ console.log("Fetched casting details:", castingDetailsData);
             <h2 className="text-lg font-semibold mb-3">Multi-Casting Selection</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="col-span-2">
-                <div className="border rounded divide-y">
+                <div className="border rounded divide-y h-64 overflow-y-auto">
                   {loading ? (
                     <div className="p-4">Loading castings...</div>
                   ) : allCastings.length === 0 ? (
@@ -1002,3 +1002,4 @@ console.log("Fetched casting details:", castingDetailsData);
     </div>
   );
 }
+
