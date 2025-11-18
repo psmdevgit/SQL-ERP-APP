@@ -66,6 +66,37 @@ const apiBaseUrl = "https://kalash.app";
 
 // const apiBaseUrl = "http://localhost:4001";
 
+
+
+  
+const handleRowDelete = async (id: string) => {
+  if (!confirm("Are you sure you want to delete this?")) return;
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/Dull/delete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      alert("Deletion failed");
+      console.log(result.message);
+      return;
+    }
+
+    alert("Dull Deleted successfully!");
+
+    window.location.reload();
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
 const downloadPDF = async (pdfUrl: string) => {
   try {
     const response = await fetch(pdfUrl, {
@@ -121,7 +152,7 @@ const previewPDF = async (pdfUrl: string) => {
 };
 
 const getStatusClass = (status: string) => {
-  switch (status?.toLowerCase()) {
+  switch (status?.toLowerCase().trim()) {
     case 'pending':
       return 'bg-warning'; // yellow background
     case 'finished':
@@ -585,7 +616,7 @@ console.log("Deals State:", deals);
    
                             
 
-                                  <button
+                                  {/* <button
                                     type="button"
                                     className="table__icon delete"
                                     onClick={(e) => {
@@ -594,7 +625,26 @@ console.log("Deals State:", deals);
                                     }}
                                   >
                                     <i className="fa-solid fa-trash"></i>
+                                  </button> */}
+
+
+                              <button disabled={deal.status?.trim().toLowerCase() === 'finished'}
+                                    type="button"
+                                    className="table__icon delete"
+                                     style={{
+                                       
+                                        cursor: deal?.status?.trim().toLowerCase() === "finished" ? "not-allowed" : "pointer",
+                                        opacity: deal?.status?.trim().toLowerCase() === "finished" ? 0.5 : 1,
+                                      }}
+
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRowDelete(deal.id);
+                                    }}
+                                  >
+                                    <i className="fa-solid fa-trash"></i>
                                   </button>
+
 
                                   <button
                                     type="button"
