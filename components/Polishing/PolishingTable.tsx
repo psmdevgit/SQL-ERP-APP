@@ -90,6 +90,37 @@ const downloadPDF = async (pdfUrl: string) => {
   }
 };
 
+
+
+  
+const handleRowDelete = async (id: string) => {
+  if (!confirm("Are you sure you want to delete this?")) return;
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/Polish/delete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      alert("Deletion failed");
+      console.log(result.message);
+      return;
+    }
+
+    alert("Polishing Deleted successfully!");
+
+    window.location.reload();
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
 const previewPDF = async (pdfUrl: string) => {
   try {
     const response = await fetch(pdfUrl, {
@@ -547,7 +578,7 @@ const PolishingTable = () => {
        </button>
      )}
 
-
+{/* 
                                   <button
                                     type="button"
                                     className="table__icon delete"
@@ -557,7 +588,27 @@ const PolishingTable = () => {
                                     }}
                                   >
                                     <i className="fa-solid fa-trash"></i>
+                                  </button> */}
+
+
+ <button disabled={deal.status?.trim().toLowerCase() === 'finished'}
+                                    type="button"
+                                    className="table__icon delete"
+                                     style={{
+                                       
+                                        cursor: deal?.status?.trim().toLowerCase() === "finished" ? "not-allowed" : "pointer",
+                                        opacity: deal?.status?.trim().toLowerCase() === "finished" ? 0.5 : 1,
+                                      }}
+
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRowDelete(deal.id);
+                                    }}
+                                  >
+                                    <i className="fa-solid fa-trash"></i>
                                   </button>
+
+
 
                                   <button
                                     type="button"
