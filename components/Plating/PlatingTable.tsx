@@ -68,13 +68,41 @@ const apiBaseUrl = "https://kalash.app";
 
 
 const getStatusClass = (status: string) => {
-  switch (status?.toLowerCase()) {
+  switch (status?.toLowerCase().trim()) {
     case 'pending':
       return 'bg-warning';
     case 'finished':
       return 'bg-success';
     default:
       return 'bg-secondary';
+  }
+};
+
+ 
+const handleRowDelete = async (id: string) => {
+  if (!confirm("Are you sure you want to delete this?")) return;
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/Plating/delete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      alert("Deletion failed");
+      console.log(result.message);
+      return;
+    }
+
+    alert("Plating Deleted successfully!");
+
+    window.location.reload();
+
+  } catch (error) {
+    console.error(error);
   }
 };
 
@@ -364,7 +392,7 @@ const PlatingTable = () => {
     )}
                       
 
-                                <button
+                                {/* <button
                                   type="button"
                                   className="table__icon delete"
                                   onClick={(e) => {
@@ -373,7 +401,24 @@ const PlatingTable = () => {
                                   }}
                                 >
                                   <i className="fa-solid fa-trash"></i>
-                                </button>
+                                </button> */}
+
+ <button disabled={deal.Status__c?.trim().toLowerCase() === 'finished'}
+                                    type="button"
+                                    className="table__icon delete"
+                                     style={{
+                                       
+                                        cursor: deal?.Status__c?.trim().toLowerCase() === "finished" ? "not-allowed" : "pointer",
+                                        opacity: deal?.Status__c?.trim().toLowerCase() === "finished" ? 0.5 : 1,
+                                      }}
+
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRowDelete(deal.Name);
+                                    }}
+                                  >
+                                    <i className="fa-solid fa-trash"></i>
+                                  </button>
 
                                 <button
                                   type="button"
