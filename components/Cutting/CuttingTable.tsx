@@ -606,7 +606,9 @@ interface ICutting {
   Returned_weight__c: number;
   Received_Date__c: string;
   Status__c: string;
-  Cutting_loss__c: number;  // Changed from Plating_Loss__c
+  Cutting_loss__c: number;  // Changed from Plating_Loss__c  
+movedstatus: number;
+
 }
 
 interface Department {
@@ -630,7 +632,8 @@ const apiBaseUrl = "https://kalash.app";
 
 
 
-//const apiBaseUrl = "http://localhost:4001";
+// const apiBaseUrl = "http://localhost:4001";
+
 const formatIndianDateTime = (date: string | null): string => {
   if (!date) return '';
   const utcDate = new Date(date);
@@ -647,7 +650,7 @@ const formatIndianDateTime = (date: string | null): string => {
 };
 
 const getStatusClass = (status: string) => {
-  switch (status?.toLowerCase()) {
+  switch (status?.toLowerCase().trim()) {
     case 'pending':
       return 'bg-warning';
     case 'finished':
@@ -717,6 +720,35 @@ const CuttingTable = () => {
 
     loadDeals();
   }, []);
+
+
+  const handleRowDelete = async (id: string) => {
+  if (!confirm("Are you sure you want to delete this?")) return;
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/Cutting/delete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      alert("Deletion failed");
+      console.log(result.message);
+      return;
+    }
+
+    alert("Cutting Deleted successfully!");
+
+    window.location.reload();
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newSearchQuery = event.target.value;
@@ -941,7 +973,7 @@ const CuttingTable = () => {
          </button>
        )}
 
-                                <button
+                                {/* <button
                                   type="button"
                                   className="table__icon delete"
                                   onClick={(e) => {
@@ -950,7 +982,24 @@ const CuttingTable = () => {
                                   }}
                                 >
                                   <i className="fa-solid fa-trash"></i>
-                                </button>
+                                </button> */}
+
+  <button disabled={deal.Status__c?.trim().toLowerCase() === 'finished'}
+                                    type="button"
+                                    className="table__icon delete"
+                                     style={{
+                                       
+                                        cursor: deal?.Status__c?.trim().toLowerCase() === "finished" ? "not-allowed" : "pointer",
+                                        opacity: deal?.Status__c?.trim().toLowerCase() === "finished" ? 0.5 : 1,
+                                      }}
+
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRowDelete(deal.Name);
+                                    }}
+                                  >
+                                    <i className="fa-solid fa-trash"></i>
+                                  </button>
 
                                 <button
                                   type="button"
@@ -971,7 +1020,7 @@ const CuttingTable = () => {
                                   <i className="fa-solid fa-check"></i>
                                 </button>
 
-                                <Select
+                                <Select disabled={deal.movedstatus === 1}
                                   onValueChange={(value) => {
                                     const dept = departments.find(d => d.value === value);
                                     if (dept) {
