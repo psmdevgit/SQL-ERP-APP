@@ -161,6 +161,22 @@ export default function CastingTable() {
   const [receivedWeight, setReceivedWeight] = useState("");
   // const [updatedBy, setUpdatedBy] = useState("");
   const [partycode, setPartycode] = useState("");
+    const [partyList, setPartyList] = useState([]);
+
+  // Fetch party list from API
+  useEffect(() => {
+    const fetchParties = async () => {
+      try {
+        const res = await fetch(`${apiBaseUrl}/api/party-ledger`);
+        const data = await res.json();
+        setPartyList(data);   // <-- store API response
+      } catch (error) {
+        console.error("Error loading party list", error);
+      }
+    };
+
+    fetchParties();
+  }, []);
 
 
 const handleScrapUpSubmit = async () => {
@@ -187,7 +203,7 @@ const handleScrapUpSubmit = async () => {
 
     console.log('Submitting payload:', payload);
 
-
+return;
     const response = await fetch(`${apiBaseUrl}/update-inventory`, {
       method: 'POST',
       headers: {
@@ -601,7 +617,7 @@ const handleScrapUpSubmit = async () => {
           placeholder="Enter Received Weight"
         />
       </div>
-
+{/* 
       <div>
         <label className="text-sm font-medium">Party Code</label>
         <Input
@@ -610,7 +626,27 @@ const handleScrapUpSubmit = async () => {
           onChange={(e) => setPartycode(e.target.value)}
           placeholder="Enter party code"
         />
-      </div>
+      </div> */}
+
+ <div>
+      {/* <Label className="text-sm font-medium">Party Code</Label> */}
+       <label className="text-sm font-medium">Party Code</label>
+
+      <Select onValueChange={(value) => setPartycode(value)}>
+          <SelectTrigger className="w-full bg-white border border-gray-300">
+            <SelectValue placeholder="Select Party Code" />
+          </SelectTrigger>
+
+          <SelectContent className="bg-white">
+            {partyList.map((item) => (
+              <SelectItem key={item.id} value={item.partyCode}>
+                {item.partyCode} — {item.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+    </div>
 
       <Button onClick={handleScrapUpSubmit} className="mt-2" style={{background:"#FEC769",color:"black"}}>
         Submit
