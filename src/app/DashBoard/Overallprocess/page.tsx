@@ -39,7 +39,7 @@ interface ProcessDetailRow {
 
 const LOSS_FIELD_MAP: Record<string, string> = {
   casting: "Casting_Loss",
-  "pouch creation": "Filing_Loss",
+  filing: "Filing_Loss",
   grinding:"Grinding_loss__c",
   polishing: "Polishing_loss__c",
   media:"Grinding_loss__c",
@@ -60,7 +60,7 @@ const FINDING_FIELD_MAP: Record<string, string> = {
 
 const SCRAP_FIELD_MAP: Record<string, string> = {
  casting: "Scrap_Weight",
-  "pouch creation": "Filing_Scrap_Weight",
+  filing: "Filing_Scrap_Weight",
   grinding: "Grinding_Scrap_Weight__C",
   media: "Grinding_Scrap_Weight__c",
   correction: "Grinding_Scrap_Weight__c",
@@ -73,7 +73,7 @@ const SCRAP_FIELD_MAP: Record<string, string> = {
 
 const DUST_FIELD_MAP: Record<string, string> = {
  casting: "Dust_Weight",
-  "pouch creation": "Filing_Dust_Weight",
+  filing: "Filing_Dust_Weight",
   grinding: "Grinding_Dust_Weight__c",
   media: "Grinding_Dust_Weight__c",
   correction: "Grinding_Dust_Weight__c",
@@ -86,7 +86,7 @@ const DUST_FIELD_MAP: Record<string, string> = {
 
 const ISSUED_FIELD_MAP: Record<string, string> = {
   casting: "Issued_weight",
-  "pouch creation": "Issued_Weight",
+  filing: "Issued_Weight",
   grinding: "Issued_Weight__c",
   media:"Issued_Weight__c",
   correction:"Issued_Weight__c",
@@ -99,7 +99,7 @@ const ISSUED_FIELD_MAP: Record<string, string> = {
 
 const ID_FIELD_MAP: Record<string, string> = {
    casting: "Name",
-  "pouch creation": "Name",
+  filing: "Name",
   grinding: "Name",
   media:"Name",
   correction:"Name",
@@ -113,7 +113,7 @@ const ID_FIELD_MAP: Record<string, string> = {
 
 const RECEIVED_FIELD_MAP: Record<string, string> = {
   casting: "Received_Weight",
-  "pouch creation": "Received_Weight",
+  filing: "Received_Weight",
   grinding: "Received_Weight__c",
   media:"Received_Weight__c",
   correction:"Received_Weight__c",
@@ -127,7 +127,7 @@ const RECEIVED_FIELD_MAP: Record<string, string> = {
 
 const ISSUED_DATE_FIELD_MAP: Record<string, string> = {
   casting: "Issued_Date",
-  "pouch creation": "Issued_Date",
+  filing: "Issued_Date",
   grinding: "Issued_Date__c",
   media: "Issued_Date__c",
   correction: "Issued_Date__c",
@@ -136,11 +136,12 @@ const ISSUED_DATE_FIELD_MAP: Record<string, string> = {
   dull: "Issued_Date__c",
   plating: "Issued_Date__c",  
   cutting: "Issued_Date__c",
+  tagging: "issuedDate",
 };
 
 const RECEIVED_DATE_FIELD_MAP: Record<string, string> = {
   casting: "Received_Date",
-  "pouch creation": "Received_Date",
+  filing: "Received_Date",
   grinding: "Received_Date__c",
   media: "Received_Date__c",
   correction: "Received_Date__c",
@@ -149,11 +150,11 @@ const RECEIVED_DATE_FIELD_MAP: Record<string, string> = {
   dull: "Received_Date__c",
   plating: "Received_Date__c",  
   cutting: "Received_Date__c",
-  // tagging: "receivedDate",
+  tagging: "receivedDate",
 };
 const STATUS_FIELD_MAP: Record<string, string> = {
   casting: "status",
-  "pouch creation": "Status",
+  filing: "Status",
   grinding: "Status__c",
   media: "Status__c", 
    correction: "Status__c",
@@ -262,9 +263,7 @@ export default function SummaryPage() {
       if(processName.toLowerCase() == 'tagging'){
         processName = 'tag';
       }
-         if(processName.toLowerCase() == 'pouch creation'){
-        processName = 'filing';
-      }
+        
       const res = await fetch(`${API_URL}/api/${processName}`);
       const result = await res.json();
       if (!result.success) {
