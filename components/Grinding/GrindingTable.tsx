@@ -557,7 +557,7 @@ const handleRowDelete = async (id: string) => {
                               <TableCell>{deal.grindingLoss}</TableCell>
                               <TableCell className="table__icon-box">
                                 <div className="flex items-center justify-start gap-[10px]">
-                                  <Link href={`/Departments/Grinding/show_grinding_details?grindingId=${deal.id}`} passHref>
+                                  <Link href={`/Departments/Grinding/show_grinding_details?grindingId=${deal.id}`} passHref style={{display:"none"}}>
                                     <button
                                       type="button"
                                       className="table__icon edit"

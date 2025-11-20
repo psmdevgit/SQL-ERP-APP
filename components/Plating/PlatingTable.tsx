@@ -328,7 +328,7 @@ const PlatingTable = () => {
                             <TableCell>{deal.Plating_Loss__c}</TableCell>
                             <TableCell className="table__icon-box">
                               <div className="flex items-center justify-start gap-[10px]">
-                                <Link href={`/Departments/Plating/show_plating_details?platingId=${deal.Name}`} passHref>
+                                <Link href={`/Departments/Plating/show_plating_details?platingId=${deal.Name}`} passHref style={{display:"none"}}>
                                   <button
                                     type="button"
                                     className="table__icon edit"
