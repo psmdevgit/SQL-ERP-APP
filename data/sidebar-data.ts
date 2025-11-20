@@ -26,7 +26,8 @@ const sidebarData: SidebarCategory[] = [
         label:"Reports",
         icon: "fa-solid fa-file",
         subItems:[        
-          { label: "Current Process", link: " /DashBoard/Overallprocess " },
+          { label: "Current Process", link: " /DashBoard/Overallprocess " },          
+          { label: "Opening / Closing", link: "/Reports/DailyInventory" },
           { label: "Inventory Items", link: "/Reports/InventoryItems" },
           { label: "Inventory Inward", link: "/Reports/InwardInventory" },
           { label: "Inventory Transactions", link: "/Reports/InventoryIssued" },
