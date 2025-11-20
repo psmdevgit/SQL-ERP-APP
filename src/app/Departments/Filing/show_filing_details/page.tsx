@@ -9,12 +9,12 @@ import { z } from 'zod';
 interface GrindingDetails {
   Id: string;
   Name: string;
-  Issued_Date__c: string;
-  Issued_weight__c: number;
-  Receievd_weight__c: number | null;
-  Received_Date__c: string | null;
-  Status__c: string;
-  Grinding_Loss__c: number | null;
+  Issued_Date_c: string;
+  Issued_weight_c: number;
+  Receievd_weight_c: number | null;
+  Received_Date_c: string | null;
+  Status_c: string;
+  Filing_loss_c: number | null;
 }
 
 interface PouchDetails {
@@ -72,7 +72,7 @@ const FilingDetailsPage = () => {
   
 
 
-// const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; 
+// const apiBaseUrl = "http://localhost:4001"; 
 
   
 const apiBaseUrl = "https://kalash.app";
@@ -95,6 +95,7 @@ const apiBaseUrl = "https://kalash.app";
         const result = await response.json();
         
         if (result.success) {
+          console.log(result.data);
           setData(result.data);
         } else {
           toast.error(result.message || 'Failed to fetch filing details');
@@ -142,37 +143,37 @@ const apiBaseUrl = "https://kalash.app";
               </div>
               <div>
                 <label className="text-sm text-gray-600">Status</label>
-                <p className="font-medium">{data.filing.Status__c}</p>
+                <p className="font-medium">{data.filing.Status_c}</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Issued Date</label>
-                <p className="font-medium">{new Date(data.filing.Issued_Date__c).toLocaleDateString()}</p>
+                <p className="font-medium">{new Date(data.filing.Issued_Date_c).toLocaleDateString()}</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Issued Weight</label>
-                <p className="font-medium">{data.filing.Issued_weight__c}g</p>
+                <p className="font-medium">{data.filing.Issued_weight_c}g</p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Received Date</label>
                 <p className="font-medium">
-                  {data.filing.Received_Date__c 
-                    ? new Date(data.filing.Received_Date__c).toLocaleDateString() 
+                  {data.filing.Received_Date_c 
+                    ? new Date(data.filing.Received_Date_c).toLocaleDateString() 
                     : '-'}
                 </p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Received Weight</label>
                 <p className="font-medium">
-                  {data.filing.Receievd_weight__c 
-                    ? `${data.filing.Receievd_weight__c}g` 
+                  {data.filing.Receievd_weight_c 
+                    ? `${data.filing.Receievd_weight_c}g` 
                     : '-'}
                 </p>
               </div>
               <div>
                 <label className="text-sm text-gray-600">Filing Loss</label>
                 <p className="font-medium">
-                  {data.filing.Filing_loss__c 
-                    ? `${data.filing.Filing_loss__c }g` 
+                  {data.filing.Filing_loss_c 
+                    ? `${data.filing.Filing_loss_c }g` 
                     : '-'}
                 </p>
               </div>
@@ -204,7 +205,12 @@ const apiBaseUrl = "https://kalash.app";
                     </div>
                     <div>
                       <label className="text-sm text-gray-600">Status</label>
-                      <p className="font-medium">{pouch.Status__c}</p>
+                      <p className="font-medium">
+                          {pouch.Status__c 
+                    ? `${pouch.Status__c }` 
+                    : '-'}
+
+                      </p>
                     </div>
                   </div>
 
@@ -252,7 +258,7 @@ const apiBaseUrl = "https://kalash.app";
                                 <td className="px-4 py-2">{model.Name}</td>
                                 <td className="px-4 py-2">{model.Category__c}</td>
                                 <td className="px-4 py-2">{model.Purity__c}</td>
-                                <td className="px-4 py-2">{model.size__c}</td>
+                                <td className="px-4 py-2">{model.Size__c}</td>
                                 <td className="px-4 py-2">{model.Color__c}</td>
                                 <td className="px-4 py-2">{model.Quantity__c}</td>
                                 <td className="px-4 py-2">{model.Net_Weight__c}g</td>
