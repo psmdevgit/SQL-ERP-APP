@@ -1,8 +1,14 @@
 // pages/reports/casting.tsx
 import { useEffect, useState } from "react";
 import { Table, Input, DatePicker, Select, Button, Tag } from "antd";
+import { EyeOutlined } from "@ant-design/icons";
+
+import { useRouter } from "next/navigation";
+
+
 import dayjs from "dayjs";
 import dataAxios from "@/src/axios";
+import { record } from "zod";
 const { RangePicker } = DatePicker;
 
 export default function CastingReport() {
@@ -10,6 +16,9 @@ export default function CastingReport() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
+
+  
+const router = useRouter();
 
 const apiUrl = "https://kalash.app";
 
@@ -58,6 +67,19 @@ const filteredData = (Array.isArray(data) ? data : []).filter((item) => {
         <Tag color={text === "Finished" ? "green" : "orange"}>{text}</Tag>
       ),
     },
+
+     {
+    title: "Action",
+    key: "action",
+    render: (_: any, record: any) => (
+      <Button
+        type="primary"
+        icon={<EyeOutlined />}
+        onClick={() => {router.push(`/Departments/Assembly/assembleShow?assemblyId=${record.Name}`);}}
+      />
+    ),
+  },
+
   ];
 
   return (
