@@ -88,7 +88,7 @@ const filteredData = (Array.isArray(data) ? data : []).filter((item) => {
       dataIndex: "status_c",
       key: "status",
       render: (text: string) => (
-        <Tag color={text === "Finished" ? "green" : "orange"}>{text}</Tag>
+        <Tag color={text.trim() === "Completed" ? "green" : "orange"}>{text}</Tag>
       ),
     },
      {
