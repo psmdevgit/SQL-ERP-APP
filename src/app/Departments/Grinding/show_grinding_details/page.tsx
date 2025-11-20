@@ -68,7 +68,7 @@ const GrindingDetailsPage = () => {
   
 const apiBaseUrl = "https://kalash.app"; 
 
-// const apiBaseUrl ="http://localhost:5001";
+// const apiBaseUrl ="http://localhost:4001";
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -92,6 +92,7 @@ const apiBaseUrl = "https://kalash.app";
 
         if (result.success) {
           const { data, summary } = result;
+          console.log(result);
           setData({
             grinding: data.grinding,
             pouches: data.pouches,
@@ -99,12 +100,12 @@ const apiBaseUrl = "https://kalash.app";
           });
         } else {
           toast.error(result.message || 'Grinding record not found');
-          alert(result.message || 'Grinding record not found');
+          console.log(result.message || 'Grinding record not found');
         }
       } catch (error) {
         console.error('Error fetching details:', error);
         toast.error('Error fetching grinding details');
-        alert('Error fetching grinding details');
+        // alert('Error fetching grinding details');
       } finally {
         setLoading(false);
       }
