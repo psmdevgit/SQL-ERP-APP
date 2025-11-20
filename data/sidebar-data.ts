@@ -28,6 +28,7 @@ const sidebarData: SidebarCategory[] = [
         subItems:[        
           { label: "Current Process", link: " /DashBoard/Overallprocess " },
           { label: "Inventory Items", link: "/Reports/InventoryItems" },
+          { label: "Inventory Inward", link: "/Reports/InwardInventory" },
           { label: "Inventory Transactions", link: "/Reports/InventoryIssued" },
           { label: "Party Ledger", link: "/Reports/VendorRep/PartyLedger" },          
           { label: "Order Transaction", link: "/Reports/OrderTransaction" },
