@@ -479,9 +479,9 @@ console.log("Deals State:", deals);
                                 </span>
                               </TableCell>
                               <TableCell>{deal.grindingLoss}</TableCell>
-                              <TableCell className="table__icon-box">
-                                <div className="flex items-center justify-start gap-[10px]">
-                                  <Link href={`/Departments/Filing/show_filing_details?filingId=${deal.id}`} passHref>
+                              <TableCell className="table__icon-box" >
+                                <div className="flex items-center justify-start gap-[10px]" >
+                                  <Link href={`/Departments/Filing/show_filing_details?filingId=${deal.id}`} passHref style={{display:"none"}}>
                                     <button
                                       type="button"
                                       className="table__icon edit"
@@ -492,7 +492,7 @@ console.log("Deals State:", deals);
                                         borderRadius: '4px',
                                         padding: '5px',
                                         textDecoration: 'none',
-                                        border: 'none',
+                                        border: 'none', 
                                         cursor: 'pointer',
                                       }}
                                       onClick={(e) => e.stopPropagation()}

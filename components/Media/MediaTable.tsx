@@ -550,7 +550,7 @@ const GrindingTable = () => {
                               <TableCell>{deal.grindingLoss}</TableCell>
                               <TableCell className="table__icon-box">
                                 <div className="flex items-center justify-start gap-[10px]">
-                                  <Link href={`/Departments/Media/show_media_details?grindingId=${deal.id}`} passHref>
+                                  <Link href={`/Departments/Media/show_media_details?grindingId=${deal.id}`} passHref style={{display:"none"}}>
                                     <button
                                       type="button"
                                       className="table__icon edit"

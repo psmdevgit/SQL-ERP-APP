@@ -452,7 +452,7 @@ const SettingTable = () => {
                               <TableCell>{deal.stoneWeight}</TableCell>
                               <TableCell className="table__icon-box">
                                 <div className="flex items-center justify-start gap-[10px]">
-                                  <Link href={`/Departments/Setting/show_setting_details?settingId=${deal.id}`} passHref>
+                                  <Link href={`/Departments/Setting/show_setting_details?settingId=${deal.id}`} passHref style={{display:"none"}}>
                                     <button
                                       type="button"
                                       className="table__icon edit"

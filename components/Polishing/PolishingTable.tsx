@@ -513,7 +513,7 @@ const PolishingTable = () => {
                               <TableCell>{deal.polishingLoss}</TableCell>
                               <TableCell className="table__icon-box">
                                 <div className="flex items-center justify-start gap-[10px]">
-                                  <Link href={`/Departments/Polishing/show_polishing_details?polishingId=${deal.id}`} passHref>
+                                  <Link href={`/Departments/Polishing/show_polishing_details?polishingId=${deal.id}`} passHref style={{display:"none"}}>
                                     <button
                                       type="button"
                                       className="table__icon edit"

@@ -551,7 +551,7 @@ console.log("Deals State:", deals);
                               <TableCell>{deal.dullLoss}</TableCell>
                               <TableCell className="table__icon-box">
                                 <div className="flex items-center justify-start gap-[10px]">
-                                  <Link href={`/Departments/Dull/show_dull_details?dullId=${deal.id}`} passHref>
+                                  <Link href={`/Departments/Dull/show_dull_details?dullId=${deal.id}`} passHref style={{display:"none"}}>
                                     <button
                                       type="button"
                                       className="table__icon edit"
