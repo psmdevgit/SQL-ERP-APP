@@ -47,7 +47,7 @@ const LOSS_FIELD_MAP: Record<string, string> = {
   setting:"Setting__c",
   dull:"Dull_loss__c",  
   plating:"plating_loss__c",
-  cutting:"Cutting_loss__c"
+  cutting:"Cutting_loss__c",
 };
 
 
@@ -56,6 +56,7 @@ const FINDING_FIELD_MAP: Record<string, string> = {
   grinding:"Finding_Received__c",
   media:"Finding_Weight__c",
   correction:"Finding_Weight__c",
+  assembly:"findingWeight"
 };
 
 const SCRAP_FIELD_MAP: Record<string, string> = {
@@ -95,6 +96,7 @@ const ISSUED_FIELD_MAP: Record<string, string> = {
   dull: "Issued_Weight__c",
   plating: "Issued_Weight__c",  
   cutting: "Issued_Weight__c",
+  assembly:"issued_weight_c"
 };
 
 const ID_FIELD_MAP: Record<string, string> = {
@@ -109,6 +111,7 @@ const ID_FIELD_MAP: Record<string, string> = {
   plating: "Name",  
   cutting: "Name",
   tagging: "taggingId",
+  assembly:"Name",
 };
 
 const RECEIVED_FIELD_MAP: Record<string, string> = {
@@ -137,6 +140,7 @@ const ISSUED_DATE_FIELD_MAP: Record<string, string> = {
   plating: "Issued_Date__c",  
   cutting: "Issued_Date__c",
   tagging: "issuedDate",
+  assembly:"issued_date_c",
 };
 
 const RECEIVED_DATE_FIELD_MAP: Record<string, string> = {
@@ -151,6 +155,7 @@ const RECEIVED_DATE_FIELD_MAP: Record<string, string> = {
   plating: "Received_Date__c",  
   cutting: "Received_Date__c",
   tagging: "receivedDate",
+  assembly:"issued_date_c",
 };
 const STATUS_FIELD_MAP: Record<string, string> = {
   casting: "status",
@@ -164,6 +169,7 @@ const STATUS_FIELD_MAP: Record<string, string> = {
   plating: "Status__c",  
   cutting: "Status__c",
   tagging: "status",
+  assembly:"status_c"
 };
 const getLossValue = (row: ProcessDetailRow, process: string) => {
   const lossField = LOSS_FIELD_MAP[process.toLowerCase()];
