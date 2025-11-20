@@ -481,7 +481,9 @@ console.log("Deals State:", deals);
                               <TableCell>{deal.grindingLoss}</TableCell>
                               <TableCell className="table__icon-box" >
                                 <div className="flex items-center justify-start gap-[10px]" >
-                                  <Link href={`/Departments/Filing/show_filing_details?filingId=${deal.id}`} passHref style={{display:"none"}}>
+                                  <Link href={`/Departments/Filing/show_filing_details?filingId=${deal.id}`} passHref 
+                                  // style={{display:"none"}}
+                                  >
                                     <button
                                       type="button"
                                       className="table__icon edit"
