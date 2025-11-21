@@ -92,13 +92,40 @@ const DailyInventory: React.FC = () => {
         </Button>
       </div>
 
-      <Table
+      {/* <Table
         columns={columns}
         dataSource={data}
         loading={loading}
         pagination={{ pageSize: 50 }}
         rowKey={(r) => r.itemName + r.openingDate}
-      />
+      /> */}
+      <Table
+  columns={columns}
+  dataSource={data}
+  loading={loading}
+  pagination={{ pageSize: 50 }}
+  rowKey={(r) => r.itemName + r.openingDate}
+  size="small"
+  bordered
+  style={{ fontSize: "12px" }}
+  components={{
+    header: {
+      cell: (props: any) => (
+        <th
+          {...props}
+          style={{
+            background: "#1A7A75",
+            color: "white",
+            fontSize: "14px",
+            padding: "6px",
+            textTransform: "capitalize",
+          }}
+        />
+      )
+    }
+  }}
+/>
+
     </div>
   );
 };
