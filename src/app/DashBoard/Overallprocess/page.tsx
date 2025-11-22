@@ -301,26 +301,68 @@ export default function SummaryPage() {
   };
 
   // Add this filtering logic
+// const filteredDetailData = detailData.filter((item) => {
+//   const issueDate = getIssuedDate(item, selectedProcess || "") || null;
+//   const receivedDate = getReceivedDate(item, selectedProcess || "") || null;
+
+
+
+//   const from = fromDate ? new Date(fromDate) : null;
+//   const to = toDate ? new Date(toDate) : null;
+
+//   const issue = issueDate ? new Date(issueDate) : null;
+//   const receive = receivedDate ? new Date(receivedDate) : null;
+
+//   // If no dates are available, include
+//   if (!issue && !receive) return true;
+
+//   const dateToCheck = receive || issue;
+//   if (!dateToCheck) return true;
+
+//   if (from && dateToCheck < from) return false;
+//   if (to && dateToCheck > to) return false;
+//   return true;
+// });
+
+
+
+// const filteredDetailData = detailData.filter((item) => {
+//   const issueDate = toPureDate(getIssuedDate(item, selectedProcess || ""));
+//   const receivedDate = toPureDate(getReceivedDate(item, selectedProcess || ""));
+
+//   const from = fromDate ? new Date(fromDate) : null;
+//   const to = toDate ? new Date(toDate) : null;
+
+//   const dateToCheck = receivedDate || issueDate;
+//   if (!dateToCheck) return true;
+
+//   if (from && dateToCheck < from) return false;
+//   if (to && dateToCheck > to) return false;
+
+//   return true;
+// });
+
+const toPureDate = (dt: string | null) => {
+  if (!dt) return null;
+  return new Date(dt.split("T")[0]); // keep only yyyy-mm-dd
+}; 
+
 const filteredDetailData = detailData.filter((item) => {
-  const issueDate = getIssuedDate(item, selectedProcess || "") || null;
-  const receivedDate = getReceivedDate(item, selectedProcess || "") || null;
+  const issueDate = toPureDate(getIssuedDate(item, selectedProcess || ""));
+  
+  // If no issued date → include it
+  if (!issueDate) return true;
 
   const from = fromDate ? new Date(fromDate) : null;
   const to = toDate ? new Date(toDate) : null;
 
-  const issue = issueDate ? new Date(issueDate) : null;
-  const receive = receivedDate ? new Date(receivedDate) : null;
+  // Compare ONLY issued date
+  if (from && issueDate < from) return false;
+  if (to && issueDate > to) return false;
 
-  // If no dates are available, include
-  if (!issue && !receive) return true;
-
-  const dateToCheck = receive || issue;
-  if (!dateToCheck) return true;
-
-  if (from && dateToCheck < from) return false;
-  if (to && dateToCheck > to) return false;
   return true;
 });
+
 
 
   useEffect(() => {
