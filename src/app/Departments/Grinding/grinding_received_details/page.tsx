@@ -242,12 +242,14 @@ const GrindingDetailsPage = () => {
       // Calculate total received weight from pouches
       const totalReceivedWeight = Object.values(pouchReceivedWeights)
         .reduce((sum, weight) => sum + (weight || 0), 0);
+        console.log(totalReceivedWeight);
 
       // Add scrap and dust weights
       const totalWeight = totalReceivedWeight + 
         (scrapReceivedWeight || 0) + 
         (dustReceivedWeight || 0);
 
+        console.log(totalWeight);
       // Get current date and time in ISO format
       const currentDateTime = new Date().toISOString();
 
@@ -255,7 +257,7 @@ const GrindingDetailsPage = () => {
       const pouchData = data.pouches.map(pouch => ({
         pouchId: pouch.Id,
         issuedWeight: newissuedWeight,
-        receivedWeight: totalWeight + findingReceived,
+        receivedWeight: totalReceivedWeight + findingReceived,
         receivedDate: currentDateTime
       }));
 
@@ -267,7 +269,7 @@ const GrindingDetailsPage = () => {
         // receivedWeight: totalWeight,
 
         
-        receivedWeight: totalWeight + findingReceived,
+        receivedWeight: totalReceivedWeight + findingReceived,
         
         receivedDate: currentDateTime,
         findingReceived: findingReceived,
