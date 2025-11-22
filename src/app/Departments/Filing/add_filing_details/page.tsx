@@ -860,7 +860,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       <SelectTrigger className="w-full bg-grey text-black ">
                         <SelectValue placeholder="Select an order" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white text-black">
+                      <SelectContent className="bg-white text-black max-h-48 overflow-y-auto">
                         {castingDetails.orders.map((order) => (
                           <SelectItem key={order.Id} value={order.Id} className="bg-white text-black hover:bg-gray-100">
                             {order.Order_Id_c}
