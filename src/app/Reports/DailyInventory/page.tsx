@@ -23,9 +23,9 @@ const DailyInventory: React.FC = () => {
       render: (v: any) => `${v}%`,
     },
     { title: "Opening Wt", dataIndex: "openingWeight", key: "openingWeight" },
-    { title: "Opening Pure Wt", dataIndex: "openingPureWeight", key: "openingPureWeight" },
+    // { title: "Opening Pure Wt", dataIndex: "openingPureWeight", key: "openingPureWeight" },
     { title: "Closing Wt", dataIndex: "closingWeight", key: "closingWeight" },
-    { title: "Closing Pure Wt", dataIndex: "closingPureWeight", key: "closingPureWeight" },
+    // { title: "Closing Pure Wt", dataIndex: "closingPureWeight", key: "closingPureWeight" },
     {
       title: "Opening Date",
       dataIndex: "openingDate",
