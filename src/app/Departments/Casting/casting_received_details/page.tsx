@@ -441,7 +441,7 @@ console.log(enterWeight,issWt);
                     value={receivedWeight || ''}
                     onChange={(e) => {setReceivedWeight(parseFloat(e.target.value) || 0); checkWeight(e.target.value)}}
                     className={`w-full h-9 ${formErrors.receivedWeight ? 'border-red-500' : ''}`}
-                    {/* required */}
+                    required
                     placeholder="Enter ornament weight"
                     disabled={isSubmitting}
                   />
