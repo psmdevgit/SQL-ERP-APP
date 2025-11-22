@@ -82,6 +82,7 @@ export default function AddGrindingDetails() {
     orders: []
   });
   const [bagName, setBagName] = useState('');
+  const [selected, setSelected] = useState('');
   const [selectedOrder, setSelectedOrder] = useState('');
   const [receivedWeight, setReceivedWeight] = useState(0);
   const [receivedDate, setReceivedDate] = useState('');
@@ -473,6 +474,13 @@ function processNewBag(orderDetails: any) {
   // Update order selection handler
   const handleOrderSelect = (orderId: string) => {
     console.log(`Selected  Pouchorder : ${orderId}`);
+    const selectedOrderName =
+    castingDetails.orders.find(o => o.Id == orderId)?.Order_Id_c || "";
+
+    console.log(castingDetails)
+
+  setSelected(selectedOrderName); 
+  console.log(selectedOrderName);
     setSelectedOrder(orderId);
     setSelectedCategory('');
     setSelectedCategoryQuantities([]);
@@ -859,15 +867,16 @@ const handleSubmit = async (e: React.FormEvent) => {
                     <Select value={selectedOrder} onValueChange={handleOrderSelect}>
                       <SelectTrigger className="w-full bg-grey text-black ">
                         <SelectValue placeholder="Select an order" />
+                        {selected}
                       </SelectTrigger>
-                      <SelectContent className="bg-white text-black">
+                      <SelectContent className="bg-white text-black max-h-48 overflow-y-auto">
                         {castingDetails.orders.map((order) => (
                           <SelectItem key={order.Id} value={order.Id} className="bg-white text-black hover:bg-gray-100">
                             {order.Order_Id_c}
                           </SelectItem>
                         ))}
                       </SelectContent>
-                    </Select>
+                    </Select>      
                   </div>
                 </div>
                 
