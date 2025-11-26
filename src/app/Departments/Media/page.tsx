@@ -647,7 +647,7 @@ const apiBaseUrl ="https://kalash.app";
         'Correction': 'CM'
       }[selectedDepartment] || 'M';
       
-      const newFilingId = `${deptPrefix}/${date}/${month}/${year}/${number}/${subnumber || '001'}`;
+      const newFilingId = `${deptPrefix}/${date}/${month}/${year}/${number}/${subnumber || '001'}MC`;
       setFilingId(newFilingId);
     }
   }, [selectedRecord, selectedDepartment]);
