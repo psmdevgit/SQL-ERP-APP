@@ -172,7 +172,7 @@ useEffect(() => {
         'Dull': 'PD'
       }[selectedDepartment] || 'P';
       
-      const newPolishingId = `${deptPrefix}/${date}/${month}/${year}/${number}/${subnumber}`;
+      const newPolishingId = `${deptPrefix}/${date}/${month}/${year}/${number}/${subnumber}PC`;
       setFilingId(newPolishingId);
 
       // Update pouch IDs to match the new format
