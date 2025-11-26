@@ -203,7 +203,7 @@ console.log('Selected Record for fetching pouches:', selectedRecord);
         'Dull': 'FD'
       }[selectedDepartment] || 'F';
       
-      const newFilingId = `${deptPrefix}/${date}/${month}/${year}/${number}/${subnumber || '001'}`;
+      const newFilingId = `${deptPrefix}/${date}/${month}/${year}/${number}/${subnumber || '001'}BC`;
       setFilingId(newFilingId);
     }
   }, [selectedRecord, selectedDepartment]);
