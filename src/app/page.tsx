@@ -13,14 +13,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   // API base URL (Uses `.env.local` for flexibility)
-  // const API_BASE_URL = "https://erp-server-r9wh.onrender.com" ;
-
-  
-  // const apiBaseUrl = "http://localhost:4001" ;
-
-  const apiBaseUrl = "https://kalash.app"
-
-
+  const API_BASE_URL = "https://kalash.app" ;
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,7 +30,7 @@ export default function Login() {
 
 
     try {
-      const response = await fetch(`${apiBaseUrl}/login`, {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -53,6 +46,9 @@ console.log(username);
      // Determine redirect URL
     let redirectUrl: string;
     switch (username?.toLowerCase()) {
+       case "waxing":
+        redirectUrl = "/Departments/Waxing/waxing_table";
+        break;
       case "casting":
         redirectUrl = "/Departments/Casting/casting_table";
         break;
@@ -77,8 +73,11 @@ console.log(username);
       case "cutting":
         redirectUrl = "/Departments/Cutting/Cutting_Table";
         break;
+         case "orders":
+        redirectUrl = "/Orders";
+        break;
       default:
-        redirectUrl = "/Orders"; // 👈 Default Orders URL
+        redirectUrl = "/DesignBank/Design"; // 👈 Default Orders URL
         break;
     }
         
@@ -93,7 +92,6 @@ console.log(username);
       setLoading(false);
     }
   };
-
   
   return (
   
@@ -102,7 +100,7 @@ console.log(username);
         <div className="sign-in-section">
 <div className="flex justify-center items-center flex-col">
           <Image src={pothylogo} alt="Pothys Logo" className="logo" width={200} height={200}/>                        
-  <h3>PSM GOLD CRAFTS</h3> 
+  <h3>KALASH JWELLERS GOLD CRAFTS</h3> 
 </div>
 
 <div className="form-content">
@@ -160,4 +158,4 @@ console.log(username);
     </div>
  
   );
-}
+}  
