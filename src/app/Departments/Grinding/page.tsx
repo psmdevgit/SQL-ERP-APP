@@ -661,7 +661,7 @@ const apiBaseUrl = "https://kalash.app";
         'Dull': 'GD'
       }[selectedDepartment] || 'G';
       
-      const newFilingId = `${deptPrefix}/${date}/${month}/${year}/${number}/${subnumber || '001'}BC`;
+      const newFilingId = `${deptPrefix}/${date}/${month}/${year}/${number}/${subnumber || '001'}GC`;
       setFilingId(newFilingId);
     }
   }, [selectedRecord, selectedDepartment]);
