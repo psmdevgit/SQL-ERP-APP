@@ -157,7 +157,7 @@ const apiBaseUrl = "https://kalash.app";
         'Dull': 'SD'
       }[selectedDepartment] || 'S';
       
-      const newSettingId = `${deptPrefix}/${date}/${month}/${year}/${number}/${subnumber || '001'}`;
+      const newSettingId = `${deptPrefix}/${date}/${month}/${year}/${number}/${subnumber || '001'}SC`;
       setFilingId(newSettingId);
     }
   }, [selectedRecord, selectedDepartment]);
