@@ -20,7 +20,7 @@ import DullSummary from "./DullSummary";
                 <li className="breadcrumb-item">
                   <Link href="/">Home</Link>
                 </li>
-                <li className="breadcrumb-item active">Polishing</li>
+                <li className="breadcrumb-item active">Dull</li>
               </ol>
             </nav>
                 
