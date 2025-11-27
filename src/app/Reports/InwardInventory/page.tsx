@@ -40,10 +40,10 @@ const InwardInventory: React.FC = () => {
   const [allNames, setAllNames] = useState<string[]>([]);
   const [allOrders, setAllOrders] = useState<string[]>([]);
 
-//   const API_URL = "http://localhost:4001";
+  const API_URL = "http://localhost:4001";
 
   
-  const API_URL = "https://kalash.app";
+  // const API_URL = "https://kalash.app";
 
   useEffect(() => {
     const fetchReports = async () => {

@@ -203,7 +203,6 @@ const handleScrapUpSubmit = async () => {
 
     console.log('Submitting payload:', payload);
 
-return;
     const response = await fetch(`${apiBaseUrl}/update-inventory`, {
       method: 'POST',
       headers: {

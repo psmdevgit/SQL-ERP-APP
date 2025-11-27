@@ -269,7 +269,10 @@ export default function SummaryPage() {
       if(processName.toLowerCase() == 'tagging'){
         processName = 'tag';
       }
-        
+         if(processName.toLowerCase() == 'assembly'){
+        processName = 'filing';
+      }
+
       const res = await fetch(`${API_URL}/api/${processName}`);
       const result = await res.json();
       if (!result.success) {

@@ -11,9 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 // -----------------------------
 // Configuration
 // -----------------------------
-// const apiBaseUrl = "http://localhost:4001"; // change to 
+const apiBaseUrl = "http://localhost:4001"; // change to 
 
-const apiBaseUrl ="https://kalash.app"
+// const apiBaseUrl ="https://kalash.app"
 
 // -----------------------------
 // Types (partial, flexible to tolerate column name variations)
@@ -109,7 +109,7 @@ const totalCastingUsedWeight = Object.values(castingUsedWeights)
       try {
         setLoading(true);
         // endpoint should return list of casting records
-        const res = await fetch(`${apiBaseUrl}/api/Pouchcasting`);
+        const res = await fetch(`${apiBaseUrl}`/api/Pouchcasting``);
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
           setAllCastings(json.data);
