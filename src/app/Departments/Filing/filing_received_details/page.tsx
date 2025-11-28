@@ -545,7 +545,7 @@ useEffect(() => {
 
                 <div>
                   <label className="text-sm text-gray-600 block mb-1.5">
-                    Water Grinding Loss (g)
+                   Filling Loss (g)
                   </label>
                   <Input
                     type="number"
