@@ -86,7 +86,7 @@ const FilingDetailsPage = () => {
 
   // Always calculate using ORIGINAL loss
   const diff = originalGrindingLoss - val;
-  setGrindingLoss(diff);
+ // setGrindingLoss(diff);
 };
 
   
