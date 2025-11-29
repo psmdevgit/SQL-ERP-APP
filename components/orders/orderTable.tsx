@@ -39,7 +39,7 @@ interface Column {
 const apiBaseUrl = "https://Kalash.app"; // Ensure this is set correctly
 
 
-// const apiBaseUrl = " http://localhost:4001"; // Ensure this is set correctly
+ //const apiBaseUrl = " http://localhost:4001"; // Ensure this is set correctly
 
 const downloadPDF = async (pdfUrl: string) => {
   try {
@@ -142,6 +142,8 @@ export default function DealsTable() {
 
   // Load initial data
   useEffect(() => {
+
+
     const loadData = async () => {
       try {
         setIsLoading(true);
@@ -149,6 +151,8 @@ export default function DealsTable() {
         const data = await fetchDealData();
         console.log('Fetched data:', data); // Debug log
         
+        
+//  
         if (!data || !Array.isArray(data)) {
           console.error('Invalid data format received:', data);
           toast.error('Invalid data format received from server');
