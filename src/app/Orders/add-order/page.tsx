@@ -33,7 +33,9 @@ import "./add-order.css"; // Ensure this import is present
 
 import { useRouter } from "next/navigation";
 import { date } from "zod";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
+import { Eye } from "lucide-react";
 
 interface OrderFormModalProps {
   open: boolean;
@@ -117,7 +119,7 @@ const OrderFormModal = ({ open, setOpen }: OrderFormModalProps) => {
 
   
       const router = useRouter();
-
+const [openOrderInfo, setOpenOrderInfo] = useState(false);
   /* ---------------------- STATE ---------------------- */
   const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
@@ -132,6 +134,11 @@ const OrderFormModal = ({ open, setOpen }: OrderFormModalProps) => {
    const [orderForm, setOrderForm] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // State for which models are expanded
+const [expandedModels, setExpandedModels] = useState<{ [key: string]: boolean }>({});
+const [modelFields, setModelFields] = useState<{
+  [key: string]: { size: string; quantity: number; weight: string };
+}>({});
   
   const [showForm, setShowForm] = useState(true); // controls form-card visibility
 
@@ -191,12 +198,51 @@ const [orderNumber, setOrderNumber] = useState("");
 
   const [imageUrl, setImageUrl] = useState("");
 
-const handleModelSelect = (modelId) => {
-  setSelectedModels((prev) =>
-    prev.includes(modelId) ? prev.filter((id) => id !== modelId) : [...prev, modelId]
-  );
+// const handleModelSelect = (modelId) => {
+//   setSelectedModels((prev) =>
+//     prev.includes(modelId) ? prev.filter((id) => id !== modelId) : [...prev, modelId]
+//   );
+// };
+
+
+const handleModelSelect = (model: Model) => {
+  setSelectedModels((prev) => {
+    const isSelected = prev.includes(model.Name);
+
+    if (!isSelected) {
+      // initialize fields using actual API fields
+      setModelFields((prevFields) => ({
+        ...prevFields,
+        [model.Name]: {
+          size: model.Size_c || "",
+          quantity: 1,
+          weight: model.Gross_Weight_C || "",
+          netWeight: model.Net_Weight_c || "",
+          stoneWeight: model.Stone_Weight_c || ""
+        },
+      }));
+      console.log(modelFields);
+
+      return [...prev, model.Name];
+    } else {
+      // remove
+      const updated = { ...modelFields };
+      delete updated[model.Name];
+      setModelFields(updated);
+
+      return prev.filter((name) => name !== model.Name);
+    }
+  });
 };
 
+
+// Toggle expand/collapse for a model
+const toggleExpand = (modelName: string) => {
+  setExpandedModels((prev) => ({
+    ...prev,
+    [modelName]: !prev[modelName],
+  }));
+};
 
 
     useEffect(() => {
@@ -261,6 +307,9 @@ const handleModelSelect = (modelId) => {
       .then((res) => res.json())
       .then((data) => setModels(data))
       .catch((err) => console.error(err));
+
+      console.log("models",models);
+                                       
   }, [selectedCategory]);
 
    const [activeTab, setActiveTab] = useState<"addItem" | "designBank">("addItem");
@@ -482,50 +531,109 @@ const handleModelSelect = (modelId) => {
 };
 
 
-  const handleAddSelectedItem = () => {
-      if (!isOrderSaved) {
-      // toast.error("Please save the order first");
-      alert("Please save the order first");
-      return;
-    }
+//   const handleAddSelectedItem = () => {
+//       if (!isOrderSaved) {
+//       // toast.error("Please save the order first");
+//       alert("Please save the order first");
+//       return;
+//     }
+//   if (selectedModels.length === 0) {
+//     alert("Please select at least one model");
+//     return;
+//   }
+
+// const newItems = selectedModels.map((modelId) => {
+//   const model = models.find((m) => m.Name === modelId);
+
+//   console.log("select Models : " , model);
+//     return {
+//     category: model?.Category_c || "",
+//     size: model?.Size_c || "0",
+//     grossWeight: model?.Gross_Weight_c || "0",
+//     netWeight: model?.Net_Weight_c || "0",
+//     stoneWeight: model?.Stone_Weight_c || "0",
+//     designImage: model?.Image_URL_c || "",
+//     modelName: model?.Name || "",
+//     quantity: 1,
+//     itemRemark: ""
+//   };
+// });
+
+
+//   setOrderSelectedItems([...orderSelectedItems, ...newItems]);
+
+//   console.log(orderSelectedItems);
+//   // reset form
+//   setFormData({
+//     ...formData,
+//     category: "",
+//     wtRange: "",
+//     size: "",
+//     quantity: "",
+//     itemRemark: ""
+//   });
+//   setSelectedModels([]);
+// setSelectedCategory("");
+
+// };
+
+const handleAddSelectedItem = () => {
+  if (!isOrderSaved) {
+    alert("Please save the order first");
+    return;
+  }
+
   if (selectedModels.length === 0) {
     alert("Please select at least one model");
     return;
   }
 
-const newItems = selectedModels.map((modelId) => {
-  const model = models.find((m) => m.Name === modelId);
+  const handleImageError = (
+  e: React.SyntheticEvent<HTMLImageElement>,
+  modelName: string
+) => {
+  const target = e.currentTarget;
 
-  console.log("select Models : " , model);
+  if (target.src.endsWith(".png")) {
+    target.src = `${imageapi}${modelName}.jpg`;
+    console.log("png not found, trying jpg");
+  } 
+  else if (target.src.endsWith(".jpg")) {
+    target.src = `${imageapi}${modelName}.jpeg`;
+    console.log("jpg not found, trying jpeg");
+  } 
+  else {
+    target.src = noimage.src;
+    console.log("no image found, using placeholder");
+  }
+};
+
+  const newItems = selectedModels.map((modelName) => {
+    const model = models.find((m) => m.Name === modelName);
+
+    // 🔥 get edited values from modelFields
+    const fields = modelFields[modelName];
+
     return {
-    category: model?.Category_c || "",
-    size: model?.Size_c || "0",
-    grossWeight: model?.Gross_Weight_c || "0",
-    netWeight: model?.Net_Weight_c || "0",
-    stoneWeight: model?.Stone_Weight_c || "0",
-    designImage: model?.Image_URL_c || "",
-    modelName: model?.Name || "",
-    quantity: 1,
-    itemRemark: ""
-  };
-});
+      category: model?.Category_c || "",
+      size: fields?.size || model?.Size_c || "0",
+      quantity: fields?.quantity || 1,
+      grossWeight: fields?.weight || model?.Gross_Weight_c || "0",
+      netWeight: fields?.netWeight || model?.Net_Weight_c || "0",
+      stoneWeight: fields?.stoneWeight || model?.Stone_Weight_c || "0",
 
-
-  setOrderSelectedItems([...orderSelectedItems, ...newItems]);
-
-  console.log(orderSelectedItems);
-  // reset form
-  setFormData({
-    ...formData,
-    category: "",
-    wtRange: "",
-    size: "",
-    quantity: "",
-    itemRemark: ""
+      designImage: model?.Image_URL_c || "",
+      modelName: model?.Name || "",
+      itemRemark: "",
+    };
   });
-  setSelectedModels([]);
-setSelectedCategory("");
 
+  setOrderSelectedItems((prev) => [...prev, ...newItems]);
+
+  // RESET SECTION
+  setSelectedModels([]);
+  setModelFields({});
+  setSelectedCategory("");
 };
 
 
@@ -576,7 +684,31 @@ const handleRemoveSelectedItem = (index: number) => {
     }
   }, [activeTab]);
 
+const [previewImage, setPreviewImage] = useState(null);
+const resolveImage = (modelName, setImage) => {
+  const formats = ["png", "jpg", "jpeg"];
+  let index = 0;
 
+  const tryLoad = () => {
+    if (index >= formats.length) {
+      setImage(noimage.src);
+      return;
+    }
+
+    const img = document.createElement("img");
+    const src = `${imageapi}${modelName}.${formats[index]}`;
+
+    img.onload = () => setImage(src);
+    img.onerror = () => {
+      index++;
+      tryLoad();
+    };
+
+    img.src = src;
+  };
+
+  tryLoad();
+};
 
 const generateOrderPDF = async (pdfDoc: PDFDocument) => {
   try {
@@ -2445,9 +2577,8 @@ function drawWrappedText(
 
    {/* design bank  */}
 
-      {activeTab === "designBank" && (
+      {/* {activeTab === "designBank" && (
          <div className="form-card" id="AddItemBox">
-          {/* <h2 style={{textAlign:"center"}}>Design Bank</h2> */}
           <div className="one-column-form">
             <div className="fieldgroup flex gap-2">
 
@@ -2531,7 +2662,166 @@ function drawWrappedText(
             Add Item
           </button>
         </div>
-             )}
+             )} */}
+
+
+{activeTab === "designBank" && (
+  <div className="form-card" id="AddItemBox">
+    <div className="one-column-form">
+      <div className="fieldgroup flex gap-2">
+        <div style={{ width: "100%" }}>
+          <Label htmlFor="category" className="font-bold">Category</Label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full border p-2 rounded"
+            disabled={!isOrderSaved}
+          >
+            <option value="">-- Select Category --</option>
+            {categories.map((cat) => (
+              <option key={cat.Id} value={cat.Name}>
+                {cat.Name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="field-group">
+        <Label htmlFor="designImage">Design Image</Label>
+
+<div
+  className="modelPreview grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4 mt-4 overflow-scroll"
+  style={{ maxHeight: "550px" }}
+>
+
+  {models.length > 0 ? (
+    models.map((model) => {
+      const isSelected = selectedModels.includes(model.Name);
+      const expanded = expandedModels[model.Name] || false;
+      const fields = modelFields[model.Name] || { size: "", quantity: 1, weight: "" };
+
+      return (
+        <div
+          key={model.Id}
+          className={`p-2 border rounded-md text-center cursor-pointer transition ${
+            isSelected ? "bg-blue-200 border-blue-500" : "bg-gray-100"
+          }`}
+        >
+          <div className="relative">
+  <img
+    src={`${imageapi}${model.Name}.png`}
+    alt={model.Name}
+    className="w-50 h-50 object-contain mx-auto"
+    onError={(e) => {
+      const target = e.currentTarget;
+      if (target.src.endsWith(".png")) target.src = `${imageapi}${model.Name}.jpg`;
+      else if (target.src.endsWith(".jpg")) target.src = `${imageapi}${model.Name}.jpeg`;
+      else target.src = noimage.src;
+    }}
+    onClick={() => handleModelSelect(model)}
+  />
+
+  {/* Eye Icon */}
+<button
+  type="button"
+  className="absolute top-1 right-1 bg-white rounded-full p-1 shadow"
+  onClick={(e) => {
+    e.stopPropagation();
+    resolveImage(model.Name, setPreviewImage);
+  }}
+>
+  <Eye size={16} />
+</button>
+</div>
+
+          <p className="mt-2 text-sm font-medium">{model.Name}</p>
+
+          {isSelected && (
+            <div className="mt-2 text-left">
+              <button
+                type="button"
+                className="text-blue-600 text-sm mb-2"
+                onClick={() => toggleExpand(model.Name)}
+              >
+                {expanded ? "Hide Details ▲" : "Show Details ▼"}
+              </button>
+
+              {expanded && (
+                <div className="space-y-2">
+
+  {/* Size */}
+  <div className="flex items-center gap-2">
+    <Label className="w-16 text-sm">Size</Label>
+    <input
+      type="text"
+      value={fields.size}
+      onChange={(e) =>
+        setModelFields((prev) => ({
+          ...prev,
+          [model.Name]: { ...prev[model.Name], size: e.target.value },
+        }))
+      }
+      className="flex-1 border px-2 py-1 rounded text-sm h-8"
+    />
+  </div>
+
+  {/* Quantity */}
+  <div className="flex items-center gap-2">
+    <Label className="w-16 text-sm">Quantity</Label>
+    <input
+      type="number"
+      value={fields.quantity}
+      onChange={(e) =>
+        setModelFields((prev) => ({
+          ...prev,
+          [model.Name]: { ...prev[model.Name], quantity: Number(e.target.value) },
+        }))
+      }
+      className="flex-1 border px-2 py-1 rounded text-sm h-8"
+      min={1}
+    />
+  </div>
+
+  {/* Weight */}
+  <div className="flex items-center gap-2">
+    <Label className="w-16 text-sm">Weight</Label>
+    <input
+      type="text"
+      value={fields.weight}
+      onChange={(e) =>
+        setModelFields((prev) => ({
+          ...prev,
+          [model.Name]: { ...prev[model.Name], weight: e.target.value },
+        }))
+      }
+      className="flex-1 border px-2 py-1 rounded text-sm h-8"
+    />
+  </div>
+</div>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    })
+  ) : (
+    <p className="col-span-full text-gray-500">
+      No models available for this category
+    </p>
+  )}
+</div>
+      </div>
+    </div>
+
+    <button
+      className="add-item-button mt-4"
+      onClick={handleAddSelectedItem}
+    >
+      Add Item
+    </button>
+  </div>
+)}
 
 
 </div>
@@ -2550,49 +2840,60 @@ function drawWrappedText(
       <div className="table-container">
         {/* Order Info Table */}
         {orderInfo && (
-          <Card className="card">
-            <CardHeader>
-              <CardTitle>Order Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <table>
-                <thead>
-                  <tr>
-                    <th rowSpan={2}>Party Code</th>
-                    <th rowSpan={2}>Party Name</th>
-                    <th rowSpan={2}>Order No</th>
-                    <th rowSpan={2}>Order Date</th>
-                    <th rowSpan={2}>Product</th>
-                    <th rowSpan={2}>Purity</th>
-                    <th colSpan={2}>Advance Metal Details</th>
-                    <th colSpan={3}>Order Details</th>
-                  </tr>
-                  <tr>
-                    <th>Metal</th>
-                    <th>Metal Purity</th>
-                    <th>Priority</th>
-                    <th>Delivery Date</th>
-                    <th>Created By</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{orderInfo.partyCode}</td>
-                    <td>{orderInfo.partyName}</td>
-                    <td>{orderInfo.orderNo}</td>
-                    <td>{orderInfo.orderDate}</td>
-                    <td>{orderInfo.category}</td>
-                    <td>{orderInfo.purity}</td>
-                    <td>{orderInfo.advanceMetal}</td>
-                    <td>{orderInfo.advanceMetalPurity}</td>
-                    <td>{orderInfo.priority}</td>
-                    <td>{orderInfo.deliveryDate}</td>
-                    <td>{orderInfo.createdBy}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
+         <Card className="card">
+  <CardHeader className="flex flex-row items-center justify-between cursor-default">
+    <CardTitle>Order Information</CardTitle>
+
+    <div
+      className="cursor-pointer"
+      onClick={() => setOpenOrderInfo(prev => !prev)}
+    >
+      {openOrderInfo ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+    </div>
+  </CardHeader>
+
+  {openOrderInfo && (
+    <CardContent>
+      <table>
+        <thead>
+          <tr>
+            <th rowSpan={2}>Party Code</th>
+            <th rowSpan={2}>Party Name</th>
+            <th rowSpan={2}>Order No</th>
+            <th rowSpan={2}>Order Date</th>
+            <th rowSpan={2}>Product</th>
+            <th rowSpan={2}>Purity</th>
+            <th colSpan={2}>Advance Metal Details</th>
+            <th colSpan={3}>Order Details</th>
+          </tr>
+          <tr>
+            <th>Metal</th>
+            <th>Metal Purity</th>
+            <th>Priority</th>
+            <th>Delivery Date</th>
+            <th>Created By</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{orderInfo.partyCode}</td>
+            <td>{orderInfo.partyName}</td>
+            <td>{orderInfo.orderNo}</td>
+            <td>{orderInfo.orderDate}</td>
+            <td>{orderInfo.category}</td>
+            <td>{orderInfo.purity}</td>
+            <td>{orderInfo.advanceMetal}</td>
+            <td>{orderInfo.advanceMetalPurity}</td>
+            <td>{orderInfo.priority}</td>
+            <td>{orderInfo.deliveryDate}</td>
+            <td>{orderInfo.createdBy}</td>
+          </tr>
+        </tbody>
+      </table>
+    </CardContent>
+  )}
+</Card>
+
         )}
 
         {/* Order Items Table */}
@@ -2701,39 +3002,24 @@ function drawWrappedText(
                         <td className="px-4 py-2">
                           {item.designImage && (
                             <div className="relative w-20 h-20">
-                              {/* <Image
-                                // src={ imageapi+item.modelName}
-                                  src={`${imageapi}${item.modelName}.png`}
-                                alt="Design"
-                                fill
-                                className="object-contain rounded-md"
-                                 onError={(e) => {
-
-                                    const target = e.currentTarget;
-                                    if (target.src.endsWith(".png")) {
-                                      target.src = `${imageapi}${item.modelName}.jpg`;
-                                    } else if (target.src.endsWith(".jpg")) {
-                                      target.src = `${imageapi}${item.modelName}.jpeg`;
-                                    } else {
-                                      target.src = noimage.src ;
-                                      
-                                    }
-                                  }}
-                              /> */}
+                       
                               <Image
   src={`${imageapi}${item.modelName}.png`}
   alt="Design"
-  width={80}
-  height={80}
+  width={180}
+  height={180}
   className="object-contain rounded-md border"
   onError={(e) => {
     const target = e.currentTarget;
     if (target.src.endsWith(".png")) {
       target.src = `${imageapi}${item.modelName}.jpg`;
+      console.log("png not found, trying jpg") ;
     } else if (target.src.endsWith(".jpg")) {
       target.src = `${imageapi}${item.modelName}.jpeg`;
+      console.log("jpg not found, trying jpeg") ;
     } else {
       target.src = noimage.src;
+      console.log("no image found, using placeholder") ;
     }
   }}
 />
@@ -2891,6 +3177,23 @@ function drawWrappedText(
           Generate PDF
         </button>
       </div>
+{previewImage && (
+  <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div className="bg-white p-4 rounded-lg relative max-w-3xl">
+      <button
+        className="absolute top-2 right-2 text-xl font-bold"
+        onClick={() => setPreviewImage(null)}
+      >
+        ✖
+      </button>
+      <img
+        src={previewImage}
+        alt="Preview"
+        className="max-h-[80vh] max-w-full object-contain"
+      />
+    </div>
+  </div>
+)}
 
       
       <style jsx>{`
