@@ -4,13 +4,18 @@ import { IDeal } from "@/interface/table.interface";
 
 const apiUrl = "https://kalash.app";
 
-// const apiUrl = "http://localhost:4001";
+//const apiUrl = "http://localhost:4001";
 
 // Function to fetch orders from the server
+
+
 export const fetchDealData = async (): Promise<IDeal[]> => {
   try {
-    console.log('Fetching data from:', `${apiUrl}/api/orders`);
-    const response = await fetch(`${apiUrl}/api/orders`);
+
+
+    const username = localStorage.getItem("username")?.toLowerCase();
+    console.log('Fetching data from:', `${apiUrl}/api/orders?username=${username} `);
+    const response = await fetch(`${apiUrl}/api/orders?username=${username}`);
     console.log('Response status:', response.status);
     const result = await response.json();
     console.log("API Response:", result); // Log the entire response
