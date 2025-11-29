@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import handImg from "../../../public/assets/images/shape/hand.png"
 import HeaderAction from "./components/HeaderAction";
 import useGlobalContext from "@/hooks/use-context";
@@ -16,7 +16,9 @@ const DashboardHeader = () => {
   const [searchResultData, setSearchResultData] = useState<
     SidebarCategory[] | null
   >([]);
+ const [title, setTitle] = useState("KALASH JEWELLERS GOLD CRAFTS");
 
+ 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase();
     setSearchQuery(value);
@@ -59,7 +61,13 @@ const DashboardHeader = () => {
       setSearchResultData([]);
     }
   };
+ useEffect(() => {
+    const user = localStorage.getItem("username")?.toLowerCase();
 
+    if (user === "zyra") {
+      setTitle("Zyra By Shree I Jwellery");
+    }
+  }, []);
   return (
     <>
       {/* -- App header area start -- */}
@@ -83,10 +91,7 @@ const DashboardHeader = () => {
             </div>
             <h2 className="header__title text-white">
 
-              <span>
-         
-           KALASH JEWELLERS GOLD CRAFTS {" "}
-              </span>
+              <span>{title}</span>
             </h2>
           </div>
           <div className="app__header-right">
