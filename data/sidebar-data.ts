@@ -92,7 +92,7 @@ const sidebarData: SidebarCategory[] = [
 
 // ✅ FINAL FILTER LOGIC
 export const getSidebarData = (): SidebarCategory[] => {
-  const username = localStorage.getItem("username")?.toLowerCase();
+  const username = localStorage.getItem("department")?.toLowerCase();
 
   if (!username) return sidebarData;
 
