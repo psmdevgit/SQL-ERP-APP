@@ -34,15 +34,24 @@ const DealsMainArea = () => {
                 <li className="breadcrumb-item active">Orders</li>
               </ol>
             </nav>
-            <div className="breadcrumb__btn">
-              <Button 
-                onClick={() => window.location.href = '/Orders/add-order'}
-                className="flex items-center gap-2 bg-primary hover:bg-primary/90"
-                type="button"
-              >
-                <Plus className="h-4 w-4" /> Add Order
-              </Button>
-            </div>
+            <div className=" flex items-center gap-4">
+  <Button 
+    onClick={() => window.location.href = '/DesignBank/Design'}
+    className="flex items-center gap-2 bg-primary hover:bg-primary/90"
+    type="button"
+  >
+     Design Bank
+  </Button>
+
+  <Button 
+    onClick={() => window.location.href = '/Orders/add-order'}
+    className="flex items-center gap-2 bg-primary hover:bg-primary/90"
+    type="button"
+  >
+    <Plus className="h-4 w-4" /> Add Order
+  </Button>
+</div>
+
           </div>
         </div>
         <div className="grid grid-cols-12 gap-x-6 maxXs:gap-x-0">
