@@ -5,6 +5,7 @@ import React, { useEffect, useState, useMemo } from "react";
 //import sidebarMainLogo from "../../../assets/needhagoldlogo.png";
 // import sidebarMainLogo from "../../../assets/PothysLogo.png";
 import sidebarMainLogo from "@/assets/appLogo.png";
+import sidebarZyraLogo from "@/assets/zyra.png";
 import sidebarDarkLogo from "../../../public/assets/images/logo/logo-white.svg";
 import useGlobalContext from "@/hooks/use-context";
 // import sidebarImg from "../../../public/assets/images/bg/side-bar.png";
@@ -24,7 +25,7 @@ const DashBoardSidebar = () => {
 
 
     // 🔥 Get username from localStorage
-  const username = typeof window !== "undefined" ? localStorage.getItem("username")?.toLowerCase() : null;
+  const username = typeof window !== "undefined" ? localStorage.getItem("department")?.toLowerCase() : null;
 
    // 🔥 Filter sidebar data based on username
   const filteredSidebarData = useMemo(() => {
@@ -193,7 +194,16 @@ const DashBoardSidebar = () => {
     findLayerIds();
   }, [pathName, filteredSidebarData]);
 
+const [logo, setLogo] = useState(sidebarMainLogo); // defaul
 
+
+ useEffect(() => {
+    const user = localStorage.getItem("username")?.toLowerCase();
+
+    if (user === "zyra") {
+      setLogo(sidebarZyraLogo);
+    }
+  }, []);
   return (
     <>
       <div
@@ -204,7 +214,7 @@ const DashBoardSidebar = () => {
          
             <Image
               className="main-logo w-200 h-[85px]"
-              src={sidebarMainLogo}
+               src={logo}
               priority
               alt="logo"
               width={200}
