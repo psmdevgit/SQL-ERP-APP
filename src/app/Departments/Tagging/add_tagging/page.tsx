@@ -783,7 +783,7 @@ const handleSubmit = async () => {
     if (data.success) {
       alert("✅ Tagging inserted successfully!");  
         setTimeout(() => {
-        router.push("/Departments/Tagging/Tagging_Table");
+        router.push("/Departments/Cutting/Cutting_Table");
       }, 1000);    
     } else {
       alert(`❌ Failed: ${data.message}`);
@@ -898,3 +898,4 @@ const handleSubmit = async () => {
     </div>
   );
 }
+
