@@ -227,7 +227,7 @@ useEffect(() => {
         setLoading(false);
         
          setTimeout(() => {
-          router.push('/Departments/Plating/Plating_Table');
+          router.push('/Departments/Dull/Dull_Table');
         }, 1000);
 
 
