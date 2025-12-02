@@ -279,7 +279,7 @@ console.log('[AddPolishing] Using weight field:', weightField);
         setLoading(false);
 
          setTimeout(() => {
-          router.push('/Departments/Polishing/Polishing_Table');
+          router.push('/Departments/Correction/correction_Table');
         }, 1000);
 
 
