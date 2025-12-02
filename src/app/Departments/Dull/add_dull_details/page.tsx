@@ -282,7 +282,7 @@ console.log(`[Add Dull] Fetching pouches from ${sourceType}:`, { url: apiEndpoin
         setLoading(false);
         
          setTimeout(() => {
-          router.push('/Departments/Dull/Dull_Table');
+          router.push('/Departments/Polishing/Polishing_Table');
         }, 1000);
 
 
