@@ -410,7 +410,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     <SelectValue placeholder={`Select ${selectedDepartment} record`} />
                   </SelectTrigger>
                   <SelectContent 
-                    className="bg-white border border-gray-200"
+                    className="bg-white border border-gray-200 max-h-64 overflow-y-auto"
                     style={{ backgroundColor: 'white' }}
                   >
                     {departmentRecords.map(record => (
