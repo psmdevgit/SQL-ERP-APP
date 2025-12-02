@@ -776,7 +776,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       setReceivedDate(castingDetails.receivedDate);
 
       setTimeout(() => {
-        router.push('/Departments/Filing/add_filing_details/Grinding_Table');
+        router.push('/Departments/Casting/casting_table');
       }, 1000);
     } else {
       const successCount = submissionResults.filter(r => r.success).length;
