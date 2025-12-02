@@ -229,7 +229,7 @@ const apiBaseUrl = "https://kalash.app";
         setLoading(false);
         
          setTimeout(() => {
-          router.push('/Departments/Cutting/Cutting_Table');
+          router.push('/Departments/Plating/Plating_Table');
         }, 1000);
 
       } else {
