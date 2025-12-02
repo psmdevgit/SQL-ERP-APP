@@ -227,7 +227,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
       // ✅ Optional redirect
       setTimeout(() => {
-        router.push("/Departments/Setting/Setting_Table");
+        router.push("/Departments/Polishing/Polishing_Table");
       }, 1000);
     } else {
       throw new Error(result.message || "Failed to save setting details");
