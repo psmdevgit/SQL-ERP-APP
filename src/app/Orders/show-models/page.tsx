@@ -447,8 +447,8 @@ async function createOrderPDF(orderInfo: OrderDetails, orderItems: ModelDetails[
 
   // --- Iterate Items ---
   for (const item of orderItems) {
-    const quantity = parseInt(String(item.quantity ?? "0")) || 0;
-    const weightValue = Number(item.netWeight ?? item.grossWeight ?? 0) || 0;
+    const quantity = parseInt(String(item.quantity ?? "0")) || 0;   
+    const weightValue =  parseInt(String(item.grossWeight ?? "0")) || 0;
     const itemTotalWeight = weightValue * quantity;
 
     totalQuantity += quantity;
