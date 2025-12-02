@@ -23,39 +23,51 @@ const DashBoardSidebar = () => {
   const [linkIdFour, setlinkIdFour] = useState<number | null>(null);
   const pathName = usePathname(); // Current route
 
+// 🔥 Get username / departments from localStorage
+// 🔥 Get departments from localStorage
+const departmentString =
+  typeof window !== "undefined"
+    ? localStorage.getItem("department")?.toLowerCase()
+    : "";
 
-    // 🔥 Get username from localStorage
-  const username = typeof window !== "undefined" ? localStorage.getItem("department")?.toLowerCase() : null;
+const filteredSidebarData = useMemo(() => {
+  if (!departmentString) return sidebarData;
 
-   // 🔥 Filter sidebar data based on username
-  const filteredSidebarData = useMemo(() => {
-    if (!username) return sidebarData;
+  // Convert "orders/waxing" → ["orders", "waxing"]
+  const userDepartments = departmentString.split("/").map((d) => d.trim());
 
-    const makingProgress = sidebarData
-      .flatMap((cat) => cat.items)
-      .find((item) => item.label === "Making Progress");
-
-    const matchedSubItem = makingProgress?.subItems?.find(
-      (sub) => sub.key === username
-    );
-
-    if (matchedSubItem) {
-      return [
-        {
-          id: 1,
-          category: "Main",
-          items: [
-            {
-              ...makingProgress,
-              subItems: [matchedSubItem],
-            },
-          ],
-        },
-      ];
-    }
-
+  // ✅ ADMIN FULL ACCESS
+  if (userDepartments.includes("admin")) {
     return sidebarData;
-  }, [username]);
+  }
+
+  // 🔥 NORMAL USERS → FILTERING
+  const result = sidebarData
+    .map((category) => {
+      const filteredItems = category.items
+        .map((item) => {
+          if (!item.subItems || item.subItems.length === 0) return null;
+
+          // Match only allowed departments
+          const matchedSubItems = item.subItems.filter(
+            (sub) => sub.key && userDepartments.includes(sub.key.toLowerCase())
+          );
+
+          if (matchedSubItems.length === 0) return null;
+
+          return { ...item, subItems: matchedSubItems };
+        })
+        .filter(Boolean); // Remove nulls
+
+      // Remove categories with no items
+      return filteredItems.length > 0
+        ? { ...category, items: filteredItems } 
+        : null;
+    })
+    .filter(Boolean); // Final cleanup
+
+  return result;
+}, [departmentString]);
 
 
   // Utility function to handle collapse behavior for screens with max-width: 1199px
