@@ -213,7 +213,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       setFormattedId('');
       setLoading(false);
 
-      router.push('/Departments/Correction/correction_Table');
+      router.push('/Departments/Media/media_Table');
     } else {
       alert('Failed to save correction details');
       throw new Error(result.message || 'Failed to save correction details');
