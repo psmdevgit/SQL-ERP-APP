@@ -72,8 +72,8 @@ const sidebarData: SidebarCategory[] = [
           { label: "Dull", link: "/Departments/Dull/Dull_Table", key: "dull" },
           { label: "Plating", link: "/Departments/Plating/Plating_Table", key: "plating" },
           { label: "Cutting", link: "/Departments/Cutting/Cutting_Table", key: "cutting" },
-   { label: "Tagging", link: "/Departments/Tagging/Tagging_Table", key: "cutting" },
-     { label: "Orders", link: "/Orders", key: "orders" },
+          { label: "Tagging", link: "/Departments/Tagging/Tagging_Table", key: "cutting" },
+   
           { label: "Refinery", link: "/Refinery", key: "refinery" },
         ],
       },
@@ -91,27 +91,40 @@ const sidebarData: SidebarCategory[] = [
 ];
 
 // ✅ FINAL FILTER LOGIC
+// FINAL FILTER LOGIC (supports multiple departments)
 export const getSidebarData = (): SidebarCategory[] => {
-  const username = localStorage.getItem("department")?.toLowerCase();
+  const departmentString = localStorage.getItem("department")?.toLowerCase();
 
-  if (!username) return sidebarData;
+  if (!departmentString) return sidebarData;
 
-  return sidebarData.map(category => {
-    const filteredItems = category.items.map(item => {
+  // Convert "orders/waxing" → ["orders", "waxing"]
+  const userDepartments = departmentString.split("/").map(d => d.trim());
 
-      if (!item.subItems) return item;
+  return sidebarData
+    .map(category => {
+      const filteredItems = category.items
+        .map(item => {
+          // Skip items without subItems → they should be hidden
+          if (!item.subItems || item.subItems.length === 0) return null;
 
-      const matchedSubItems = item.subItems.filter(
-        sub => sub.key?.toLowerCase() === username
-      );
+          // Filter subitems based on user departments
+          const matchedSubItems = item.subItems.filter(
+            sub => sub.key && userDepartments.includes(sub.key.toLowerCase())
+          );
 
-      return matchedSubItems.length > 0
-        ? { ...item, subItems: matchedSubItems }
-        : null;
-    }).filter(Boolean);
+          // If NO match → hide this menu item
+          if (matchedSubItems.length === 0) return null;
 
-    return { ...category, items: filteredItems };
-  }).filter(category => category.items.length > 0);
+          // Return filtered menu item
+          return { ...item, subItems: matchedSubItems };
+        })
+        .filter(Boolean); // remove null items
+
+      // If this category has NO remaining items → remove the category
+      return filteredItems.length > 0 ? { ...category, items: filteredItems } : null;
+    })
+    .filter(Boolean); // Remove empty categories
 };
+
 
 export default sidebarData;
