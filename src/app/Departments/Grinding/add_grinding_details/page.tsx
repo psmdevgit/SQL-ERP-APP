@@ -190,7 +190,7 @@ const pouchData = pouches.map(pouch => ({
         toast.success('Grinding details saved successfully');
 
  setTimeout(() => {
-          router.push('/Departments/Grinding/Grinding_Table');
+          router.push('/Departments/Filing/add_filing_details/Grinding_Table');
         }, 1000);
 
         // alert('Grinding details saved successfully');
