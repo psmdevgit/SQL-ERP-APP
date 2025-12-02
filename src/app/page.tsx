@@ -17,8 +17,8 @@ export default function Login() {
 
   const router = useRouter();
   // API base URL (Uses `.env.local` for flexibility)
-  const API_BASE_URL= "https://kalash.app" ;
-  //const API_BASE_URL = " http://localhost:4001" ;
+const API_BASE_URL = "https://kalash.app" ;
+//const API_BASE_URL = " http://localhost:4001" ;
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,7 +56,7 @@ export default function Login() {
     localStorage.setItem("username", username);
     localStorage.setItem("department", data.department);
 
-    let redirectUrl = "/DesignBank/Design";
+    let redirectUrl = "/LANDING";
 
     switch (data.department?.toLowerCase()) {
       case "waxing":
