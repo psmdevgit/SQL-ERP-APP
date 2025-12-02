@@ -206,7 +206,7 @@ if (invalidPouch) {
       setFormattedId('');
       setLoading(false);
 
-      router.push('/Departments/Media/media_Table');
+      router.push('/Departments/Filing/add_filing_details/Grinding_Table');
     } else {
       
       alert('Failed to save media details');
