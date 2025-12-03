@@ -1397,8 +1397,11 @@ const handleSubmitOrder = async () => {
       0
     );
 
+  const username = localStorage.getItem("username");
+   
     // Build JSON data
     const jsonPayload = {
+      username: username,
       orderNo: orderNumber,
       TotalQuantity: totalQuantity,
       orderInfo: orderInfo, // full order info
