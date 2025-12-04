@@ -246,6 +246,8 @@ const loadOrder = async () => {
     }
 
     alert("Order updated successfully");
+        loadOrder();
+    loadItems();
     // window.location.reload();
 router.refresh();  
   } catch (error) {
@@ -287,6 +289,8 @@ router.refresh();
     }
 
     alert("Items updated successfully");
+        loadOrder();
+    loadItems();
     // window.location.reload();
 router.refresh();  
   } catch (error) {
@@ -355,6 +359,8 @@ console.log(itemId);
     }
 
     alert("Item deleted successfully");
+        loadOrder();
+    loadItems();
     // window.location.reload();
     router.refresh();  
 
@@ -431,6 +437,8 @@ const handleAddSelectedItem = async () => {
 
     alert("Models added successfully");
     // window.location.reload();
+        loadOrder();
+    loadItems();
     router.refresh();  
 
   } catch (error) {
