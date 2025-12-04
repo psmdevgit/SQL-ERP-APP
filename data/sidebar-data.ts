@@ -74,7 +74,7 @@ const sidebarData: SidebarCategory[] = [
           { label: "Cutting", link: "/Departments/Cutting/Cutting_Table", key: "cutting" },
           { label: "Tagging", link: "/Departments/Tagging/Tagging_Table", key: "cutting" },
    
-          { label: "Refinery", link: "/Refinery", key: "refinery" },
+          { label: "Recovery", link: "/Refinery", key: "refinery" },
         ],
       },
       {
