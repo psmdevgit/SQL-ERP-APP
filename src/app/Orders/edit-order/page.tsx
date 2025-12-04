@@ -19,12 +19,17 @@ const API_URL = "https://kalash.app";
 
 export default function EditOrder() {
 
-const orderNo = new URLSearchParams(window.location.search).get("orderId");
-  console.log("Editing order number:", orderNo);
+// const orderNo = new URLSearchParams(window.location.search).get("orderId");
+ 
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
 
-  
+   const [orderNo, setOrderNo] = useState<string | null>(null);
+     useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("orderId");
+    setOrderNo(id);
+  }, []);
+   console.log("Editing order number:", orderNo);
     const [imageUrl, setImageUrl] = useState("");
 
     const [orderSelectedItems, setOrderSelectedItems] = useState<OrderSelectedItem[]>([]);
