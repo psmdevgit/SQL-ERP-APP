@@ -39,7 +39,7 @@ interface Column {
 const apiBaseUrl = "https://Kalash.app"; // Ensure this is set correctly
 
 
- //const apiBaseUrl = " http://localhost:4001"; // Ensure this is set correctly
+//  const apiBaseUrl = " http://localhost:4001"; // Ensure this is set correctly
 
 const downloadPDF = async (pdfUrl: string) => {
   try {
@@ -520,7 +520,7 @@ export default function DealsTable() {
               </button>
             </Link>
 
-            <Link href={`/Orders/add-models?orderId=${row.id}`} passHref>
+            <Link href={`/Orders/edit-order?orderId=${row.id}`} passHref>
               <button
                 type="button"
                 className="table__icon edit"
