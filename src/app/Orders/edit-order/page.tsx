@@ -19,17 +19,12 @@ const API_URL = "https://kalash.app";
 
 export default function EditOrder() {
 
-// const orderNo = new URLSearchParams(window.location.search).get("orderId");
- 
+const orderNo = new URLSearchParams(window.location.search).get("orderId");
+  console.log("Editing order number:", orderNo);
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
 
-   const [orderNo, setOrderNo] = useState<string | null>(null);
-     useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("orderId");
-    setOrderNo(id);
-  }, []);
-   console.log("Editing order number:", orderNo);
+  
     const [imageUrl, setImageUrl] = useState("");
 
     const [orderSelectedItems, setOrderSelectedItems] = useState<OrderSelectedItem[]>([]);
@@ -203,7 +198,9 @@ const handleModelSelect = (model: Model) => {
   // ------------------- LOAD ORDER -------------------
 const loadOrder = async () => {
   const encoded = encodeURIComponent(orderNo);
-  const res = await fetch(`${API_URL}/api/Editorders/${encoded}`);
+  // const res = await fetch(`${API_URL}/api/Editorders/${encoded}`);
+  const res = await fetch(`${API_URL}/api/Editorders?orderNo=${encoded}`);
+
   const data = await res.json();
 
   console.log(data);
@@ -216,10 +213,11 @@ const loadOrder = async () => {
   const loadItems = async () => {
 
       const encoded = encodeURIComponent(orderNo);
-    const res = await fetch(`${API_URL}/api/Editorders/${encoded}/items`);
+    // const res = await fetch(`${API_URL}/api/Editorders/${encoded}/items`);
+      const res = await fetch(`${API_URL}/api/Editorders/items?orderNo=${encoded}`);
+ 
     const data = await res.json();
-    setItems(data);
-   
+    setItems(data);   
     console.log("Loaded items:", data);
   };
 
