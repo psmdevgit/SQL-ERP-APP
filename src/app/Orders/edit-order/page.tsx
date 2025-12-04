@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import React, { useEffect, useState } from "react";
 import { Flex } from "antd";
+import { useSearchParams } from 'next/navigation';
 
 const API_URL = "https://kalash.app";
 
@@ -19,7 +20,12 @@ const API_URL = "https://kalash.app";
 
 export default function EditOrder() {
 
-const orderNo = new URLSearchParams(window.location.search).get("orderId");
+
+  
+   const searchParams = useSearchParams();
+   const orderNo = searchParams.get('orderId');
+
+
   console.log("Editing order number:", orderNo);
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
