@@ -3,7 +3,7 @@
 import { Eye } from "lucide-react";
 import { Trash2 } from "lucide-react";
 import noimage from "../../../../assets/no.png"; // remove {}
-
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";  
 import { Label } from "@/components/ui/label";
@@ -23,7 +23,7 @@ const orderNo = new URLSearchParams(window.location.search).get("orderId");
   console.log("Editing order number:", orderNo);
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
-
+const router = useRouter();
   
     const [imageUrl, setImageUrl] = useState("");
 
@@ -240,8 +240,8 @@ const loadOrder = async () => {
     }
 
     alert("Order updated successfully");
-    window.location.reload();
-
+    // window.location.reload();
+router.refresh();  
   } catch (error) {
     // Network error or any unexpected error
     
@@ -281,8 +281,8 @@ const loadOrder = async () => {
     }
 
     alert("Items updated successfully");
-    window.location.reload();
-
+    // window.location.reload();
+router.refresh();  
   } catch (error) {
     // Network error or any unexpected error
     
@@ -349,7 +349,8 @@ console.log(itemId);
     }
 
     alert("Item deleted successfully");
-    window.location.reload();
+    // window.location.reload();
+    router.refresh();  
 
   } catch (err) {
     console.log("Network error: " + err.message);
@@ -423,7 +424,8 @@ const handleAddSelectedItem = async () => {
     }
 
     alert("Models added successfully");
-    window.location.reload();
+    // window.location.reload();
+    router.refresh();  
 
   } catch (error) {
     // Network error or any unexpected error
