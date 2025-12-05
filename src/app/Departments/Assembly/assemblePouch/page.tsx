@@ -61,6 +61,12 @@ export default function AddFilingDetailsPage() {
   const [receivedWeight, setReceivedWeight] = useState<number>(0);
   const [receivedDate, setReceivedDate] = useState<string>("");
   
+
+  
+  const [reorderRemark, setReorderRemark] = useState("");
+  const [remarkList, setRemarkList] = useState([]);
+
+
   const [pouchWeights, setPouchWeights] = useState<Record<string, number>>({});
 
 const [pouchFindings, setPouchFindings] = useState<Record<string, number>>({});
@@ -161,14 +167,47 @@ const totalCastingUsedWeight = Object.values(castingUsedWeights)
     console.log(selectedCastings);
   };
 
+
+
   // -----------------------------
   // Generate merged base id (range) and final id using manual suffix
   // -----------------------------
-  const   generateMergedBase = () => {
+  const   generateMergedBase = async () => {
     if (selectedCastings.length === 0) {
       toast.error("Select at least one casting to merge");
       return;
     }
+
+    console.log(selectedCastings);
+
+    try {
+    if (!selectedCastings || selectedCastings.length === 0) {
+      setReorderRemark("");
+      return;
+    }
+
+    const castingNames = selectedCastings.map((c) => c.castingName);
+
+    const response = await fetch(`${apiBaseUrl}/api/waxing-remarks`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ castingNames }),
+    });
+
+    const data = await response.json();
+    console.log(data);
+
+    setReorderRemark(data.remarks || "");
+
+    // set bullet list
+    setRemarkList(data.list || []);
+
+  } catch (error) {
+    console.error("Error fetching reorder remarks:", error);
+  }
+
+
+
 
     // parse date parts & last number parts
     const parsed = selectedCastings.map((s) => {
@@ -651,6 +690,8 @@ const updateTotalIssued = (weights: any, findings: any) => {
   const handleSubmit = async (e?: React.FormEvent) => {
   e?.preventDefault();
 
+
+  
     if (bags.length === 0) {
       console.log("Add at least one pouch before submitting");
       alert("Add at least one pouch before submitting");
@@ -694,6 +735,7 @@ const updateTotalIssued = (weights: any, findings: any) => {
     };
 
     console.log("submit details", payload);
+
 
 
     try {
@@ -802,6 +844,31 @@ const updateTotalIssued = (weights: any, findings: any) => {
                     <Input readOnly value={mergedCastingId} />
                   </div>
                 </div>
+              </div>
+
+              <div>
+              {/* <Input
+  type="text"
+  className="w-[600px] h-[50px]"
+  value={reorderRemark}
+  readOnly={true}
+/> */}
+{remarkList.length > 0 && (
+
+<div>  
+                <Label>Reorder Remarks</Label>
+  <ul className="list-disc pl-4 mt-2 text-sm">
+    {remarkList.map((item, index) => (
+      <li key={index}>{item}</li>
+    ))}
+  </ul>
+  </div>
+
+
+
+)}
+
+   
               </div>
             </div>
             {/* show chosen merged id */}
