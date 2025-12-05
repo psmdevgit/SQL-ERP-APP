@@ -69,6 +69,10 @@ const [selectedShape, setSelectedShape] = useState("");
 const [selectedSize, setSelectedSize] = useState("");
 const [filteredStones, setFilteredStones] = useState<Stone[]>([]);
 
+
+const [reorderRemarks, setReorderRemarks] = useState("");
+
+
   const [inventoryApiItems, setInventoryApiItems] = useState<InventoryApiItem[]>([]);
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
 
@@ -176,6 +180,7 @@ const generateCastingNumber = () => {
 const handleSubmit = async (e?: React.FormEvent) => {
   e?.preventDefault();
 
+
   // ✅ Validate required parent fields
   if (!treecastingID && !waxTreeWeight) {
     alert("Casting Number and Wax Tree Weight are mandatory");
@@ -192,24 +197,7 @@ const handleSubmit = async (e?: React.FormEvent) => {
     return;
   }
 
-  // if (stoneRows.length === 0) {
-  //   alert("Please add at least one stone");
-  //   return;
-  // }
 
-  // ✅ Validate each stone row
-  // for (let i = 0; i < stoneRows.length; i++) {
-  //   const row = stoneRows[i];
-  //   if (!row.type || !row.color || !row.shape || !row.size || !row.weight) {
-  //     alert(`Row ${i + 1}: All fields (Type, Color, Shape, Size, Weight) are mandatory`);
-  //     return;
-  //   }
-
-  //   if (parseFloat(row.weight) <= 0) {
-  //     alert(`Row ${i + 1}: Weight must be greater than 0`);
-  //     return;
-  //   }
-  // }
 
   // ✅ Calculate total stone weight
   const totalStoneWeight = stoneRows.reduce(
@@ -223,6 +211,7 @@ const handleSubmit = async (e?: React.FormEvent) => {
     Tree_Weight__c: waxTreeWeight,
     orderId__c: selectedOrders.join(", "),
     stone_weight__c: totalStoneWeight,
+    remarks: reorderRemarks,
     stones: stoneRows.map((row) => ({
       type: row.type,
       color: row.color,
@@ -362,7 +351,14 @@ const handleSubmit = async (e?: React.FormEvent) => {
             )}
           </div>
 
-
+<div>  
+            <Label>Remarks</Label>  <Input
+    type="text"
+    placeholder="Reorder Remarks"
+    value={reorderRemarks}
+    onChange={(e) => setReorderRemarks(e.target.value)}
+  />
+</div>
 
           </div>
          
