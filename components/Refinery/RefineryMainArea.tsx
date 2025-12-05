@@ -19,7 +19,7 @@ const RefineryMainArea = () => {
                 <li className="breadcrumb-item">
                   <Link href="/">Home</Link>
                 </li>
-                <li className="breadcrumb-item active">Refinery</li>
+                <li className="breadcrumb-item active">Recovery</li>
               </ol>
             </nav>
           </div>

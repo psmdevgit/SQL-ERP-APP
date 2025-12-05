@@ -12,6 +12,19 @@ interface DepartmentSummary {
     totalSettingLoss: number;
     totalPolishingLoss: number;
     totalOverallLoss: number;
+
+    totalOverallDust : number;
+
+    totalCastingDust:number;
+    totalFiligDust:number;
+    totalGrindingDust:number;
+    totalMediaDust:number;
+    totalCorrectionDust:number;
+    totalSettingDust:number;
+    totalPolishingDust:number;
+    totalDullDust:number;
+    totalCuttingDust:number;
+
   };
 }
 
@@ -25,6 +38,8 @@ const RefinerySummary: React.FC = () => {
 
   
 const apiBaseUrl = "https://kalash.app"; 
+
+// const apiBaseUrl = "http://localhost:4001"; 
 
   const fetchSummaryData = async (startDate: Date, endDate: Date) => {
     try {
@@ -46,7 +61,7 @@ const apiBaseUrl = "https://kalash.app";
       });
       
       const response = await fetch(
-        `${apiBaseUrl}/api/department-losses?startDate=${formattedStartDate}&endDate=${formattedEndDate}`
+        `${apiBaseUrl}/api/department-dust?startDate=${formattedStartDate}&endDate=${formattedEndDate}`
       );
 
       if (!response.ok) throw new Error('Failed to fetch data');
@@ -111,49 +126,88 @@ const apiBaseUrl = "https://kalash.app";
       totalGrindingLoss,
       totalSettingLoss,
       totalPolishingLoss,
-      totalOverallLoss
+      totalOverallLoss,totalOverallDust,
+
+          totalCastingDust,
+    totalFiligDust,
+    totalGrindingDust,
+    totalMediaDust,
+    totalCorrectionDust,
+    totalSettingDust,
+    totalPolishingDust,
+    totalDullDust,
+    totalCuttingDust,
+
     } = summaryData.summary;
 
     return [
       {
         iconClass: "fa-light fa-scale-balanced",
-        title: "Casting Loss",
-        value: `${totalCastingLoss.toFixed(3)} g`,
-        description: "Total casting department loss",
+        title: "Casting Dust",
+        value: `${totalCastingDust.toFixed(3)} g`,
+        description: "Total casting department dust",
         isIncrease: false,
       },
       {
         iconClass: "fa-light fa-file-lines",
-        title: "Filing Loss",
-        value: `${totalFilingLoss.toFixed(3)} g`,
-        description: "Total filing department loss",
+        title: "Filing Dust",
+        value: `${totalFiligDust.toFixed(3)} g`,
+        description: "Total filing department dust",
         isIncrease: false,
       },
       {
         iconClass: "fa-light fa-gear",
-        title: "Grinding Loss",
-        value: `${totalGrindingLoss.toFixed(3)} g`,
-        description: "Total grinding department loss",
+        title: "Grinding Dust",
+        value: `${totalGrindingDust.toFixed(3)} g`,
+        description: "Total grinding department dust",
+        isIncrease: false,
+      },
+      {
+        iconClass: "fa-light fa-gear",
+        title: "Media Dust",
+        value: `${totalMediaDust.toFixed(3)} g`,
+        description: "Total media department dust",
+        isIncrease: false,
+      },
+      {
+        iconClass: "fa-light fa-gear",
+        title: "Correction Dust",
+        value: `${totalCorrectionDust.toFixed(3)} g`,
+        description: "Total Correction department dust",
         isIncrease: false,
       },
       {
         iconClass: "fa-light fa-gem",
-        title: "Setting Loss",
-        value: `${totalSettingLoss.toFixed(3)} g`,
-        description: "Total setting department loss",
+        title: "Setting Dust",
+        value: `${totalSettingDust.toFixed(3)} g`,
+        description: "Total setting department dust",
         isIncrease: false,
       },
       {
         iconClass: "fa-light fa-sparkles",
-        title: "Polishing Loss",
+        title: "Polishing Dust",
         value: `${totalPolishingLoss.toFixed(3)} g`,
         description: "Total polishing department loss",
         isIncrease: false,
       },
       {
         iconClass: "fa-light fa-arrow-trend-down",
-        title: "Total Loss",
-        value: `${totalOverallLoss.toFixed(3)} g`,
+        title: "Dull Dust",
+        value: `${totalDullDust.toFixed(3)} g`,
+        description: "Total dust department dust",
+        isIncrease: false,
+      }, 
+      {
+        iconClass: "fa-light fa-arrow-trend-down",
+        title: "Cutting Dust",
+        value: `${totalCuttingDust.toFixed(3)} g`,
+        description: "Total cutting department dust",
+        isIncrease: false,
+      }, 
+       {
+        iconClass: "fa-light fa-arrow-trend-down",
+        title: "Total Dust",
+        value: `${totalOverallDust.toFixed(3)} g`,
         description: "Total loss across departments",
         isIncrease: false,
       },
