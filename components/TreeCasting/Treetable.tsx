@@ -91,6 +91,7 @@ const filteredData = (Array.isArray(data) ? data : []).filter((item) => {
         <Tag color={text.trim() === "Completed" ? "green" : "orange"}>{text}</Tag>
       ),
     },
+    { title: "Remarks", dataIndex: "remark", key: "remark" },
      {
         title: "Action",
         key: "action",
