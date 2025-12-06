@@ -4,7 +4,7 @@ import { IDeal } from "@/interface/table.interface";
 
 const apiUrl = "https://kalash.app";
 
-//const apiUrl = "http://localhost:4001";
+// const apiUrl = "http://localhost:4001";
 
 // Function to fetch orders from the server
 
@@ -34,7 +34,9 @@ export const fetchDealData = async (): Promise<IDeal[]> => {
             createdDate: order.created_date || new Date().toISOString(),
             createdBy: order.created_by || '',
             status: order.status || 'Open',
-            clientSheetPdf: order.pdfUrl || null
+            clientSheetPdf: order.pdfUrl || null,
+            quantity: order.totalQuantity || 0,
+            weight: order.totalWeight || 0
           };
         });
       } else {

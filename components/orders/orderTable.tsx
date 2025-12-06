@@ -495,8 +495,11 @@ export default function DealsTable() {
         <TableCell>
           <span className="tag-badge">{row.tags}</span>
         </TableCell>
+        
+        <TableCell>{row.quantity}</TableCell>
         <TableCell>
-          {calculateTotalWeight(row.weightRange || '0', Number(row.quantity) || 0)}
+          {/* {calculateTotalWeight(row.weightRange || '0', Number(row.quantity) || 0)} */}
+          {row.weight}
         </TableCell>
         <TableCell className="table__icon-box">
           <div className="flex items-center justify-start gap-[10px]">
@@ -639,6 +642,7 @@ export default function DealsTable() {
                         <TableCell>Status</TableCell>
                         <TableCell>Advance Metal</TableCell>
                         <TableCell>Tags</TableCell>
+                        <TableCell>Quantity</TableCell>
                         <TableCell>Total Weight</TableCell>
                         <TableCell>Actions</TableCell>
                       </TableRow>
