@@ -408,15 +408,16 @@ async function createOrderPDF(orderInfo: OrderDetails, orderItems: ModelDetails[
   // --- Order Details ---
   const detailsColumnWidths = [150, 350];
   const orderDetailsTable = [
-    ["Order No:", orderInfo.orderId ?? "-"],
-    ["Party Ledger:", orderInfo.partyName ?? "-"],
-    ["Product:", orderInfo.category ?? "-"],
-    ["Metal Purity:", orderInfo.purity ?? "-"],
-    ["Advance Metal:", orderInfo.advanceMetal ?? "-"],
-    ["Delivery Date:", orderInfo.deliveryDate ?? "-"],
-    ["Created Date:", orderInfo.createdDate ?? "-"],
-    ["Created By:", orderInfo.createdBy ?? "-"],
-    ["Date:", new Date().toLocaleDateString()],
+    ["Order No :", orderInfo.orderId ?? "-"],
+    ["Party Ledger :", orderInfo.partyName ?? "-"],
+    ["Product :", orderInfo.category ?? "-"],
+    ["Metal Purity :", orderInfo.purity ?? "-"],
+    ["Advance Metal :", orderInfo.advanceMetal ?? "-"],
+    ["Delivery Date :", orderInfo.deliveryDate ?? "-"],
+    ["Created Date :", orderInfo.createdDate ?? "-"],
+    ["Created By :", orderInfo.createdBy ?? "-"],
+    ["Date :", new Date().toLocaleDateString()],
+    ["Remarks : ", orderInfo.remarks ?? "-"],
   ];
 
   orderDetailsTable.forEach(([label, value]) => {
