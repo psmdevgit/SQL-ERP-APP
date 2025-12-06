@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import DullTable from "./DullTable";
 import DullSummary from "./DullSummary";
 
+import { Button } from "@/components/ui/button";
           const DullMainArea = () => {
   const router = useRouter();
 
@@ -24,7 +25,23 @@ import DullSummary from "./DullSummary";
               </ol>
             </nav>
                 
+                {/* Action Buttons */}
+            <div className="flex items-center gap-4 mt-4">
+              
+            
+
+              <Button
+                onClick={() => router.push('/Departments/Dull/')}
+                className="bg-blue-600 text-white hover:bg-blue-700"
+              >
+                Dull Backorder
+              </Button>
+            </div>
+
           </div>
+
+           
+
         </div>
         <div className="grid grid-cols-12 gap-x-6 maxXs:gap-x-0">
           {/* Summary section - full width */}
