@@ -204,12 +204,12 @@ console.log('[Dull Details] Fetch result:', result);
       
       if (!data) return;
 
-          // 🚨 Validation: Check if total received weight > issued weight
-    if (totalReceivedWeight > (data.dull.Issued_Weight__c || 0)) {
-      alert("Received Weight cannot be greater than Issued Weight!");
-      setIsSubmitting(false);
-      return;
-    }
+    //       // 🚨 Validation: Check if total received weight > issued weight
+    // if (totalReceivedWeight > (data.dull.Issued_Weight__c || 0)) {
+    //   alert("Received Weight cannot be greater than Issued Weight!");
+    //   setIsSubmitting(false);
+    //   return;
+    // }
 
 
 
