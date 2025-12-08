@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation';
-import { toast } from 'react-hot-toast';import { PDFDocument, StandardFonts, rgb, degrees } from "pdf-lib";
+import { toast } from 'react-hot-toast';
+import { PDFDocument, StandardFonts, rgb, degrees, PDFPage, PDFFont } from "pdf-lib";
 
 import COMPANY_LOGO from "@/assets/PothysLogo.png"
 
@@ -432,6 +433,32 @@ async function createOrderPDF(orderInfo: OrderDetails, orderItems: ModelDetails[
 
   y -= lineHeight * 2;
 
+     //---------------------------------------------------------------------------------------
+    
+  const remark = orderInfo.remarks.trim();
+
+  page.drawText("Order Remark", { x: margin, y, size: 14, font: boldFont });
+      y -= lineHeight *1;
+
+    let newLine = orderInfo.remarks ;
+    
+newLine = newLine.replace(/[\r\n]+/g, " ").trim();
+      //  const newLine = "This is a single-line paragraph.rfgokin uwiorgh9iwpe wue9h9wiuej 8w90efjwiqe0jf 09weijf9i0wejf i0wehjf i0wefh9uiwehfiwuefhweiqufhbwepiufnb9weufhw9eiuf";
+page.drawText(newLine, {
+  x: margin,      // left margin
+  y: y,           // current vertical position
+  size: 10,       // font size
+  font: boldFont, // or font
+  maxWidth: page.getWidth() - margin * 2, // optional, text will be cut if too long
+});
+ y -= lineHeight *2;
+
+
+
+
+    //----------------------------------------------------------------------------------------
+
+
   // --- Items Table ---
   page.drawText("Order Items", { x: margin, y, size: 14, font: boldFont });
   y -= lineHeight * 1.5;
@@ -521,6 +548,7 @@ async function createOrderPDF(orderInfo: OrderDetails, orderItems: ModelDetails[
   const pdfBytes = await pdfDoc.save();
   return new Blob([pdfBytes], { type: "application/pdf" });
 }
+
 
 
   if (loading) {
@@ -735,7 +763,7 @@ async function createOrderPDF(orderInfo: OrderDetails, orderItems: ModelDetails[
         )}
 
         {/* Download buttons section */}
-        <div style={{ 
+        {/* <div style={{ 
           display: 'flex', 
           gap: '15px', 
           padding: '20px 0',
@@ -816,7 +844,7 @@ async function createOrderPDF(orderInfo: OrderDetails, orderItems: ModelDetails[
               Download Canceled Image Sheet
             </a>
           )}
-        </div>
+        </div> */}
       </div>
 
       {/* Confirmation Modal */}
