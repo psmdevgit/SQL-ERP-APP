@@ -417,7 +417,7 @@ async function createOrderPDF(orderInfo: OrderDetails, orderItems: ModelDetails[
     ["Created Date :", orderInfo.createdDate ?? "-"],
     ["Created By :", orderInfo.createdBy ?? "-"],
     ["Date :", new Date().toLocaleDateString()],
-    ["Remarks : ", orderInfo.remarks ?? "-"],
+    // ["Remarks : ", orderInfo.remarks ?? "-"],
   ];
 
   orderDetailsTable.forEach(([label, value]) => {
