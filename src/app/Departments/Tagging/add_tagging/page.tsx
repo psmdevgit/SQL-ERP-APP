@@ -39,6 +39,7 @@ export default function AddTagging() {
 
      const pouchid = cuttingId || platingId;  
      
+     console.log('pouch id : ', pouchid);
     if (!pouchid) return;
 
     const parts = pouchid.split("/");
@@ -59,10 +60,10 @@ export default function AddTagging() {
         let url = "";
 
         // Decide API based on which query param is present
-      if (cuttingId) {
-        url = `${apiBaseUrl}/api/cutting-tagging/${prefix}/${date}/${month}/${year}/${number}/${subnum}`;
-      } else if (platingId) {
+      if (platingId) {
         url = `${apiBaseUrl}/api/plating-tagging/${prefix}/${date}/${month}/${year}/${number}/${subnum}`;
+      } else if (cuttingId) {
+        url = `${apiBaseUrl}/api/cutting-tagging/${prefix}/${date}/${month}/${year}/${number}/${subnum}`;
       }
 
 
@@ -75,7 +76,7 @@ export default function AddTagging() {
 
           setCutting(item);
           setReceivedWeight(item.Returned_weight__c ?? 0);
-          setQuantity(item.cutting.Quantity__c ?? 0);
+          setQuantity(item.Quantity__c ?? 0);
         } else {
           console.error("API error:", data.message);
         }
