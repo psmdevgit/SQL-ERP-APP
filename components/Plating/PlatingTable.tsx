@@ -54,7 +54,8 @@ const departments: Department[] = [
   { value: 'polish', label: 'Polish', path: '/Departments/Polish/add_polish_details' },
   { value: 'dull', label: 'Dull', path: '/Departments/Dull/add_dull_details' },
   { value: 'plating', label: 'Plating', path: '/Departments/Plating/add_plating_details' },
-  {value: "cutting", label:"Cutting", path: '/Departments/Cutting/add_cutting_details'}
+  {value: "cutting", label:"Cutting", path: '/Departments/Cutting/add_cutting_details'},
+  {value: "tagging", label:"Tagging", path: '/Departments/Tagging/add_tagging'}
 
 ];
 
