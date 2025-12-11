@@ -69,8 +69,8 @@ const DailyInventory: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ padding: 20 ,marginTop:50}} class="w-[60%] mx-auto">
-      <Title level={3}>Opening / Closing Inventory Report</Title>
+    <div style={{ padding: 20 ,marginTop:50}} className="w-[60%] mx-auto">
+      <Title level={3}>Opening / Closing Inventory Reports</Title>
 
       <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
         <RangePicker
