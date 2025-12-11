@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import "../Orders/add-order/add-order.css";
+import { availableMemory } from 'process';
 
 const apiBaseUrl = "https://kalash.app" ;
 
@@ -208,6 +209,22 @@ const InventoryUpdateForm = () => {
       return;
     }
 
+    console.log("selected item : ", formData.itemName);
+
+    // if(formData.availableWeight <= '0' ){
+    //   alert("Received weight cannot be 0 or minus.");
+      
+    //   setIsLoading(false);
+    //   return;
+    // }
+// Skip weight validation ONLY for itemName "finding"
+if (formData.itemName.toLowerCase() !== "finding") {
+  if (parseFloat(formData.availableWeight) <= 0) {
+    alert("Available weight cannot be 0 or negative.");
+    setIsLoading(false);
+    return;
+  }
+}
     try {
       // Prepare the payload without weight conversion
       const payload = {
@@ -221,6 +238,8 @@ const InventoryUpdateForm = () => {
       };
 
       console.log('Submitting payload:', payload);
+
+
 
       const response = await fetch(`${apiBaseUrl}/update-inventory`, {
         method: 'POST',
