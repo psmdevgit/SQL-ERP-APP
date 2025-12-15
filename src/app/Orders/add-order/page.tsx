@@ -163,9 +163,10 @@ const [modelFields, setModelFields] = useState<{
 
   /* ---------------------- API ---------------------- */
 
-  const apiBaseUrl = "https://kalash.app" ;
+  //const apiBaseUrl = "https://kalash.app" ;
 
   
+  const apiBaseUrl = "http://localhost:4001" ;
   const imageapi = "https://psmport.pothysswarnamahalapp.com/FactoryModels/" ;
   
   // const apiBaseUrl = "http://localhost:4001" ;
@@ -1397,9 +1398,11 @@ const handleSubmitOrder = async () => {
       0
     );
 
+    const username = localStorage.getItem("username") || "Unknown User";
     // Build JSON data
     const jsonPayload = {
       orderNo: orderNumber,
+      createdById: username,
       TotalQuantity: totalQuantity,
       orderInfo: orderInfo, // full order info
       items: orderSelectedItems.map((item) => ({

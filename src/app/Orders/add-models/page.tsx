@@ -24,7 +24,7 @@ const AddModel = () => {
 
 //  const apiBaseUrl ="http://localhost:4001";
 
-const router = useRouter();
+ const router = useRouter();
  const searchParams = useSearchParams();
  const orderId = searchParams.get('orderId');
 

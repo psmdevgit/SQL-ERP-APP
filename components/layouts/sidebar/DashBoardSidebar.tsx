@@ -45,7 +45,7 @@ const filteredSidebarData = useMemo(() => {
   const result = sidebarData
     .map((category) => {
       const filteredItems = category.items
-        .map((item) => {
+        .map((item) => { 
           if (!item.subItems || item.subItems.length === 0) return null;
 
           // Match only allowed departments

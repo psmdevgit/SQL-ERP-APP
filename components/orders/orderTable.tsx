@@ -520,7 +520,7 @@ export default function DealsTable() {
               </button>
             </Link>
 
-            <Link href={`/Orders/add-models?orderId=${row.id}`} passHref>
+            <Link href={`/Orders/edit-order?orderId=${row.id}`} passHref>
               <button
                 type="button"
                 className="table__icon edit"
