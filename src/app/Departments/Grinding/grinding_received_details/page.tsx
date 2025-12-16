@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { z } from 'zod';
 
 
-// const apiBaseUrl = "http://localhost:4001"; 
+const apiBaseUrl = "http://localhost:4001"; 
 
-const apiBaseUrl = "https://kalash.app"; 
+// const apiBaseUrl = "https://kalash.app"; 
 
 interface Details {
   Id: string;
@@ -277,7 +277,8 @@ const GrindingDetailsPage = () => {
         dustWeight: dustReceivedWeight || 0,
         status: 'Completed',
         grindingLoss: newissuedWeight - totalWeight,
-        pouches: pouchData
+        pouches: pouchData,
+        ornamentWeight: ornamentWeight,
       };
 
       console.log('Submitting data:', formData);
