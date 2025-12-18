@@ -469,6 +469,11 @@ export interface IFiling {
   status: string;
   grindingLoss: number;
   movedstatus: number;
+  scrapWeight: number;
+  dustWeight: number;
+  findingWeight: number;
+  AddedFindingWeight: number;
+ 
 }
 
 export interface IMedia {
