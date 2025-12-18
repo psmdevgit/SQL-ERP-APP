@@ -193,6 +193,11 @@ const PlatingSummary: React.FC = () => {
       (sum, item) => sum + Number(item.Plating_Loss__c || 0),
       0
     );
+
+       const totalPlatingDust = filteredData.reduce(
+      (sum, item) => sum + Number(item.Plating_Dust_Weight__c || 0),
+      0
+    );
   const totalProcessingWeight = filteredData.reduce((sum, item) => {
     const received = Number(item.Returned_weight__c || 0);
     if (!received) {
@@ -205,6 +210,10 @@ const PlatingSummary: React.FC = () => {
       ? ((totalPlatingLoss / totalIssuedWeight) * 100).toFixed(2)
       : "0";
     
+       const platingDustPercentage = totalIssuedWeight
+      ? ((totalPlatingDust / totalIssuedWeight) * 100).toFixed(2)
+      : "0";
+
     const receivedPercentage = totalIssuedWeight 
       ? ((totalReceivedWeight / totalIssuedWeight) * 100).toFixed(2)
       : "0";
@@ -242,6 +251,14 @@ const PlatingSummary: React.FC = () => {
         percentageChange: receivedPercentage,
         isIncrease: true,
       },  
+      {
+        iconClass: "fa-light fa-arrow-trend-down",
+        title: "Plating Dust",
+        value: totalPlatingDust.toFixed(2) + " g",
+        description: platingDustPercentage + "% of issued",
+        percentageChange: platingDustPercentage,
+        isIncrease: false
+      },
       {
         iconClass: "fa-light fa-arrow-trend-down",
         title: "Plating Loss",
@@ -354,7 +371,7 @@ const PlatingSummary: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
         {loading ? (
           <div className="col-span-full text-center py-8 text-gray-500">
             Loading plating data...

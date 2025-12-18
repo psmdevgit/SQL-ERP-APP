@@ -30,6 +30,7 @@ export const fetchCorrectionData = async (): Promise<IFiling[]> => {
             orderId : grinding.Order_Id__c || '',
             grindingLoss: grinding.Grinding_loss__c || 0 ,
             movedstatus: grinding.movedstatus || 0,
+            correctionDust : grinding.Grinding_Dust_Weight__c || 0
           };
         });
       } else {

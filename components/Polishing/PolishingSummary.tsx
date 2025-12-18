@@ -220,6 +220,12 @@ const PolishingSummary: React.FC = () => {
           (sum, item) => sum + Number(item.polishingLoss || 0),
       0
     );
+
+     const totalPolishingDust = filteredData.reduce(
+          (sum, item) => sum + Number(item.polishingDust || 0),
+      0
+    );
+
  const totalProcessingWeight = filteredData.reduce((sum, item) => {
     const received = Number(item.receivedWeight || 0);
     if (!received) {
@@ -231,6 +237,11 @@ const PolishingSummary: React.FC = () => {
     const polishingLossPercentage = totalIssuedWeight
       ? ((totalPolishingLoss / totalIssuedWeight) * 100).toFixed(2)
       : "0";
+
+      const polishingDustPercentage = totalIssuedWeight
+      ? ((totalPolishingDust / totalIssuedWeight) * 100).toFixed(2)
+      : "0";
+
     
     const receivedPercentage = totalIssuedWeight 
       ? ((totalReceivedWeight / totalIssuedWeight) * 100).toFixed(2)
@@ -269,6 +280,14 @@ const PolishingSummary: React.FC = () => {
         percentageChange: receivedPercentage,
         isIncrease: true,
       },  
+      {
+        iconClass: "fa-light fa-arrow-trend-down",
+        title: "Polishing Dust",
+        value: totalPolishingDust.toFixed(2) + " g",
+        description: polishingDustPercentage + "% of issued",
+        percentageChange: polishingDustPercentage,
+        isIncrease: false
+      },
       {
         iconClass: "fa-light fa-arrow-trend-down",
         title: "Polishing Loss",
@@ -394,7 +413,7 @@ const PolishingSummary: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
         {loading ? (
           <div className="col-span-full text-center py-8 text-gray-500">
                 Loading polishing data...

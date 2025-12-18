@@ -25,6 +25,7 @@ export const fetchcuttingData = async (): Promise<ICutting[]> => {
             product: cutting.Product__c || 'N/A',
             quantity: cutting.Quantity__c || 0,
             OrderId : cutting.Order_Id__c || 'N/A',
+            cuttingDust : cutting.Cutting_Dust_Weight__c || 0,
             
             CuttinfLoss: cutting.Cutting_loss__c || 0 // Calculate loss
           };

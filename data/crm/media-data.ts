@@ -29,7 +29,8 @@ export const fetchMediaData = async (): Promise<IMedia[]> => {
             quantity: grinding.Quantity__c || 0,
             orderId : grinding.Order_Id__c || '',
             grindingLoss: grinding.Grinding_loss__c || 0,
-            movedstatus: grinding.movedstatus || 0,
+            movedstatus: grinding.movedstatus || 0,            
+            mediaDust: grinding.Grinding_Dust_Weight__c || 0,
           };
         });
       } else {

@@ -239,6 +239,11 @@ const DullSummary: React.FC = () => {
       0
     );
 
+     const totalDullDust = filteredData.reduce(
+          (sum, item) => sum + Number(item.dullDust || 0),
+      0
+    );
+
         // FIXED: Proper processing weight
     const totalProcessingWeight = filteredData.reduce((sum, item) => {
         const received = Number(item.receivedWeight || 0);
@@ -252,6 +257,10 @@ const DullSummary: React.FC = () => {
       ? ((totalDullLoss / totalIssuedWeight) * 100).toFixed(2)
       : "0";
     
+       const dullDustPercentage = totalIssuedWeight
+      ? ((totalDullDust / totalIssuedWeight) * 100).toFixed(2)
+      : "0";
+
     const receivedPercentage = totalIssuedWeight 
       ? ((totalReceivedWeight / totalIssuedWeight) * 100).toFixed(2)
       : "0";
@@ -289,6 +298,15 @@ const DullSummary: React.FC = () => {
         percentageChange: receivedPercentage,
         isIncrease: true,
       },  
+      
+      {
+        iconClass: "fa-light fa-arrow-trend-down",
+        title: "Dull Dust",
+        value: totalDullDust.toFixed(2) + " g",
+        description: dullDustPercentage + "% of issued",
+        percentageChange: dullDustPercentage,
+        isIncrease: false
+      },
       {
         iconClass: "fa-light fa-arrow-trend-down",
         title: "Dull Loss",
@@ -411,7 +429,7 @@ const DullSummary: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
         {loading ? (
           <div className="col-span-full text-center py-8 text-gray-500">
             Loading Dull data...

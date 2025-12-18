@@ -34,6 +34,7 @@ export const fetchGrindingData = async (): Promise<IFiling[]> => {
             quantity:grinding.quantity || 0,  
             grindingLoss: grinding.Filing_Loss || 0,
             movedstatus: grinding.movedstatus || 0,
+            filingDust: grinding.Filing_Dust_Weight || 0
 
           };
         });

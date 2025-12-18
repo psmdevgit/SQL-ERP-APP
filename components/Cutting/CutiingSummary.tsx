@@ -168,6 +168,12 @@ const CuttingSummary: React.FC = () => {
       (sum, item) => sum + Number(item.CuttinfLoss || 0), // Note the typo in property name
       0
     );
+
+    const totalCuttingDust = filteredData.reduce(
+      (sum, item) => sum + Number(item.cuttingDust || 0), // Note the typo in property name
+      0
+    );
+
     const totalProcessingWeight = filteredData.reduce((sum, item) => {
     const received = Number(item.returnedWeight || 0);
     if (!received) {
@@ -178,6 +184,10 @@ const CuttingSummary: React.FC = () => {
     // Calculate percentages
     const cuttingLossPercentage = totalIssuedWeight
       ? ((totalCuttingLoss / totalIssuedWeight) * 100).toFixed(2)
+      : "0";
+
+    const cuttingDustPercentage = totalIssuedWeight
+      ? ((totalCuttingDust / totalIssuedWeight) * 100).toFixed(2)
       : "0";
     
     const receivedPercentage = totalIssuedWeight 
@@ -201,14 +211,14 @@ const CuttingSummary: React.FC = () => {
       percentageChange: "",
       isIncrease: true,
     },
-      {
-        iconClass: "fa-light fa-weight-scale",
-        title: "Pending Cuttings",
-        value: totalIssuedWeight.toFixed(2) + " g",
-        description: "Total gold issued",
-        percentageChange: "",
-        isIncrease: true,
-      },
+      // {
+      //   iconClass: "fa-light fa-weight-scale",
+      //   title: "Pending Cuttings",
+      //   value: totalIssuedWeight.toFixed(2) + " g",
+      //   description: "Total gold issued",
+      //   percentageChange: "",
+      //   isIncrease: true,
+      // },
       {
         iconClass: "fa-light fa-weight-scale",
         title: "Weight Issued",
@@ -224,7 +234,15 @@ const CuttingSummary: React.FC = () => {
         description: receivedPercentage + "% of issued",
         percentageChange: receivedPercentage,
         isIncrease: true,
-      },  
+      },        
+      {
+        iconClass: "fa-light fa-arrow-trend-down",
+        title: "Cutting Dust",
+        value: totalCuttingDust.toFixed(2) + " g",
+        description: cuttingDustPercentage + "% of issued",
+        percentageChange: cuttingDustPercentage,
+        isIncrease: false
+      }, 
       {
         iconClass: "fa-light fa-arrow-trend-down",
         title: "Cutting Loss",
@@ -344,7 +362,7 @@ const CuttingSummary: React.FC = () => {
       
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
         {loading ? (
           <div className="col-span-full text-center py-8 text-gray-500">
             Loading cutting data...
