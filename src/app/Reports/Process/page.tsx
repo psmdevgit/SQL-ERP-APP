@@ -201,7 +201,10 @@ export default function SummaryPage() {
                       </td>
                     </tr>
                   ) : (
-                    data.map((row, idx) => (
+                    data.map((row, idx) =>
+                      
+                      { if (row.process?.toLowerCase() === "tagging") return null;
+                        return (
                       <tr key={idx} className="text-center">
                         <td
                           className="border p-2 text-left"
@@ -216,7 +219,8 @@ export default function SummaryPage() {
                           {Number((row.process_wt*91.7)/100 || 0).toFixed(4)}
                         </td>
                       </tr>
-                    ))
+                    )
+})
                   )}
                 </tbody>
                 {data.length > 0 && (
@@ -261,140 +265,227 @@ export default function SummaryPage() {
           </div>
         </div>
 
-<div>
-  <h1 className="text-xl font-bold mb-4">Inventory Items</h1>
-  <div className="mt-5 overflow-x-auto">
-    {isLoading && <p className="text-gray-500">Loading...</p>}
-    {error && <p className="text-red-500">Error: {error}</p>}
-    {!isLoading && !error && reports.length === 0 && (
-      <p className="text-gray-500">No reports found.</p>
-    )}
+        <div>
+          <h1 className="text-xl font-bold mb-4">Inventory Items</h1>
+          <div className="mt-5 overflow-x-auto">
+            {isLoading && <p className="text-gray-500">Loading...</p>}
+            {error && <p className="text-red-500">Error: {error}</p>}
+            {!isLoading && !error && reports.length === 0 && (
+              <p className="text-gray-500">No reports found.</p>
+            )}
 
-    {!isLoading && !error && reports.length > 0 && (
-      <div className="overflow-x-auto">
-{/*         {(() => {
-          const filteredReports = reports.filter(
-            (r) => Number(r.availableWeight) > 0
-          ); */}
+            {!isLoading && !error && reports.length > 0 && (
+              <div className="overflow-x-auto">
+        {/*         {(() => {
+                  const filteredReports = reports.filter(
+                    (r) => Number(r.availableWeight) > 0
+                  ); */}
 
-                {(() => {
-       
-          const filteredReports = reports.filter(
-  (r) => Number(r.availableWeight) > 0 && r.name.toLowerCase() !== "alloy"
-);
+                        {(() => {
+              
+                  const filteredReports = reports.filter(
+          (r) => Number(r.availableWeight) > 0 && r.name.toLowerCase() !== "alloy"
+        );
 
-          const totalAvlWeight = filteredReports.reduce(
-            (sum, r) => sum + (Number(r.availableWeight) || 0),
-            0
-          );
+                  const totalAvlWeight = filteredReports.reduce(
+                    (sum, r) => sum + (Number(r.availableWeight) || 0),
+                    0
+                  );
 
-          const totalPurityWt = filteredReports.reduce((sum, r) => {
-            const purityString = String(r.purity).trim().toLowerCase();
-            let purityValue: number = purityString.includes("22k")
-              ? 91.7
-              : parseFloat(purityString) || 0;
-            const availableWeightValue = Number(r.availableWeight) || 0;
-            return sum + (purityValue * availableWeightValue) / 100;
-          }, 0);
-
-          return (
-            <table className="border border-collapse w-full bg-white">
-              <thead className="bg-[#1A7A75] text-white">
-                <tr>
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    Item
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    Purity
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    Avl Weight (gm)
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    Purity Gold Wt (gm)
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {filteredReports.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="px-4 py-4 text-center text-gray-500"
-                    >
-                      No data found.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredReports.map((report, index) => {
-                    const purityString = String(report.purity)
-                      .trim()
-                      .toLowerCase();
+                  const totalPurityWt = filteredReports.reduce((sum, r) => {
+                    const purityString = String(r.purity).trim().toLowerCase();
                     let purityValue: number = purityString.includes("22k")
                       ? 91.7
                       : parseFloat(purityString) || 0;
+                    const availableWeightValue = Number(r.availableWeight) || 0;
+                    return sum + (purityValue * availableWeightValue) / 100;
+                  }, 0);
 
-                    const availableWeightValue =
-                      Number(report.availableWeight) || 0;
+                  return (
+                    <table className="border border-collapse w-full bg-white">
+                      <thead className="bg-[#1A7A75] text-white">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-sm font-semibold">
+                            Item
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-semibold">
+                            Purity
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-semibold">
+                            Avl Weight (gm)
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-semibold">
+                            Purity Gold Wt (gm)
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {filteredReports.length === 0 ? (
+                          <tr>
+                            <td
+                              colSpan={4}
+                              className="px-4 py-4 text-center text-gray-500"
+                            >
+                              No data found.
+                            </td>
+                          </tr>
+                        ) : (
+                          filteredReports.map((report, index) => {
+                            const purityString = String(report.purity)
+                              .trim()
+                              .toLowerCase();
+                            let purityValue: number = purityString.includes("22k")
+                              ? 91.7
+                              : parseFloat(purityString) || 0;
 
-                    const purityGoldWeight = (
-                      (purityValue * availableWeightValue) /
-                      100
-                    ).toFixed(4);
+                            const availableWeightValue =
+                              Number(report.availableWeight) || 0;
 
-                    return (
-                      <tr
-                        key={`${report.name}-${index}`}
-                        className="hover:bg-gray-50"
-                      >
-                        <td className="px-4 py-2 text-sm text-gray-800">
-                          {report.name}
-                        </td>
-                        <td className="px-4 py-2 text-sm text-gray-800">
-                          {report.purity}
-                        </td>
-                        <td className="px-4 py-2 text-sm text-gray-800">
-                          {availableWeightValue.toFixed(4)}
-                        </td>
-                        <td className="px-4 py-2 text-sm text-gray-800">
-                          {purityGoldWeight}
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
+                            const purityGoldWeight = (
+                              (purityValue * availableWeightValue) /
+                              100
+                            ).toFixed(4);
 
-              {/* Show footer only if totals > 0 */}
-              {totalAvlWeight > 0 || totalPurityWt > 0 ? (
-                <tfoot>
+                            return (
+                              <tr
+                                key={`${report.name}-${index}`}
+                                className="hover:bg-gray-50"
+                              >
+                                <td className="px-4 py-2 text-sm text-gray-800">
+                                  {report.name}
+                                </td>
+                                <td className="px-4 py-2 text-sm text-gray-800">
+                                  {report.purity}
+                                </td>
+                                <td className="px-4 py-2 text-sm text-gray-800">
+                                  {availableWeightValue.toFixed(4)}
+                                </td>
+                                <td className="px-4 py-2 text-sm text-gray-800">
+                                  {purityGoldWeight}
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+
+                      {/* Show footer only if totals > 0 */}
+                      {totalAvlWeight > 0 || totalPurityWt > 0 ? (
+                        <tfoot>
+                          <tr
+                            style={{
+                              backgroundColor: "#EDB652",
+                              color: "#000",
+                              fontWeight: "500",
+                            }}
+                          >
+                            <td colSpan={2} className="px-4 py-2">
+                              Total:
+                            </td>
+                            <td className="px-4 py-2 text-sm">
+                              {totalAvlWeight.toFixed(4)}
+                            </td>
+                            <td className="px-4 py-2 text-sm">
+                              {totalPurityWt.toFixed(4)}
+                            </td>
+                          </tr>
+                        </tfoot>
+                      ) : null}
+                    </table>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
+        </div>
+
+{/* <div>
+  <h1 className="text-xl font-bold mb-4">Tagged Items</h1>
+          <div className="mt-5 overflow-x-auto">
+            {loading ? (
+              <p className="text-lg font-semibold">Loading...</p>
+            ) : (
+              <table
+                className="border border-collapse"
+                style={{ width: "100%", backgroundColor: "#fff" }}
+              >
+                <thead>
                   <tr
+                    className="bg-gray-100"
                     style={{
-                      backgroundColor: "#EDB652",
-                      color: "#000",
-                      fontWeight: "500",
+                      backgroundColor: "#1a7a75",
+                      color: "#fff"
                     }}
                   >
-                    <td colSpan={2} className="px-4 py-2">
-                      Total:
-                    </td>
-                    <td className="px-4 py-2 text-sm">
-                      {totalAvlWeight.toFixed(4)}
-                    </td>
-                    <td className="px-4 py-2 text-sm">
-                      {totalPurityWt.toFixed(4)}
-                    </td>
+                    <th className="border p-2">Process</th>
+                    <th className="border p-2">
+                      Tagged Wt{" "}
+                      <span className="text-xs ps-2 text-white-700">(gm)</span>
+                    </th>
+                      
                   </tr>
-                </tfoot>
-              ) : null}
-            </table>
-          );
-        })()}
-      </div>
-    )}
-  </div>
-</div>
+                </thead>
+                <tbody>
+                  {taggedData.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="text-center p-4 text-gray-500"
+                      >
+                        No records found
+                      </td>
+                    </tr>
+                  ) : (
+                    taggedData.map((row, idx) => (
+                      <tr key={idx} className="text-center">
+                        <td
+                          className="border p-2 text-left"
+                          style={{ color: "#444", fontWeight: "500" }}
+                        >
+                          {row.process}
+                        </td>
+                        <td className="border p-2">
+                          {Number(row.Received_weight || 0).toFixed(4)}
+                        </td>  
+                       
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+                {data.length > 0 && (
+                  <tfoot>
+                    <tr
+                      className="text-center"
+                      style={{
+                        backgroundColor: "#EDB652",
+                        color: "#000",
+                        fontWeight: "500",
+                      }}
+                    >
+                      <td
+                        className="border p-2 text-left"
+                        style={{ color: "#000", fontWeight: "500" }}
+                      >
+                        Total:
+                      </td>
+                      <td className="border p-2">
+                        {data
+                          .reduce(
+                            (sum, row) => sum + Number(row.Received_weight || 0),
+                            0
+                          )
+                          .toFixed(4)}
+                      </td>
 
+                     
+
+                    </tr>
+                  </tfoot>
+                )}
+              </table>
+            )}
+          </div>
+</div> */}
 
 
       </div>
