@@ -46,6 +46,14 @@ interface Department {
   path: string;
 }
 
+// Add this type for weight breakdown
+
+interface WeightBreakdown {
+  ornamentWeight: number;
+  scrapWeight: number;
+  dustWeight: number;
+}
+
 const departments: Department[] = [
   { value: 'grinding', label: 'Grinding', path: '/Departments/Grinding/add_grinding_details' }
   // { value: 'setting', label: 'Setting', path: '/Departments/Setting/add_setting_details' },
@@ -127,6 +135,67 @@ const getStatusClass = (status: string) => {
       return 'bg-secondary'; // default gray background
   }
 };
+ const formatWeight = (weight: number | string | undefined | null) => {
+  const num = Number(weight);       // Convert to number safely
+  return !isNaN(num) ? num.toFixed(4) : '0.0000';
+};
+
+
+
+  const renderWeightBreakdown = (deal: IFiling) => {
+    return (
+      <div className="bg-white p-3 rounded-lg shadow-xl border border-gray-200 text-sm w-[250px]">
+        <div className="font-semibold mb-3 text-gray-800 border-b pb-2">
+          Weight Breakdown
+        </div>
+        <div className="space-y-2">
+          <div className="flex justify-between items-center bg-blue-50 p-2 rounded">
+            <div className="text-blue-700">Ornament Weight:</div>
+            <div className="font-medium text-blue-800">
+              {formatWeight(deal.ornamentWeight)}g
+            </div>
+          </div>
+          
+          </div>
+           <div className="flex justify-between items-center bg-yellow-50 p-2 rounded">
+            <div className="text-purple-700">Added Finding Wt:</div>
+            <div className="font-medium text-purple-800">
+              {formatWeight(deal.AddedFindingWeight)}g
+            </div>
+          </div>
+         <div className="flex justify-between items-center bg-orange-50 p-2 rounded">
+              <div className="text-orange-700">Received Finding Wt:</div>
+              <div className="font-medium text-orange-800">
+                {formatWeight(deal.findingWeight)}g
+              </div>
+            </div>
+          <div className="flex justify-between items-center bg-green-50 p-2 rounded">
+            <div className="text-green-700">Scrap Weight:</div>
+            <div className="font-medium text-green-800">
+              {formatWeight(deal.scrapWeight)}g
+
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center bg-purple-50 p-2 rounded">
+            <div className="text-purple-700">Dust Weight:</div>
+            <div className="font-medium text-purple-800">
+              {formatWeight(deal.dustWeight)}g
+            </div>
+          </div>
+         
+          <div className="flex justify-between items-center bg-gray-100 p-2 rounded mt-3 border-t border-gray-200">
+            <div className="font-semibold text-gray-700">Total:</div>
+            <div className="font-bold text-gray-800">
+              {formatWeight(deal.receivedWeight)}g
+            </div>
+          </div>
+        </div>
+ 
+    );
+  };
+
+  
 
 const FilingTable = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -458,7 +527,25 @@ console.log("Deals State:", deals);
                               </TableCell>
                               <TableCell>{deal.id}</TableCell>
                               <TableCell>{deal.issuedWeight}</TableCell>
-                              <TableCell>{deal.receivedWeight}</TableCell>
+                              <TableCell>
+                                {/* {deal.receivedWeight} */}
+
+                                 <div 
+                                  className="relative group cursor-help"
+                                  title="Hover to see weight breakdown"
+                                >
+                                  <span className="hover:text-blue-600 transition-colors">
+                                    {formatWeight(deal.receivedWeight)}g
+                                  </span>
+                                  <div className="absolute z-[1000] invisible group-hover:visible 
+                                                left-0 top-full mt-1
+                                                animate-fade-in duration-200">
+                                    {renderWeightBreakdown(deal)}
+                                    <div className="absolute -top-2 left-4 
+                                                  border-8 border-transparent border-b-white"></div>
+                                  </div>
+                                </div>
+                                </TableCell>
                               <TableCell>{deal.issuedDate}</TableCell>
                               <TableCell>{deal.receivedDate}</TableCell>
                               <TableCell>{deal.orderId}</TableCell> 
@@ -585,7 +672,7 @@ console.log("Deals State:", deals);
                                         window.location.href = `${dept.path}?filingId=${deal.id}`;
                                       }
                                     }}
-                                  >
+                                  >  
                                     <SelectTrigger 
                                       className="w-[130px] h-8"
                                       style={{
@@ -608,7 +695,7 @@ console.log("Deals State:", deals);
                                             backgroundColor: 'white',
                                             color: 'black',
                                             padding: '8px 12px'
-                                          }}
+                                          }}   
                                         >
                                           {dept.label}
                                         </SelectItem>
@@ -778,7 +865,7 @@ console.log("Deals State:", deals);
                   marginTop: 0, 
                   marginBottom: '16px' 
                 }}>
-                  Approved Successfully!
+                  Approved Successfully!  
                 </h3>
               </div>
             )}
