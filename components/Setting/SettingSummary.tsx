@@ -211,6 +211,12 @@ import "react-datepicker/dist/react-datepicker.css";
       (sum, item) => sum + Number(item.receivedWeight || 0),
       0
     );
+
+     const totalSettingDust = filteredData.reduce(
+      (sum, item) => sum + Number(item.settingDust || 0),
+      0
+    );
+
     // Calculate setting loss as the difference between issued and received weight
     const totalSettingLoss = totalIssuedWeight - totalReceivedWeight;
 
@@ -227,6 +233,10 @@ import "react-datepicker/dist/react-datepicker.css";
       ? ((totalSettingLoss / totalIssuedWeight) * 100).toFixed(2)
       : "0";
     
+       const settingDustPercentage = totalIssuedWeight
+      ? ((totalSettingDust / totalIssuedWeight) * 100).toFixed(2)
+      : "0";
+
     const receivedPercentage = totalIssuedWeight 
       ? ((totalReceivedWeight / totalIssuedWeight) * 100).toFixed(2)
       : "0";
@@ -264,6 +274,14 @@ import "react-datepicker/dist/react-datepicker.css";
         percentageChange: receivedPercentage,
         isIncrease: true,
       },  
+      {
+        iconClass: "fa-light fa-arrow-trend-down",
+        title: "Setting Dust",
+        value: totalSettingDust.toFixed(2) + " g",
+        description: settingDustPercentage + "% of issued",
+        percentageChange: settingDustPercentage,
+        isIncrease: false
+      },
       {
         iconClass: "fa-light fa-arrow-trend-down",
         title: "Setting Loss",
@@ -389,7 +407,7 @@ import "react-datepicker/dist/react-datepicker.css";
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
         {loading ? (
           <div className="col-span-full text-center py-8 text-gray-500">
                 Loading setting data...

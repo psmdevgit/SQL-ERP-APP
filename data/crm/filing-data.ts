@@ -33,11 +33,16 @@ export const fetchGrindingData = async (): Promise<IFiling[]> => {
             product :grinding.product || '',  
             quantity:grinding.quantity || 0,  
             grindingLoss: grinding.Filing_Loss || 0,
+
+            movedstatus: grinding.movedstatus || 0,
+            filingDust: grinding.Filing_Dust_Weight || 0,
+
             ornamentWeight: grinding.Filing_Ornament_Weight || 0,
             scrapWeight: grinding.Filing_Scrap_Weight || 0,
             dustWeight: grinding.Filing_Dust_Weight || 0,
             findingWeight: grinding.Filing_Finding_Weight || 0,
             AddedFindingWeight: grinding.Filing_Added_Finding_Weight || 0,
+
 
 
 

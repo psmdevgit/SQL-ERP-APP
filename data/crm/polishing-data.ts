@@ -29,7 +29,8 @@ export const fetchPolishingData = async (): Promise<IPolishing[]> => {
             Order_Id__c
              || '',
             quantity: polishing.Quantity__c || 0,
-            polishingLoss: polishing.Polishing_loss__c || 0 ,
+            polishingLoss: polishing.Polishing_loss__c || 0 ,            
+            polishingDust: polishing.Polishing_Dust_Weight__c || 0 ,
             movedstatus: polishing.movedstatus || 0
           };
         });

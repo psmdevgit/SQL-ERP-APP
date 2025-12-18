@@ -30,6 +30,9 @@ export const fetchGrindingData = async (): Promise<IFiling[]> => {
             orderId : grinding.Order_Id__c || '',
             grindingLoss: grinding.Grinding_loss__c || 0 ,// Calculate loss
             movedstatus : grinding.movedstatus || 0,
+
+            grindingDust : grinding.Grinding_Dust_Weight__c || 0,
+
             ornamentWeight: grinding.Grinding_Ornament_Weight__c || 0,
             scrapWeight: grinding.Grinding_Scrap_Weight__c || 0,
             dustWeight: grinding.Grinding_Dust_Weight__c || 0,

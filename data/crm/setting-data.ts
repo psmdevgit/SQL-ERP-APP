@@ -30,6 +30,7 @@ export const fetchSettingData = async (): Promise<ISetting[]> => {
             stoneWeight: setting.Stone_Weight__c || 0,
             grindingLoss: setting.Setting_l__c || 0,
             movedstatus: setting.movedstatus || 0,
+            settingDust: setting.Setting_Dust_Weight__c || 0,
           };
         });
       } else {

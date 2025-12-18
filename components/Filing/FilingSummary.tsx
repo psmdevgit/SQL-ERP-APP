@@ -228,6 +228,10 @@ const calculateSummary = () => {
     (sum, item) => sum + (Number(item.grindingLoss) || 0),
     0
   );
+    const totalFilingDust = filteredData.reduce(
+    (sum, item) => sum + (Number(item.filingDust) || 0),
+    0
+  );
 
   const totalProcessingWeight = filteredData.reduce((sum, item) => {
     const received = Number(item.receivedWeight || 0);
@@ -239,6 +243,10 @@ const calculateSummary = () => {
 
   const filingLossPercentage = totalIssuedWeight > 0
     ? ((totalFilingLoss / totalIssuedWeight) * 100).toFixed(2)
+    : "0";
+
+      const filingDustPercentage = totalIssuedWeight > 0
+    ? ((totalFilingDust / totalIssuedWeight) * 100).toFixed(2)
     : "0";
 
   const receivedPercentage = totalIssuedWeight > 0
@@ -277,6 +285,14 @@ const calculateSummary = () => {
       description: receivedPercentage + "% of issued",
       percentageChange: receivedPercentage,
       isIncrease: true,
+    },
+     {
+      iconClass: "fa-light fa-arrow-trend-down",
+      title: "Filing Dust",
+      value: totalFilingDust.toFixed(2) + " g",
+      description: filingDustPercentage + "% of issued",
+      percentageChange: filingDustPercentage,
+      isIncrease: false,
     },
     {
       iconClass: "fa-light fa-arrow-trend-down",
@@ -391,7 +407,7 @@ const calculateSummary = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
         {loading ? (
           <div className="col-span-full text-center py-8 text-gray-500">
             Loading casting data...
