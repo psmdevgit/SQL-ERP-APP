@@ -12,6 +12,7 @@ interface Report {
   AlloyWeight: number;       
   ReceivedWeight: number;
   PartyCode: string;
+  Remark: string;
 
 }
 
@@ -32,15 +33,22 @@ const InwardInventory: React.FC = () => {
   const today = new Date();
   const startOfYear = new Date(today.getFullYear(), 0, 1);
 
-  const [fromDate, setFromDate] = useState(formatDateInput(startOfYear));
+  const [fromDate, setFromDate] = useState(formatDateInput(today));
   const [toDate, setToDate] = useState(formatDateInput(today));
   const [selectedName, setSelectedName] = useState("All");
   const [selectedOrder, setSelectedOrder] = useState("All");
 
+  const [selectedScrapType, setSelectedScrapType] = useState("All");
+
+
   const [allNames, setAllNames] = useState<string[]>([]);
+
+  
+  const [scrapType, setScrapType] = useState<string[]>([]);
+
   const [allOrders, setAllOrders] = useState<string[]>([]);
 
-//   const API_URL = "http://localhost:4001";
+  // const API_URL = "http://localhost:4001";
 
   
   const API_URL = "https://kalash.app";
@@ -65,16 +73,19 @@ const InwardInventory: React.FC = () => {
             PureMetalweight: item.pureMetalWeight,
             AlloyWeight: item.alloyWeight,
             ReceivedWeight: item.receivedWeight,
-            PartyCode: item.partyCode
+            PartyCode: item.partyCode,
+            Remark: item.remark
           }));
         }
 
         // build dropdown lists
         const uniqueNames = Array.from(new Set(reportData.map((r) => r.Name))).filter(Boolean);
         const uniqueOrders = Array.from(new Set(reportData.map((r) => r.PartyCode))).filter(Boolean);
+        const uniqueScrap = Array.from(new Set(reportData.map((r) => r.Remark))).filter(Boolean);
 
         setAllNames(["All", ...uniqueNames]);
         setAllOrders(["All", ...uniqueOrders]);
+        setScrapType(["All", ...uniqueScrap]);
 
         setReports(reportData);
         setFilteredReports(reportData);
@@ -105,11 +116,28 @@ useEffect(() => {
     const dateInRange = created >= from && created <= to;
     const nameMatch = selectedName === "All" || report.Name === selectedName;
     const orderMatch = selectedOrder === "All" || report.PartyCode === selectedOrder;
-    return dateInRange && nameMatch && orderMatch;
+    const scrapMatch = selectedScrapType === "All" || report.Remark === selectedScrapType;
+    return dateInRange && nameMatch && orderMatch && scrapMatch;
   });
 
   setFilteredReports(filtered);
-}, [fromDate, toDate, selectedName, selectedOrder, reports]);
+}, [fromDate, toDate, selectedName, selectedOrder,selectedScrapType, reports]);
+
+
+const formatDate24 = (dateStr: string) => {
+  const date = new Date(dateStr);
+
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+};
+
 
 
   return (
@@ -159,7 +187,7 @@ useEffect(() => {
 
 
           <div>
-            <label className="text-sm text-gray-700">Filter by Item Name</label>
+            <label className="text-sm text-gray-700">Filter by Item </label>
             <select
               className="border rounded px-3 py-1 w-full"
               value={selectedName}
@@ -172,6 +200,22 @@ useEffect(() => {
               ))}
             </select>
           </div>
+
+            <div>
+            <label className="text-sm text-gray-700">Scrap Type</label>
+            <select
+              className="border rounded px-3 py-1 w-full"
+              value={selectedScrapType}
+              onChange={(e) => setSelectedScrapType(e.target.value)}
+            >
+              {scrapType.map((remark) => (
+                <option key={remark} value={remark}>
+                  {remark}
+                </option>
+              ))}
+            </select>
+          </div>
+
 
           <div>
             <label className="text-sm text-gray-700">Filter by Party Code</label>
@@ -214,9 +258,11 @@ useEffect(() => {
                         <th className="px-4 py-2 text-left text-sm font-semibold">Name</th>
                         <th className="px-4 py-2 text-left text-sm font-semibold">Received Wt</th>
                         <th className="px-4 py-2 text-left text-sm font-semibold">Purity</th>
-                        <th className="px-4 py-2 text-left text-sm font-semibold">Pure Metal Wt</th>
-                        <th className="px-4 py-2 text-left text-sm font-semibold">Alloy Wt</th>
+                        {/* <th className="px-4 py-2 text-left text-sm font-semibold">Pure Metal Wt</th> */}
+                        {/* <th className="px-4 py-2 text-left text-sm font-semibold">Alloy Wt</th> */}
                         <th className="px-4 py-2 text-left text-sm font-semibold">Received Date</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold">Remark</th>
+
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -232,15 +278,19 @@ useEffect(() => {
                             {report.Purity || "-"}
                           </td>                        
 
-                        <td className="px-4 py-2 text-sm text-gray-800">
+                        {/* <td className="px-4 py-2 text-sm text-gray-800">
                             {report.PureMetalweight != null ? report.PureMetalweight.toFixed(4) : "-"}
-                          </td>
-                          <td className="px-4 py-2 text-sm text-gray-800">
+                          </td> */}
+                          {/* <td className="px-4 py-2 text-sm text-gray-800">
                             {report.AlloyWeight != null ? report.AlloyWeight.toFixed(4) : "-"}
+                          </td> */}
+
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {report.ReceivedDate != null ? formatDate24(report.ReceivedDate) : "-"}
                           </td>
 
                           <td className="px-4 py-2 text-sm text-gray-800">
-                            {report.ReceivedDate != null ? report.ReceivedDate : "-"}
+                            {report.Remark != null ? report.Remark : "-"}
                           </td>
 
                         </tr>
