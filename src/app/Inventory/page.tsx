@@ -43,6 +43,9 @@ const InventoryUpdateForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isCustomItem, setIsCustomItem] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
+
+  const [scrapType, setScrapType] = useState('');
+
   
   const [formData, setFormData] = useState({
     itemName: '',
@@ -55,44 +58,14 @@ const InventoryUpdateForm = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Fetch inventory items
-  // useEffect(() => {
-  //   const fetchInventory = async () => {
-  //     try {
-  //       const response = await fetch(`${apiBaseUrl}/get-inventoryupdate`);
-  //       const result = await response.json();
-        
-  //       if (result.success) {
-  //         setInventoryItems(result.data);
-  //       } else {
-  //         setError('Failed to fetch inventory items');
-  //       }
-  //     } catch (err) {
-  //       setError('Error fetching inventory items');
-  //       console.error(err);
-  //     }
-  //   };
+const isCastingScrap =
+  formData.itemName.toLowerCase() === "casting scrap";
 
-  //    const fetchPartyLedgers = async () => {
-  //     try {
-  //       const response = await fetch(`${apiBaseUrl}/customer-groups`);
-  //       const result = await response.json();
+const isNegativeWeight =
+  parseFloat(formData.availableWeight || "0") < 0;
 
-  //       if (result.success) {
-  //         console.log(result.data);
-  //         setPartyLedgers(result.data);
-  //       } else {
-  //         setError('Failed to fetch party ledgers');
-  //       }
-  //     } catch (err) {
-  //       setError('Error fetching party ledgers');
-  //       console.error(err);
-  //     }
-  //   };
+const showScrapDropdown = isCastingScrap && isNegativeWeight;
 
-  //   fetchInventory();    
-  //   fetchPartyLedgers();
-  // }, []);
 
     // ✅ Fetch Party Ledgers on load
   useEffect(() => {
@@ -211,20 +184,33 @@ const InventoryUpdateForm = () => {
 
     console.log("selected item : ", formData.itemName);
 
-    // if(formData.availableWeight <= '0' ){
-    //   alert("Received weight cannot be 0 or minus.");
-      
-    //   setIsLoading(false);
-    //   return;
-    // }
-// Skip weight validation ONLY for itemName "finding"
-if (formData.itemName.toLowerCase() !== "finding") {
+ const item = formData.itemName.toLowerCase();
+
+if (item !== "finding" && item !== "casting scrap") {
   if (parseFloat(formData.availableWeight) <= 0) {
     alert("Available weight cannot be 0 or negative.");
     setIsLoading(false);
     return;
   }
 }
+
+// Skip weight validation ONLY for itemName "finding"
+// if (formData.itemName.toLowerCase() !== "finding" ) {
+//   if (parseFloat(formData.availableWeight) <= 0) {
+//     alert("Available weight cannot be 0 or negative.");
+//     setIsLoading(false);
+//     return;
+//   }
+// }
+
+if (showScrapDropdown && !scrapType) {
+  setError("Please select Scrap Type (Handmade / Coin)");
+  setIsLoading(false);
+  return;
+}
+
+
+
     try {
       // Prepare the payload without weight conversion
       const payload = {
@@ -234,11 +220,11 @@ if (formData.itemName.toLowerCase() !== "finding") {
         unitOfMeasure: formData.unitOfMeasure,
          partyLedger: formData.partyLedger,
         isCustomItem: isCustomItem,
-        originalItem: isCustomItem ? null : selectedItem
+        originalItem: isCustomItem ? null : selectedItem,
+        scrapType: showScrapDropdown ? scrapType : ""
       };
 
       console.log('Submitting payload:', payload);
-
 
 
       const response = await fetch(`${apiBaseUrl}/update-inventory`, {
@@ -364,6 +350,10 @@ if (formData.itemName.toLowerCase() !== "finding") {
               />
             </div>
 
+         
+
+
+
             {/* Available Weight */}
             <div className="space-y-2">
               <Label htmlFor="availableWeight">Received Weight</Label>
@@ -377,6 +367,24 @@ if (formData.itemName.toLowerCase() !== "finding") {
                 className="w-full"
               />
             </div>
+
+   {showScrapDropdown && (
+  <div className="space-y-2">
+    <Label>Scrap Type</Label>
+    <Select
+      value={scrapType}
+      onValueChange={setScrapType}
+    >
+      <SelectTrigger className="w-full bg-white border border-gray-200">
+        <SelectValue placeholder="Select for" />
+      </SelectTrigger>
+      <SelectContent className="bg-white border border-gray-200">
+        <SelectItem value="handmade">Handmade</SelectItem>
+        <SelectItem value="coin">Coin</SelectItem>
+      </SelectContent>
+    </Select>
+  </div>
+)}
 
             {/* Unit of Measure - Updated with value prop */}
             <div className="space-y-2">
