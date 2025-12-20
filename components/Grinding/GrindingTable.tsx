@@ -207,6 +207,8 @@ const GrindingTable = () => {
     });
   };
 
+  
+
   // Apply sorting
   const sortedDeals = getSortedData(deals);
     console.log("Sorting by:", sortedDeals);
@@ -470,6 +472,11 @@ const handleRowDelete = async (id: string) => {
                             ) : null}
                           </TableSortLabel>
                         </TableCell>
+
+                        <TableCell>Scrap</TableCell>
+                        <TableCell>Dust</TableCell>
+                        <TableCell>Finding</TableCell>
+
                         <TableCell>
                           <TableSortLabel
                             active={orderBy === 'issuedDate'}
@@ -612,8 +619,14 @@ const handleRowDelete = async (id: string) => {
                                 </div>
 
                                 </TableCell>
+
+                                
+                              <TableCell>{deal.scrapWeight}</TableCell>                              
+                              <TableCell>{deal.dustWeight}</TableCell>                              
+                              <TableCell>{deal.findingWeight}</TableCell>
+
                               <TableCell>{deal.issuedDate}</TableCell>
-                              <TableCell>{deal.receivedDate}</TableCell>
+                              <TableCell>{deal.receivedDate || 0}</TableCell>
                               <TableCell>
                                 <span 
                                   className={`bd-badge ${getStatusClass(deal.status)}`}
