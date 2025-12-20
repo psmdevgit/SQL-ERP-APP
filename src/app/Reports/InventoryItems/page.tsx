@@ -59,14 +59,26 @@ const InventoryItemSummary: React.FC = () => {
   ).filter((p) => p && p.trim() !== "");
 
   // 🧮 Apply filters
-  const filteredReports = reports.filter((report) => {
-    const isValidWeight = Number(report.availableWeight) > 0;
-    const notAlloy = report.name.toLowerCase() !== "alloy";
-    const matchesParty =
-      selectedParty === "All" || report.partycode === selectedParty;
+  // const filteredReports = reports.filter((report) => {
+  //   const isValidWeight = Number(report.availableWeight) > 0;
+  //   const notAlloy = report.name.toLowerCase() !== "alloy";
+  //   const matchesParty =
+  //     selectedParty === "All" || report.partycode === selectedParty;
 
-    return isValidWeight && notAlloy && matchesParty;
-  });
+  //   return isValidWeight && notAlloy && matchesParty;
+  // });
+
+  const filteredReports = reports.filter((report) => {
+  const isValidWeight = Number(report.availableWeight) > 0;
+
+  const name = (report.name || "").toString().toLowerCase();
+  const notAlloy = name !== "alloy";
+
+  const matchesParty =
+    selectedParty === "All" || report.partycode === selectedParty;
+
+  return isValidWeight && notAlloy && matchesParty;
+});
 
 
     const [loading, setLoading] = useState(false);
