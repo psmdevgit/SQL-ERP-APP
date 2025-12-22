@@ -47,6 +47,7 @@ export default function SummaryPage() {
       }
 
       setData(result.data);
+      console.log(result.data);
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
@@ -97,6 +98,33 @@ export default function SummaryPage() {
     (sum, row) => sum + Number((row.process_wt*91.7)/100 || 0),
     0
   );
+
+    const taggingRows = data.filter(
+    row => row.process?.toLowerCase() === "tagging"
+  );
+
+    const totalTagReceived = taggingRows.reduce(
+    (sum, row) => sum + Number(row.received_wt || 0),
+    0
+  );
+
+  console.log("taggeed : ",taggingRows);
+
+
+  const hiddenItems = [
+    "alloy",
+  "cutting dust",
+  "dust",
+  "g machine dust",
+  "p machine dust",
+];
+
+const totalTagPurity = taggingRows.reduce(
+  (sum, row) => sum + (Number(row.received_wt || 0) * 91.7) / 100,
+  0
+);
+
+
 
   const inventoryTotalAvl = reports
     .filter((r) => Number(r.availableWeight) > 0 && r.name.toLowerCase() !== "alloy")
@@ -284,7 +312,7 @@ export default function SummaryPage() {
                         {(() => {
               
                   const filteredReports = reports.filter(
-          (r) => Number(r.availableWeight) > 0 && r.name.toLowerCase() !== "alloy"
+          (r) => Number(r.availableWeight) > 0  &&   !hiddenItems.includes(r.name.toLowerCase().trim())
         );
 
                   const totalAvlWeight = filteredReports.reduce(
@@ -399,7 +427,7 @@ export default function SummaryPage() {
           </div>
         </div>
 
-{/* <div>
+ <div>
   <h1 className="text-xl font-bold mb-4">Tagged Items</h1>
           <div className="mt-5 overflow-x-auto">
             {loading ? (
@@ -422,11 +450,15 @@ export default function SummaryPage() {
                       Tagged Wt{" "}
                       <span className="text-xs ps-2 text-white-700">(gm)</span>
                     </th>
+                        <th className="border p-2">
+                           Purity Wt <span className="text-xs">(91.7%)</span>
+                        </th>
+
                       
                   </tr>
                 </thead>
                 <tbody>
-                  {taggedData.length === 0 ? (
+                  {taggingRows.length === 0 ? (
                     <tr>
                       <td
                         colSpan={7}
@@ -436,23 +468,47 @@ export default function SummaryPage() {
                       </td>
                     </tr>
                   ) : (
-                    taggedData.map((row, idx) => (
-                      <tr key={idx} className="text-center">
-                        <td
-                          className="border p-2 text-left"
-                          style={{ color: "#444", fontWeight: "500" }}
-                        >
-                          {row.process}
-                        </td>
-                        <td className="border p-2">
-                          {Number(row.Received_weight || 0).toFixed(4)}
-                        </td>  
+                    // taggingRows.map((row, idx) => (
+                    //   <tr key={idx} className="text-center">
+                    //     <td
+                    //       className="border p-2 text-left"
+                    //       style={{ color: "#444", fontWeight: "500" }}
+                    //     >
+                    //       {row.process}
+                    //     </td>
+                    //     <td className="border p-2">
+                    //       {Number(row.received_wt || 0).toFixed(4)}
+                    //     </td>  
                        
-                      </tr>
-                    ))
-                  )}
+                    //   </tr>
+                    // ))
+
+                    taggingRows.map((row, idx) => {
+  const taggedWt = Number(row.received_wt || 0);
+  const purityWt = (taggedWt * 91.7) / 100;
+
+  return (
+    <tr key={idx} className="text-center">
+      <td className="border p-2 text-left">
+        {row.process}
+      </td>
+
+      <td className="border p-2">
+        {taggedWt.toFixed(4)}
+      </td>
+
+      <td className="border p-2">
+        {purityWt.toFixed(4)}
+      </td>
+    </tr>
+  );
+})
+
+
+                  )
+                  }
                 </tbody>
-                {data.length > 0 && (
+                {/* {taggingRows.length > 0 && ( */}
                   <tfoot>
                     <tr
                       className="text-center"
@@ -469,23 +525,29 @@ export default function SummaryPage() {
                         Total:
                       </td>
                       <td className="border p-2">
-                        {data
+                        {/* {taggingRows
                           .reduce(
-                            (sum, row) => sum + Number(row.Received_weight || 0),
+                            (sum, row) => sum + Number(row.received_wt || 0),
                             0
                           )
-                          .toFixed(4)}
+                          .toFixed(4)} */}
+
+                            {totalTagReceived.toFixed(4)}
+
                       </td>
 
+    <td className="border p-2">
+      {totalTagPurity.toFixed(4)}
+    </td>
                      
 
                     </tr>
                   </tfoot>
-                )}
+                {/* )} */}
               </table>
             )}
           </div>
-</div> */}
+</div> 
 
 
       </div>

@@ -141,20 +141,28 @@ const apiBaseUrl = "https://kalash.app";
     } = summaryData.summary;
 
     return [
-      {
-        iconClass: "fa-light fa-scale-balanced",
-        title: "Casting Dust",
-        value: `${totalCastingDust.toFixed(3)} g`,
-        description: "Total casting department dust",
-        isIncrease: false,
-      },
-      {
-        iconClass: "fa-light fa-file-lines",
-        title: "Filing Dust",
-        value: `${totalFiligDust.toFixed(3)} g`,
-        description: "Total filing department dust",
-        isIncrease: false,
-      },
+      // {
+      //   iconClass: "fa-light fa-scale-balanced",
+      //   title: "Casting Dust",
+      //   value: `${totalCastingDust.toFixed(3)} g`,
+      //   description: "Total casting department dust",
+      //   isIncrease: false,
+      // }
+      // ,
+      //  {
+      //   iconClass: "fa-light fa-scale-balanced",
+      //   title: "Casting Loss",
+      //   value: `${totalCastingLoss.toFixed(3)} g`,
+      //   description: "Total casting department dust",
+      //   isIncrease: false,
+      // },
+      // {
+      //   iconClass: "fa-light fa-file-lines",
+      //   title: "Filing Dust",
+      //   value: `${totalFiligDust.toFixed(3)} g`,
+      //   description: "Total filing department dust",
+      //   isIncrease: false,
+      // },
       {
         iconClass: "fa-light fa-gear",
         title: "Grinding Dust",
