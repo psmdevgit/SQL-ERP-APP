@@ -371,6 +371,7 @@ console.log("Deals State:", deals);
       alert("No PDF available to print.");
     }
   };
+  
   const handlePdfClick = (pdfUrl: string) => {
     if (!pdfUrl) {
       alert("No PDF available to print.");
@@ -445,9 +446,12 @@ console.log("Deals State:", deals);
     paginatedRowCount: paginatedRows.length
   });
 
+  
+
   if (loading) return <div>Loading deals...</div>;
   if (error) return <div>Error: {error}</div>;
 
+  
   return (
     <>
       <div className="col-span-12">
@@ -496,6 +500,9 @@ console.log("Deals State:", deals);
                         <TableCell>Filing Id</TableCell>
                         <TableCell>Issued Weight</TableCell>
                         <TableCell>Received Weight</TableCell>
+                        <TableCell>Scrap</TableCell>
+                        <TableCell>Dust</TableCell>
+                        <TableCell>Finding</TableCell>
                         <TableCell>Issued Date</TableCell>
                         <TableCell>Received Date</TableCell>
                         <TableCell>Order Id</TableCell>
@@ -546,6 +553,11 @@ console.log("Deals State:", deals);
                                   </div>
                                 </div>
                                 </TableCell>
+                                
+                              <TableCell>{deal.scrapWeight}</TableCell>
+                              <TableCell>{deal.dustWeight}</TableCell>
+                              <TableCell>{deal.AddedFindingWeight}</TableCell>
+
                               <TableCell>{deal.issuedDate}</TableCell>
                               <TableCell>{deal.receivedDate}</TableCell>
                               <TableCell>{deal.orderId}</TableCell> 
