@@ -194,7 +194,7 @@ const apiBaseUrl = "https://kalash.app";
       {
         iconClass: "fa-light fa-sparkles",
         title: "Polishing Dust",
-        value: `${totalPolishingLoss.toFixed(3)} g`,
+        value: `${totalPolishingDust.toFixed(3)} g`,
         description: "Total polishing department loss",
         isIncrease: false,
       },
