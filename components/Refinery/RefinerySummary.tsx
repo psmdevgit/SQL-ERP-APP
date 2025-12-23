@@ -441,6 +441,13 @@ const RefinerySummary: React.FC = () => {
     return [
       {
         iconClass: "fa-light fa-gear",
+        title: "Casting Loss",
+        value: `${s.totalCastingLoss.toFixed(3)} g`,
+        description: "Total casting loss",
+        isIncrease: false,
+      },,
+      {
+        iconClass: "fa-light fa-gear",
         title: "Grinding Dust",
         value: `${s.totalGrindingDust.toFixed(3)} g`,
         description: "Total grinding department dust",
