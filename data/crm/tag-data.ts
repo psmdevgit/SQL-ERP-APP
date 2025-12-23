@@ -24,6 +24,7 @@ export const fetchTaggingData = async (): Promise<ITag[]> => {
             receivedWeight: tag.receivedWeight,
             receivedDate: tag.receivedDate,
             status: tag.status,
+            flag: tag.flag
           };
         });
       } else {

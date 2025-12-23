@@ -548,6 +548,7 @@ export interface ITag {
   receivedWeight: number;
   receivedDate: string;
   status: string;
+  flag:number;
 }
 export interface Billing {
   id: string;
