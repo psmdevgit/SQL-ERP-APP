@@ -31,6 +31,9 @@ const TaggingTable = () => {
   const [endDate, setEndDate] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
+
+  const apiurl = "https://kalash.app";
+
   const handlePageChange = (newPage: number) => setPage(newPage);
   const handleRowsPerPageChange = (newRowsPerPage: number) => {
     setRowsPerPage(newRowsPerPage);
@@ -66,7 +69,79 @@ const TaggingTable = () => {
     loadTags();
   }, []);
 
+
+//   const handleDispatch = async (taggingId: string) => {
+//   const confirmed = window.confirm(
+//     `Are you sure you want to dispatch Tag ID: ${taggingId}?`
+//   );
+
+//   if (!confirmed) return;
+
+//   try {
+
+//      const res = await fetch("/api/tagging/dispatch", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({ taggingId }),
+//   });
+
+//   if (!res.ok) {
+//     throw new Error("Failed to dispatch tag");
+//   }
+
+
+//     alert("Dispatched successfully");
+//   } catch (error) {
+//     console.error(error);
+//     alert("Dispatch failed");
+//   }
+// };
+
+ 
+
+
   // ✅ Filter data
+ 
+ 
+  const handleDispatch = async (taggingId: string) => {
+  const confirmed = window.confirm(
+    `Are you sure you want to dispatch Tag ID: ${taggingId}?`
+  );
+
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch(`${apiurl}/api/tagging/dispatch`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ taggingId }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to dispatch tag");
+    }
+
+    // ✅ Update UI state
+    setTags(prev =>
+      prev.map(tag =>
+        tag.taggingId === taggingId
+          ? { ...tag, flag: 2 }
+          : tag
+      )
+    );
+
+    alert("Dispatched successfully");
+  } catch (error) {
+    console.error(error);
+    alert("Dispatch failed");
+  }
+};
+
+
   const filteredTags = useMemo(() => {
     let filtered = [...tags];
 
@@ -162,7 +237,7 @@ const TaggingTable = () => {
                   <Table className="whitespace-nowrap">
                     <TableHead>
                       <TableRow className="table__title">
-                        <TableCell padding="checkbox">
+                        {/* <TableCell padding="checkbox">
                           <Checkbox
                             className="custom-checkbox checkbox-small"
                             color="primary"
@@ -179,7 +254,7 @@ const TaggingTable = () => {
                             }
                             size="small"
                           />
-                        </TableCell>
+                        </TableCell> */}
                         <TableCell>Tagging ID</TableCell>
                         <TableCell>Received Weight</TableCell>
                         <TableCell>Received Date</TableCell>
@@ -187,6 +262,7 @@ const TaggingTable = () => {
                         <TableCell>Order ID</TableCell>
                         <TableCell>Product</TableCell>
                         <TableCell>Quantity</TableCell>
+                        <TableCell>Action</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -199,14 +275,14 @@ const TaggingTable = () => {
                               selected={selected.includes(index)}
                               onClick={() => handleClick(index)}
                             >
-                              <TableCell padding="checkbox">
+                              {/* <TableCell padding="checkbox">
                                 <Checkbox
                                   className="custom-checkbox checkbox-small"
                                   checked={selected.includes(index)}
                                   onChange={() => handleClick(index)}
                                   size="small"
                                 />
-                              </TableCell>
+                              </TableCell> */}
                               <TableCell>{tag.taggingId}</TableCell>
                               <TableCell>{tag.receivedWeight}</TableCell>
                               <TableCell>{tag.receivedDate}</TableCell>
@@ -214,6 +290,52 @@ const TaggingTable = () => {
                               <TableCell>{tag.orderId}</TableCell>
                               <TableCell>{tag.product}</TableCell>
                               <TableCell>{tag.quantity}</TableCell>
+
+                              {/* <TableCell>
+  {tag.status?.toLowerCase() == "finished" && (
+    <button
+      className="px-3 py-1 text-xs font-semibold text-white bg-yellow-600 rounded hover:bg-green-700"
+      onClick={(e) => {       
+        handleDispatch(tag.taggingId);
+      }}
+    >
+      Dispatch
+    </button>
+  )}
+    {tag.flag == 2 && (
+    <button
+      className="px-3 py-1 text-xs font-semibold text-white bg-green-600 rounded"     
+    >      
+      Dispatched
+    </button>
+  )}
+</TableCell> */}
+
+
+<TableCell>
+  {tag.flag === 1 && (
+    <button
+      className="px-3 py-1 text-xs font-semibold text-white bg-yellow-600 rounded hover:bg-yellow-700"
+      onClick={(e) => {
+        e.stopPropagation();
+        handleDispatch(tag.taggingId);
+      }}
+    >
+      Dispatch
+    </button>
+  )}
+
+  {tag.flag === 2 && (
+    <button
+      className="px-3 py-1 text-xs font-semibold text-white bg-green-600 rounded cursor-not-allowed"
+      disabled
+    >
+      Dispatched
+    </button>
+  )}
+</TableCell>
+
+
                             </TableRow>
                           );
                         })
