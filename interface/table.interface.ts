@@ -497,6 +497,7 @@ export interface ICorrection {
   receivedDate: string;
   status: string;
   grindingLoss: number;
+  
 }
 
 export interface ISetting {
