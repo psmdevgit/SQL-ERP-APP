@@ -621,8 +621,8 @@ export interface ICutting {
   receivedDate: string;
   status: string;
   cuttingLoss: number;  
-  scrapWeight: number;
-  dustWeight: number;  
+Cutting_Scrap_Weight__c:number;
+Cutting_Dust_Weight__c:number;
   
 }
 
