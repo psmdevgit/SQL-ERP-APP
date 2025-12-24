@@ -112,7 +112,7 @@ export default function SummaryPage() {
 
 
   const hiddenItems = [
-    "alloy",
+    // "alloy",
   "cutting dust",
   "dust",
   "g machine dust",
