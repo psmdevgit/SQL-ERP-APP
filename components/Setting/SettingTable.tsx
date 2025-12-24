@@ -396,6 +396,11 @@ const SettingTable = () => {
                         <TableCell>Setting Id</TableCell>
                         <TableCell>Issued Weight</TableCell>
                         <TableCell>Received Weight</TableCell>
+                        
+                        <TableCell>Scrap</TableCell>
+                        <TableCell>Dust</TableCell>
+                        <TableCell>Stone Wt</TableCell>
+
                         <TableCell>Issued Date</TableCell>
                         <TableCell>Received Date</TableCell>
                         <TableCell>Status</TableCell>
@@ -429,6 +434,9 @@ const SettingTable = () => {
                               <TableCell>{deal.id}</TableCell>
                               <TableCell>{deal.issuedWeight}</TableCell>
                               <TableCell>{deal.receivedWeight}</TableCell>
+                              <TableCell>{deal.scrapWeight}</TableCell>
+                              <TableCell>{deal.dustWeight}</TableCell>
+                              <TableCell>{deal.stone}</TableCell>
                               <TableCell>{deal.issuedDate}</TableCell>
                               <TableCell>{deal.receivedDate}</TableCell>
                               <TableCell>

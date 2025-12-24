@@ -508,7 +508,10 @@ export interface ISetting {
   receivedDate: string;
   status: string;
   settingLoss: number;
-  movedstatus: number;
+  movedstatus: number;  
+    scrapWeight: number;
+  dustWeight: number;  
+  stone: number;
 }
 
 export interface IPolishing {
