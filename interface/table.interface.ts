@@ -525,6 +525,7 @@ export interface IPolishing {
   movedstatus: number;  
   scrapWeight: number;
   dustWeight: number;  
+  finding : number;
 }
 
 export interface IDull {

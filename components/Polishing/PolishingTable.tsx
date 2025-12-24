@@ -462,6 +462,7 @@ const PolishingTable = () => {
                         
                         <TableCell>Scrap</TableCell>
                         <TableCell>Dust</TableCell>
+                        <TableCell>Finding</TableCell>
 
                         <TableCell>Issued Date</TableCell>
                         <TableCell>Received Date</TableCell>
@@ -498,6 +499,7 @@ const PolishingTable = () => {
                               
                               <TableCell>{deal.scrapWeight}</TableCell>
                               <TableCell>{deal.dustWeight}</TableCell>
+                              <TableCell>{deal.finding}</TableCell>
                               
                               <TableCell>{deal.issuedDate}</TableCell>
                               <TableCell>{deal.receivedDate}</TableCell>

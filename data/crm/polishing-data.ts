@@ -33,7 +33,8 @@ export const fetchPolishingData = async (): Promise<IPolishing[]> => {
             polishingDust: polishing.Polishing_Dust_Weight__c || 0 ,
             movedstatus: polishing.movedstatus || 0,
             scrapWeight: polishing.Polishing_Scrap_Weight__c || 0,
-            dustWeight: polishing.Polishing_Dust_Weight__c || 0 
+            dustWeight: polishing.Polishing_Dust_Weight__c || 0 ,
+            finding: polishing.finding_weight || 0,
           };
         });
       } else {
