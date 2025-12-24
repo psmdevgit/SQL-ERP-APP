@@ -164,7 +164,9 @@ const orderNo =
     { text: `${model.modelName}`, font: "bold 40px Arial" },
     { text: "N.wt | S.wt | G.wt", font: "25px Arial" },
     { text: `${pc.netWeight || 0}g | ${pc.stoneWeight || 0}g | ${pc.grossWeight || 0}g`, font: "25px Arial" },
-    { text: `Wastage : `, font: "bold 28px Arial" },
+    // { text: `Wastage : `, font: "bold 28px Arial" },
+    { text: `Piece : ${pc.pieceNo || "-"}`, font: "bold 28px Arial" },
+
 
     // ${(pc.stoneCharges || 0).toLocaleString()} ₹
 
@@ -859,7 +861,7 @@ const handleSubmitModels = async () => {
 
   try {
     if (submittedItems.length === 0) {
-      alert('Please submit models first');
+      // alert('Please submit models first');
       setIsSubmittingTagging(false);
       return;
     }
@@ -1622,7 +1624,10 @@ const generateExcel = (models: TaggingModel[]): Blob => {
           <th className="border px-2 py-1">Unique No.</th>
           <th className="border px-2 py-1">Stone Wt (g)</th>
           <th className="border px-2 py-1">Net Wt (g)</th>
+          <th className="border px-2 py-1">Piece No</th>
+
           <th className="border px-2 py-1">Gross Wt</th>
+
           <th className="border px-2 py-1">Stone Charges</th>
           <th className="border px-2 py-1">Preview</th>
           <th className="border px-2 py-1">Print</th>
@@ -1694,6 +1699,30 @@ const generateExcel = (models: TaggingModel[]): Blob => {
                 className="w-full h-7 px-2 border border-gray-300 rounded"
               />
             </td>
+
+            <td className="border px-2 py-1">
+  <input
+    type="number"
+    min="1"
+    value={pc.pieceNo || ""}
+    onChange={(e) => {
+      const pieceNo = Number(e.target.value || 0);
+
+      setSelectedModels(prev => {
+        const updated = [...prev];
+        const m = { ...updated[index] };
+        const pcs = [...(m.pcs || [])];
+        pcs[pcIndex] = { ...pcs[pcIndex], pieceNo };
+        m.pcs = pcs;
+        updated[index] = m;
+        return updated;
+      });
+    }}
+    className="w-full h-7 px-2 border border-gray-300 rounded"
+  />
+</td>
+
+
 
             {/* Gross & Charges (display only) */}
             <td className="border px-2 py-1 text-center bg-gray-50">
