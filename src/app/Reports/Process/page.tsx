@@ -20,18 +20,85 @@ interface Report {
   purity: string;
 }
 
+interface DepartmentSummary {
+  success: boolean;
+  summary: {
+    totalCastingLoss: number;
+    totalFilingLoss: number;
+    totalGrindingLoss: number;
+    totalSettingLoss: number;
+    totalPolishingLoss: number;
+    totalOverallLoss: number;
+
+    totalOverallDust: number;
+    totalCastingDust: number;
+    totalFiligDust: number;
+    totalGrindingDust: number;
+    totalMediaDust: number;
+    totalCorrectionDust: number;
+    totalSettingDust: number;
+    totalPolishingDust: number;
+    totalDullDust: number;
+    totalCuttingDust: number;
+  };
+}
+
 export default function SummaryPage() {
   const [data, setData] = useState<ProcessRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [reports, setReports] = useState<Report[]>([]);
   const [error, setError] = useState<string | null>(null);
+  
+
+  const [summaryData, setSummaryData] = useState<DepartmentSummary | null>(null);
 
   const API_URL = "https://kalash.app";
 
   
   // const API_URL = "http://localhost:4001";
   
+
+
+useEffect(() => {
+  const now = new Date();
+
+  // ✅ First day of current month
+  const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  // ✅ Last day of current month
+  const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  fetchSummaryData(startDate, endDate);
+}, []);
+
+
+   const fetchSummaryData = async (startDate: Date, endDate: Date) => {
+  try {
+    setLoading(true);
+
+    const start = formatDate(startDate);
+    const end = formatDate(endDate);
+
+    console.log("Sending dates to backend:", start, end);
+
+    const response = await fetch(
+      `${API_URL}/api/department-dust?startDate=${start}&endDate=${end}`
+    );
+
+    if (!response.ok) throw new Error("Failed to fetch");
+
+    const data = await response.json();
+    setSummaryData(data);
+  } catch (error) {
+    console.error(error);
+    setSummaryData(null);
+  } finally {
+    setLoading(false);
+  }
+};
+const formatDate = (date: Date) =>
+  date.toISOString().split("T")[0];
 
 
   const fetchData = async () => {
@@ -113,7 +180,7 @@ export default function SummaryPage() {
 
   const hiddenItems = [
     // "alloy",
-  "cutting dust",
+  // "cutting dust",
   "dust",
   "g machine dust",
   "p machine dust",
@@ -124,14 +191,32 @@ const totalTagPurity = taggingRows.reduce(
   0
 );
 
+  const filteredReports = reports.filter(
+          (r) => Number(r.availableWeight) > 0  &&   !hiddenItems.includes(r.name.toLowerCase().trim())
+        );
 
+                  const totalInvWeight = filteredReports.reduce(
+                    (sum, r) => sum + (Number(r.availableWeight) || 0),
+                    0
+                  );
+
+                  const totalInvPurityWt = filteredReports.reduce((sum, r) => {
+                    const purityString = String(r.purity).trim().toLowerCase();
+                    let purityValue: number = purityString.includes("22k")
+                      ? 91.7
+                      : parseFloat(purityString) || 0;
+                    const availableWeightValue = Number(r.availableWeight) || 0;
+                    return sum + (purityValue * availableWeightValue) / 100;
+                  }, 0);
+
+const totalRecoveryPurity = (summaryData?.summary.totalOverallDust * 91.7) / 100;
 
   const inventoryTotalAvl = reports
-    .filter((r) => Number(r.availableWeight) > 0 && r.name.toLowerCase() !== "alloy")
+    .filter((r) => Number(r.availableWeight) > 0 && r.name.toLowerCase() !== "aloy")
     .reduce((sum, r) => sum + (Number(r.availableWeight) || 0 ), 0);
 
   const inventoryTotalGold = reports
-    .filter((r) => Number(r.availableWeight) > 0 && r.name.toLowerCase() !== "alloy")
+    .filter((r) => Number(r.availableWeight) > 0 && r.name.toLowerCase() !== "aloy")
     .reduce((sum, r) => {
       const purityString = String(r.purity).trim().toLowerCase();
       let purityValue = purityString.includes("22k")
@@ -215,10 +300,10 @@ const totalTagPurity = taggingRows.reduce(
       <tr className="border-b">
         <td className="px-4 py-2 font-medium">Inventory</td>
         <td className="px-4 py-2 text-right">
-          {inventoryTotalAvl.toFixed(4)}
+          {totalInvWeight.toFixed(4)}
         </td>
         <td className="px-4 py-2 text-right">
-          {inventoryTotalGold.toFixed(4)}
+          {totalInvPurityWt.toFixed(4)}
         </td>
       </tr>
 
@@ -231,6 +316,18 @@ const totalTagPurity = taggingRows.reduce(
           {totalTagPurity.toFixed(4)}
         </td>
       </tr>
+
+      <tr className="border-b">
+        <td className="px-4 py-2 font-medium">Recovery Dust</td>
+        <td className="px-4 py-2 text-right">
+          {summaryData?.summary.totalOverallDust.toFixed(4)}
+        </td>
+        <td className="px-4 py-2 text-right">
+        {totalRecoveryPurity.toFixed(4)}
+        </td>
+      </tr>
+
+
     </tbody>
 
     <tfoot>
@@ -245,14 +342,14 @@ const totalTagPurity = taggingRows.reduce(
           {(
             processTotal +
             inventoryTotalAvl +
-            totalTagReceived
+            totalTagReceived + summaryData?.summary.totalOverallDust
           ).toFixed(4)}
         </td>
         <td className="px-4 py-2 text-right">
           {(
             processTotalPurity +
             inventoryTotalGold +
-            totalTagPurity
+            totalTagPurity + totalRecoveryPurity
           ).toFixed(4)}
         </td>
       </tr>
