@@ -467,13 +467,13 @@ const RefinerySummary: React.FC = () => {
         description: "Total correction department dust",
         isIncrease: false,
       },
-      {
-        iconClass: "fa-light fa-gem",
-        title: "Setting Dust",
-        value: `${s.totalSettingDust.toFixed(3)} g`,
-        description: "Total setting department dust",
-        isIncrease: false,
-      },
+      // {
+      //   iconClass: "fa-light fa-gem",
+      //   title: "Setting Dust",
+      //   value: `${s.totalSettingDust.toFixed(3)} g`,
+      //   description: "Total setting department dust",
+      //   isIncrease: false,
+      // },
       {
         iconClass: "fa-light fa-sparkles",
         title: "Polishing Dust",
