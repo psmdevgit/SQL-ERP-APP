@@ -341,14 +341,14 @@ const totalRecoveryPurity = (summaryData?.summary.totalOverallDust * 91.7) / 100
         <td className="px-4 py-2 text-right">
           {(
             processTotal +
-            inventoryTotalAvl +
+            totalInvWeight +
             totalTagReceived + summaryData?.summary.totalOverallDust
           ).toFixed(4)}
         </td>
         <td className="px-4 py-2 text-right">
           {(
             processTotalPurity +
-            inventoryTotalGold +
+            totalInvPurityWt +
             totalTagPurity + totalRecoveryPurity
           ).toFixed(4)}
         </td>
