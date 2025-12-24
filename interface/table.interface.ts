@@ -483,6 +483,8 @@ export interface IMedia {
   receivedWeight: number;
   receivedDate: string;
   status: string;
+    scrapWeight: number;
+  dustWeight: number;
   grindingLoss: number;
    movedstatus: number;
 }
