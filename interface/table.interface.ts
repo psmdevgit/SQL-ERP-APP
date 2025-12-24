@@ -607,7 +607,9 @@ export interface IPlating {
   Received_Date__c: string;
   Status__c: string;
   Plating_Loss__c: number;
-  movedstatus: number;
+  movedstatus: number;    
+  Plating_Scrap_Weight__c: number;
+  Plating_Dust_Weight__c: number;  
 }
 
 
@@ -618,7 +620,9 @@ export interface ICutting {
   receivedWeight: number;
   receivedDate: string;
   status: string;
-  cuttingLoss: number;
+  cuttingLoss: number;  
+  scrapWeight: number;
+  dustWeight: number;  
   
 }
 
