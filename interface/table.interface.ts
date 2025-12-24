@@ -535,7 +535,9 @@ export interface IDull {
   receivedDate: string;
   status: string;
   dullLoss: number;
-  movedstatus: number;
+  movedstatus: number;   
+  scrapWeight: number;
+  dustWeight: number;  
 }
 
 export interface ITagging {

@@ -497,6 +497,10 @@ console.log("Deals State:", deals);
                         <TableCell>Dull  Id</TableCell>
                         <TableCell>Issued Weight</TableCell>
                         <TableCell>Received Weight</TableCell>
+                        
+                        <TableCell>Scrap</TableCell>
+                        <TableCell>Dust</TableCell>
+
                         <TableCell>Issued Date</TableCell>
                         <TableCell>Received Date</TableCell>
                         <TableCell>Order Id</TableCell>
@@ -529,6 +533,10 @@ console.log("Deals State:", deals);
                               <TableCell>{deal.id}</TableCell>
                               <TableCell>{deal.issuedWeight}</TableCell>
                               <TableCell>{deal.receivedWeight}</TableCell>
+                              
+                              <TableCell>{deal.scrapWeight}</TableCell>                              
+                              <TableCell>{deal.dustWeight}</TableCell>
+
                               <TableCell>{deal.issuedDate}</TableCell>
                               <TableCell>{deal.receivedDate}</TableCell>
                               <TableCell>{deal.orderId}</TableCell>
