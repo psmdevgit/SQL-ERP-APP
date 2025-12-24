@@ -522,7 +522,9 @@ export interface IPolishing {
   receivedDate: string;
   status: string;
   polishingLoss: number;
-  movedstatus: number;
+  movedstatus: number;  
+  scrapWeight: number;
+  dustWeight: number;  
 }
 
 export interface IDull {
