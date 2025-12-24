@@ -143,7 +143,7 @@ const totalTagPurity = taggingRows.reduce(
   return (
     <div className="p-4 progress-report flex flex-col gap-6">
       {/* ✅ Overall Total Table at Top */}
-      <div className="mb-8 w-full">
+      {/* <div className="mb-8 w-full">
         <h1 className="text-xl font-bold mb-4">Overall Total</h1>
          <table
             className="border border-collapse w-full bg-white"
@@ -184,7 +184,82 @@ const totalTagPurity = taggingRows.reduce(
       </tr>
     </tfoot>
         </table>
-      </div>
+      </div> */}
+
+<div className="mt-8 w-full">
+  <h1 className="text-xl font-bold mb-4">Final Summary</h1>
+
+  <table
+    className="border border-collapse w-full bg-white"
+    style={{ width: "60%" }}
+  >
+    <thead className="bg-[#1A7A75] text-white">
+      <tr>
+        <th className="px-4 py-2 text-left">Name</th>
+        <th className="px-4 py-2 text-right">Weight (gm)</th>
+        <th className="px-4 py-2 text-right">Purity Weight (gm)</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr className="border-b">
+        <td className="px-4 py-2 font-medium">Process</td>
+        <td className="px-4 py-2 text-right">
+          {processTotal.toFixed(4)}
+        </td>
+        <td className="px-4 py-2 text-right">
+          {processTotalPurity.toFixed(4)}
+        </td>
+      </tr>
+
+      <tr className="border-b">
+        <td className="px-4 py-2 font-medium">Inventory</td>
+        <td className="px-4 py-2 text-right">
+          {inventoryTotalAvl.toFixed(4)}
+        </td>
+        <td className="px-4 py-2 text-right">
+          {inventoryTotalGold.toFixed(4)}
+        </td>
+      </tr>
+
+      <tr className="border-b">
+        <td className="px-4 py-2 font-medium">Tagging</td>
+        <td className="px-4 py-2 text-right">
+          {totalTagReceived.toFixed(4)}
+        </td>
+        <td className="px-4 py-2 text-right">
+          {totalTagPurity.toFixed(4)}
+        </td>
+      </tr>
+    </tbody>
+
+    <tfoot>
+      <tr
+        style={{
+          backgroundColor: "#EDB652",
+          fontWeight: "600",
+        }}
+      >
+        <td className="px-4 py-2 text-left">Grand Total</td>
+        <td className="px-4 py-2 text-right">
+          {(
+            processTotal +
+            inventoryTotalAvl +
+            totalTagReceived
+          ).toFixed(4)}
+        </td>
+        <td className="px-4 py-2 text-right">
+          {(
+            processTotalPurity +
+            inventoryTotalGold +
+            totalTagPurity
+          ).toFixed(4)}
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
 
       {/* ✅ Two Columns Side by Side */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -548,6 +623,7 @@ const totalTagPurity = taggingRows.reduce(
             )}
           </div>
 </div> 
+
 
 
       </div>
