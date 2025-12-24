@@ -31,6 +31,8 @@ export const fetchMediaData = async (): Promise<IMedia[]> => {
             grindingLoss: grinding.Grinding_loss__c || 0,
             movedstatus: grinding.movedstatus || 0,            
             mediaDust: grinding.Grinding_Dust_Weight__c || 0,
+            scrapWeight: grinding.Grinding_Scrap_Weight__c || 0,
+            dustWeight : grinding.Grinding_Dust_Weight__c || 0
           };
         });
       } else {

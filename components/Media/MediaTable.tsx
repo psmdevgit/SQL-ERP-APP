@@ -197,6 +197,8 @@ const GrindingTable = () => {
         const data = await fetchMediaData();
         console.log("Fetched Deals:", data);
         setDeals(data);
+
+        console.log(deals);
       } catch (error) {
         console.error("Error loading deals:", error);
         setError("Failed to load deals");
@@ -405,6 +407,10 @@ const GrindingTable = () => {
                             ) : null}
                           </TableSortLabel>
                         </TableCell>
+                        
+                        <TableCell>Scrap</TableCell>
+                        <TableCell>Dust</TableCell>
+
                         <TableCell>
                           <TableSortLabel
                             active={orderBy === 'issuedDate'}
@@ -528,6 +534,8 @@ const GrindingTable = () => {
                               <TableCell>{deal.id}</TableCell>
                               <TableCell>{deal.issuedWeight}</TableCell>
                               <TableCell>{deal.receivedWeight}</TableCell>
+                              <TableCell>{deal.scrapWeight}</TableCell>
+                              <TableCell>{deal.dustWeight}</TableCell>
                               <TableCell>{deal.issuedDate}</TableCell>
                               <TableCell>{deal.receivedDate}</TableCell>
                               <TableCell>
