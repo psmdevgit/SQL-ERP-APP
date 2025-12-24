@@ -41,6 +41,8 @@ interface ICutting {
   Status__c: string;
   Cutting_loss__c: number;  // Changed from Plating_Loss__c  
 movedstatus: number;
+Cutting_Scrap_Weight__c:number;
+Cutting_Dust_Weight__c:number;
 
 }
 
@@ -293,6 +295,8 @@ const CuttingTable = () => {
                         <TableCell>Cutting Id</TableCell>
                         <TableCell>Issued Weight</TableCell>
                         <TableCell>Received Weight</TableCell>
+                        <TableCell>Scrap</TableCell>
+                        <TableCell>Dust</TableCell>
                         <TableCell>Issued Date</TableCell>
                         <TableCell>Received Date</TableCell>
                         <TableCell>Order Id</TableCell>
@@ -321,9 +325,11 @@ const CuttingTable = () => {
                             </TableCell>
                             <TableCell>{deal.Name}</TableCell>
                             <TableCell>{deal.Issued_Weight__c}</TableCell>
-                            <TableCell>{deal.Returned_weight__c}</TableCell>
+                            <TableCell>{deal.Returned_weight__c || 0}</TableCell>
+                            <TableCell>{deal.Cutting_Scrap_Weight__c || 0}</TableCell>
+                            <TableCell>{deal.Cutting_Dust_Weight__c || 0}</TableCell>
                             <TableCell>{deal.Issued_Date__c}</TableCell>
-                            <TableCell>{deal.Received_Date__c}</TableCell>
+                            <TableCell>{deal.Received_Date__c || "-"}</TableCell>
                             <TableCell>{deal.Order_Id__c}</TableCell>
                             <TableCell>{deal.Product__c}</TableCell>
                             <TableCell>{deal.Quantity__c}</TableCell>

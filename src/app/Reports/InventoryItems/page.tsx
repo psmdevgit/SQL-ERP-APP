@@ -72,7 +72,7 @@ const InventoryItemSummary: React.FC = () => {
   const isValidWeight = Number(report.availableWeight) > 0;
 
   const name = (report.name || "").toString().toLowerCase();
-  const notAlloy = name !== "alloy";
+  const notAlloy = name !== "aloy";
 
   const matchesParty =
     selectedParty === "All" || report.partycode === selectedParty;

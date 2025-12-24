@@ -483,6 +483,8 @@ export interface IMedia {
   receivedWeight: number;
   receivedDate: string;
   status: string;
+    scrapWeight: number;
+  dustWeight: number;
   grindingLoss: number;
    movedstatus: number;
 }
@@ -495,6 +497,7 @@ export interface ICorrection {
   receivedDate: string;
   status: string;
   grindingLoss: number;
+  
 }
 
 export interface ISetting {
@@ -505,7 +508,10 @@ export interface ISetting {
   receivedDate: string;
   status: string;
   settingLoss: number;
-  movedstatus: number;
+  movedstatus: number;  
+    scrapWeight: number;
+  dustWeight: number;  
+  stone: number;
 }
 
 export interface IPolishing {
@@ -516,7 +522,10 @@ export interface IPolishing {
   receivedDate: string;
   status: string;
   polishingLoss: number;
-  movedstatus: number;
+  movedstatus: number;  
+  scrapWeight: number;
+  dustWeight: number;  
+  finding : number;
 }
 
 export interface IDull {
@@ -527,7 +536,9 @@ export interface IDull {
   receivedDate: string;
   status: string;
   dullLoss: number;
-  movedstatus: number;
+  movedstatus: number;   
+  scrapWeight: number;
+  dustWeight: number;  
 }
 
 export interface ITagging {
@@ -597,7 +608,9 @@ export interface IPlating {
   Received_Date__c: string;
   Status__c: string;
   Plating_Loss__c: number;
-  movedstatus: number;
+  movedstatus: number;    
+  Plating_Scrap_Weight__c: number;
+  Plating_Dust_Weight__c: number;  
 }
 
 
@@ -608,7 +621,9 @@ export interface ICutting {
   receivedWeight: number;
   receivedDate: string;
   status: string;
-  cuttingLoss: number;
+  cuttingLoss: number;  
+Cutting_Scrap_Weight__c:number;
+Cutting_Dust_Weight__c:number;
   
 }
 

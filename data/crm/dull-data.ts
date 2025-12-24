@@ -36,7 +36,9 @@ export const fetchDullData = async (startDate?: string, endDate?: string): Promi
             Product : dull.Product__c,         // Updated to match server field
             dullLoss: dull.Dull_loss__c || 0,
             movedstatus:dull.movedstatus || 0,
-            dullDust:dull.Dull_Dust_Weight__c || 0
+            dullDust:dull.Dull_Dust_Weight__c || 0,
+            scrapWeight : dull.Dull_Scrap_Weight__c || 0,
+            dustWeight : dull.Dull_Dust_Weight__c || 0
           };
         });
       } else {

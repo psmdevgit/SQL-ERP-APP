@@ -40,6 +40,8 @@ interface IPlating {
   Status__c: string;
   Plating_Loss__c: number;
   movedstatus: number;
+    Plating_Scrap_Weight__c: number;
+  Plating_Dust_Weight__c: number;  
 }
 
 interface Department {
@@ -279,6 +281,8 @@ const PlatingTable = () => {
                         <TableCell>Plating Id</TableCell>
                         <TableCell>Issued Weight</TableCell>
                         <TableCell>Received Weight</TableCell>
+                        <TableCell>Scrap</TableCell>                        
+                        <TableCell>Dust</TableCell>
                         <TableCell>Issued Date</TableCell>
                         <TableCell>Received Date</TableCell>
                         <TableCell>Order Id</TableCell>
@@ -308,6 +312,8 @@ const PlatingTable = () => {
                             <TableCell>{deal.Name}</TableCell>
                             <TableCell>{deal.Issued_Weight__c}</TableCell>
                             <TableCell>{deal.Returned_weight__c}</TableCell>
+                            <TableCell>{deal.Plating_Scrap_Weight__c}</TableCell>
+                            <TableCell>{deal.Plating_Dust_Weight__c}</TableCell>
                             <TableCell>{deal.Issued_Date__c || ''}</TableCell>
                             <TableCell>{deal.Received_Date__c || ''}</TableCell>
                             <TableCell>{deal.Order_Id__c || ' '}</TableCell>
