@@ -536,6 +536,12 @@ const handleScrapUpSubmit = async () => {
             <div className="font-medium text-blue-800">
               {formatWeight(deal.ornamentWeight)}g
             </div>
+             <div className="flex justify-between items-center bg-white-50 p-2 rounded">
+            <div className="text-red-700">Stone Weight:</div>
+            <div className="font-medium text-red-800">
+              {formatWeight(deal.receivedWeight - deal.ornamentWeight) }g
+            </div>
+          </div>
           </div>
           <div className="flex justify-between items-center bg-green-50 p-2 rounded">
             <div className="text-green-700">Scrap Weight:</div>
