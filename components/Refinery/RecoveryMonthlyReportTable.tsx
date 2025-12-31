@@ -27,7 +27,7 @@ const RecoveryMonthlyReportTable = () => {
     fetchMonthlyReport();
   }, []);
 
-  const apiBaseUrl = "http://kalash.app";
+  const apiBaseUrl = "https://kalash.app";
 
 const fetchMonthlyReport = async () => {
   try {
@@ -152,3 +152,4 @@ const fetchMonthlyReport = async () => {
 };
 
 export default RecoveryMonthlyReportTable;
+
