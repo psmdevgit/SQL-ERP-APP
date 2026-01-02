@@ -58,6 +58,7 @@ export default function SummaryPage() {
   
   // const API_URL = "http://localhost:4001";
   
+  
 
 
 useEffect(() => {
@@ -71,6 +72,7 @@ useEffect(() => {
 
   fetchSummaryData(startDate, endDate);
 }, []);
+
 
 
    const fetchSummaryData = async (startDate: Date, endDate: Date) => {
@@ -97,8 +99,16 @@ useEffect(() => {
     setLoading(false);
   }
 };
-const formatDate = (date: Date) =>
-  date.toISOString().split("T")[0];
+// const formatDate = (date: Date) =>
+//   date.toISOString().split("T")[0];
+
+const formatDate = (date: Date) => {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+};
+
 
 
   const fetchData = async () => {
