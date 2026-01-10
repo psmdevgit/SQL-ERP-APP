@@ -58,13 +58,19 @@ const InventoryUpdateForm = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-const isCastingScrap =
-  formData.itemName.toLowerCase() === "casting scrap";
+// const isCastingScrap =
+//   formData.itemName.toLowerCase() === "casting scrap";
+
+const itemNameCs = formData.itemName?.toLowerCase() || "";
+
+const scrapItems = ["casting scrap", "scrap"];
+
+const isScrapItem = scrapItems.includes(itemNameCs);
 
 const isNegativeWeight =
   parseFloat(formData.availableWeight || "0") < 0;
 
-const showScrapDropdown = isCastingScrap && isNegativeWeight;
+const showScrapDropdown = isScrapItem && isNegativeWeight;
 
 
     // ✅ Fetch Party Ledgers on load
@@ -186,7 +192,7 @@ const showScrapDropdown = isCastingScrap && isNegativeWeight;
 
  const item = formData.itemName.toLowerCase();
 
-if (item !== "finding" && item !== "casting scrap") {
+if (item !== "finding" && item !== "casting scrap" && item !== "scrap") {
   if (parseFloat(formData.availableWeight) <= 0) {
     alert("Available weight cannot be 0 or negative.");
     setIsLoading(false);
