@@ -5,7 +5,8 @@ import html2canvas from "html2canvas";
 import QRCode  from 'qrcode';
 import noimage from "../../../../../assets/no.png";
 
-import { useRouter } from "next/navigation";
+import {  useSearchParams,useRouter } from "next/navigation";
+
 
 import {
   Select,
@@ -83,6 +84,14 @@ const NewTagging = () => {
   const [submittedItems, setSubmittedItems] = useState<SubmittedTaggedItem[]>([]);
   const [isSubmittingModels, setIsSubmittingModels] = useState(false);
   const [isSubmittingTagging, setIsSubmittingTagging] = useState(false);
+
+  
+  const [partyCode, setPartyCode] = useState<string>('');
+
+  
+    const searchParams = useSearchParams();
+    const orderId = searchParams.get('orderId');
+
 
   // const [previewData, setPreviewData] = useState<{ model: TaggingModel; pcIndex: number } | null>(null);
   // instead of storing row data snapshot
@@ -197,6 +206,31 @@ const orderNo =
   alert("Tag Generated and Downloaded.....");
 };
 
+useEffect(() => {
+  if (partyCode && partyLedgers.length > 0) {
+    const match = partyLedgers.find(
+      (party) => party.code === partyCode
+    );
+
+    if (match) {
+      setSelectedParty(match.code); // ✅ AUTO SELECT
+    }
+  }
+}, [partyCode, partyLedgers]);
+
+useEffect(() => {
+  if (!orderId || orders.length === 0) return;
+
+  const match = orders.find(
+    (order) =>
+      order.id === orderId || order.orderNo === orderId
+  );
+
+  if (match) {
+    setSelectedOrder(match.id); // ✅ AUTO SELECT
+  }
+}, [orderId, orders]);
+
 
 const handleRemove = (modelIndex: number, pcIndex: number) => {
   setSelectedModels(prev => {
@@ -226,10 +260,6 @@ const handleRemove = (modelIndex: number, pcIndex: number) => {
     return updated;
   });
 };
-
-
-
-
 
 const handlePreviewPDFOne = async () => {
   const element = document.querySelector(".maincontent") as HTMLElement;
@@ -271,6 +301,44 @@ const handlePreviewPDFOne = async () => {
 
   // Update the useState initialization
   const [lastTaggingNumber, setLastTaggingNumber] = useState(getInitialTaggingNumber);
+
+
+  // set default order and party code
+
+    useEffect(() => {
+
+    if (!orderId) return;
+
+    const fetchPartyCode = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/tagOrder?orderId=${orderId}`);
+        
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Party Ledgers API Response:', result);
+
+          if (result.success && result.data.length > 0) {
+            console.log(result.data)
+        setPartyCode(result.data[0].partyName); // ✅ FIX
+      } else {
+        setPartyCode("");
+      }
+      } catch (error) {
+        console.error('Error fetching party ledgers:', error);
+        setPartyCode("");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPartyCode();
+  }, [apiBaseUrl, orderId]);
+
+
 
   // Fetch party ledgers on component mount
   useEffect(() => {
@@ -780,7 +848,7 @@ const handleSubmitModels = async () => {
     });
 
     // ✅ Set locally processed items
-    console.log("All tagged items :", taggedItems);
+    console.log("All tagged items :", taggedItems);      
     setSubmittedItems(taggedItems);
 
     alert("Models submitted successfully!");
@@ -923,7 +991,7 @@ const handleSubmitModels = async () => {
 
     // Generate summary files
     const pdfBytes = await generateSummaryPDF(selectedModels);
-    const excelBlob = generateExcel(selectedModels);
+    const excelBlob = generateExcel(selectedModels,orderId);
 
     // Prepare tagging submission
     const formData = new FormData();
@@ -1387,67 +1455,146 @@ const generateSummaryPDF = async (models: TaggingModel[]): Promise<Uint8Array> =
   //   return new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   // };
 
-const generateExcel = (models: TaggingModel[]): Blob => {
+// const generateExcel = (models: TaggingModel[]): Blob => {
+//   const excelData: any[] = [];
+
+//   models.forEach((model, modelIndex) => {
+//     // Loop through each pcs entry (child rows)
+//     model.pcs.forEach((p, pcsIndex) => {
+//       excelData.push({
+//         // 'Sr.No': `${modelIndex + 1}.${pcsIndex + 1}`, 
+//         // 'Model ID': model.modelId,
+//         'Model Name': model.modelName,
+//         // 'Unique Number': model.uniqueNumber,
+//         'Net Weight': p.netWeight.toFixed(3),
+//         'Stone Weight': p.stoneWeight.toFixed(3),
+//         'Gross Weight': p.grossWeight.toFixed(3),
+//         'Stone Charges': p.stoneCharges.toFixed(2),
+//         'count': p.pieceNo
+//         // 'PDF URL': `${apiBaseUrl}${model.imageUrl}` || ''
+//       });
+//     });
+//   });
+
+//   // Grand total across all models
+//   const grandTotals = models.reduce(
+//     (acc, model) => {
+//       acc.netWeight += model.pcs.reduce((a, b) => a + b.netWeight, 0);
+//       acc.stoneWeight += model.pcs.reduce((a, b) => a + b.stoneWeight, 0);
+//       acc.grossWeight += model.pcs.reduce((a, b) => a + b.grossWeight, 0);
+//       acc.stoneCharges += model.pcs.reduce((a, b) => a + b.stoneCharges, 0);
+//       acc.pcsCount += model.pcs.reduce((a, b) => a + b.pieceNo, 0);
+//       return acc;
+//     },
+//     { netWeight: 0, stoneWeight: 0, grossWeight: 0, stoneCharges: 0, pcsCount: 0 }
+//   );
+
+//   excelData.push({
+//     'Model Name': 'GRAND TOTAL',
+//     // 'Unique Number': '',
+//     'Net Weight': grandTotals.netWeight.toFixed(3),
+//     'Stone Weight': grandTotals.stoneWeight.toFixed(3),
+//     'Gross Weight': grandTotals.grossWeight.toFixed(3),
+//     'Stone Charges': grandTotals.stoneCharges.toFixed(2),
+//     'count': grandTotals.pcsCount,
+//     // 'PDF URL': ''
+//   });
+
+//   // Create worksheet
+//   const ws = XLSX.utils.json_to_sheet(excelData);
+//   const wb = XLSX.utils.book_new();
+//   XLSX.utils.book_append_sheet(wb, ws, 'Tagging Summary');
+
+//   // Generate Excel file
+//   const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+//   return new Blob([excelBuffer], {
+//     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+//   });
+// };
+
+const generateExcel = (
+  models: TaggingModel[],
+  orderId: string
+): Blob => {
+
   const excelData: any[] = [];
 
-  models.forEach((model, modelIndex) => {
-    // Loop through each pcs entry (child rows)
-    model.pcs.forEach((p, pcsIndex) => {
+  // ================= DATA ROWS =================
+  models.forEach((model) => {
+    model.pcs.forEach((p) => {
       excelData.push({
-        // 'Sr.No': `${modelIndex + 1}.${pcsIndex + 1}`, 
-        // 'Model ID': model.modelId,
-        'Model Name': model.modelName,
-        'Unique Number': model.uniqueNumber,
-        'Net Weight': p.netWeight.toFixed(3),
-        'Stone Weight': p.stoneWeight.toFixed(3),
-        'Gross Weight': p.grossWeight.toFixed(3),
-        'Stone Charges': p.stoneCharges.toFixed(2),
-        'PDF URL': `${apiBaseUrl}${model.imageUrl}` || ''
+        "Model Name": model.modelName,
+        "Net Weight": p.netWeight.toFixed(3),
+        "Stone Weight": p.stoneWeight.toFixed(3),
+        "Gross Weight": p.grossWeight.toFixed(3),
+        "Stone Charges": p.stoneCharges.toFixed(2),
+        "Count": p.pieceNo
       });
     });
   });
 
-  // Grand total across all models
+  // ================= GRAND TOTAL =================
   const grandTotals = models.reduce(
     (acc, model) => {
       acc.netWeight += model.pcs.reduce((a, b) => a + b.netWeight, 0);
       acc.stoneWeight += model.pcs.reduce((a, b) => a + b.stoneWeight, 0);
       acc.grossWeight += model.pcs.reduce((a, b) => a + b.grossWeight, 0);
       acc.stoneCharges += model.pcs.reduce((a, b) => a + b.stoneCharges, 0);
-      acc.pcsCount += model.pcs.length;
+      acc.pcsCount += model.pcs.reduce((a, b) => a + b.pieceNo, 0);
       return acc;
     },
     { netWeight: 0, stoneWeight: 0, grossWeight: 0, stoneCharges: 0, pcsCount: 0 }
   );
 
   excelData.push({
-    'Model Name': 'GRAND TOTAL',
-    'Unique Number': '',
-    'Net Weight': grandTotals.netWeight.toFixed(3),
-    'Stone Weight': grandTotals.stoneWeight.toFixed(3),
-    'Gross Weight': grandTotals.grossWeight.toFixed(3),
-    'Stone Charges': grandTotals.stoneCharges.toFixed(2),
-    'PDF URL': ''
+    "Model Name": "GRAND TOTAL",
+    "Net Weight": grandTotals.netWeight.toFixed(3),
+    "Stone Weight": grandTotals.stoneWeight.toFixed(3),
+    "Gross Weight": grandTotals.grossWeight.toFixed(3),
+    "Stone Charges": grandTotals.stoneCharges.toFixed(2),
+    "Count": grandTotals.pcsCount
   });
 
-  // Create worksheet
-  const ws = XLSX.utils.json_to_sheet(excelData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Tagging Summary');
+  // ================= CREATE SHEET =================
+  const ws = XLSX.utils.json_to_sheet(excelData, { origin: "A3" });
 
-  // Generate Excel file
-  const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  // ================= HEADER ROWS =================
+  XLSX.utils.sheet_add_aoa(
+    ws,
+    [
+      [`Order ID : ${orderId}`], // Row 1
+      [],                         // Row 2 (blank)
+    ],
+    { origin: "A1" }
+  );
+
+  // Optional: merge Order ID row across columns
+  ws["!merges"] = [
+    {
+      s: { r: 0, c: 0 },
+      e: { r: 0, c: 5 } // merge till "Count" column
+    }
+  ];
+
+  // ================= WORKBOOK =================
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Tagging Summary");
+
+  const excelBuffer = XLSX.write(wb, {
+    bookType: "xlsx",
+    type: "array"
+  });
+
   return new Blob([excelBuffer], {
-    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   });
 };
-
 
 
   // Add preview Excel function
   const previewExcel = () => {
     try {
-      const excelBlob = generateExcel(selectedModels);
+      const excelBlob = generateExcel(selectedModels, orderId);
       const url = window.URL.createObjectURL(excelBlob);
       window.open(url, '_blank');
     } catch (error) {
@@ -1475,7 +1622,7 @@ const generateExcel = (models: TaggingModel[]): Blob => {
       {/* Party & Order Selection */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Party */}
-        <div className="form-group">
+        {/* <div className="form-group">
           <label className="block text-sm font-medium text-gray-700 mb-2">Select Party</label>
           <Select
             onValueChange={(value) => {
@@ -1505,10 +1652,58 @@ const generateExcel = (models: TaggingModel[]): Blob => {
               )}
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
+
+
+<div className="form-group">
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Select Party
+  </label>
+
+  <Select
+    value={selectedParty}
+    onValueChange={(value) => {
+      const selectedPartyObj = partyLedgers.find(
+        (party) => party.code === value
+      );
+
+      if (selectedPartyObj) {
+        setSelectedParty(selectedPartyObj.code);
+        setSelectedOrder("");
+        setSelectedModels([]);
+        setSubmittedItems([]);
+      }
+    }}
+  >
+    <SelectTrigger className="w-full bg-white border border-gray-200">
+      <SelectValue
+        placeholder={isLoading ? "Loading..." : "Select Party"}
+      />
+    </SelectTrigger>
+
+    <SelectContent className="bg-white">
+      {partyLedgers.length > 0 ? (
+        partyLedgers.map((party) => (
+          <SelectItem
+            key={party.id}
+            value={party.code}
+            className="hover:bg-gray-100"
+          >
+            {party.name}
+          </SelectItem>
+        ))
+      ) : (
+        <SelectItem value="no-data" disabled>
+          {isLoading ? "Loading..." : "No parties available"}
+        </SelectItem>
+      )}
+    </SelectContent>
+  </Select>
+</div>
+
 
         {/* Order */}
-        <div className="form-group relative z-10">
+        {/* <div className="form-group relative z-10">
           <label className="block text-sm font-medium text-gray-700 mb-2">Select Order</label>
           <Select
             value={selectedOrder}
@@ -1532,7 +1727,47 @@ const generateExcel = (models: TaggingModel[]): Blob => {
               )}
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
+
+<div className="form-group relative z-10">
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Select Order
+  </label>
+
+  <Select
+    value={selectedOrder}
+    onValueChange={(value) => setSelectedOrder(value)}
+    disabled={!selectedParty || isLoadingOrders}
+  >
+    <SelectTrigger className="w-full bg-white border border-gray-200">
+      <SelectValue
+        placeholder={
+          isLoadingOrders ? "Loading Orders..." : "Select Order"
+        }
+      />
+    </SelectTrigger>
+
+    <SelectContent className="bg-white max-h-[200px] overflow-y-auto">
+      {orders.length > 0 ? (
+        orders.map((order) => (
+          <SelectItem
+            key={`${order.id}-${order.orderNo}`}
+            value={order.id}
+            className="hover:bg-gray-100"
+          >
+            {order.orderNo}
+          </SelectItem>
+        ))
+      ) : (
+        <SelectItem value="no-data" disabled>
+          {isLoadingOrders ? "Loading..." : "No orders available"}
+        </SelectItem>
+      )}
+    </SelectContent>
+  </Select>
+</div>
+
+
       </div>
 
       {/* Model Selection */}
@@ -1734,14 +1969,15 @@ const generateExcel = (models: TaggingModel[]): Blob => {
             <td className="preview border text-center">
               <button
                 onClick={() => {
+                  const piece = Number(pc.pieceNo || 0);
                   const stoneWeight = Number(pc.stoneWeight || 0);
                   const netWeight = Number(pc.netWeight || 0); // Add this if you want to check netWeight too
 
                   // if (stoneWeight === 0 || netWeight === 0)
                   
-                  if (netWeight === 0) 
+                  if (netWeight === 0 || piece === 0) 
                     {
-                    alert('Please enter Net Weight before previewing.');
+                    alert('Please enter Net Weight & Pieces before previewing.');
                     return;
                   }
 
