@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import {
   Box,
   Table,
@@ -262,6 +263,7 @@ const TaggingTable = () => {
                         <TableCell>Order ID</TableCell>
                         <TableCell>Product</TableCell>
                         <TableCell>Quantity</TableCell>
+                        <TableCell>Transfer</TableCell>
                         <TableCell>Action</TableCell>
                       </TableRow>
                     </TableHead>
@@ -290,6 +292,15 @@ const TaggingTable = () => {
                               <TableCell>{tag.orderId}</TableCell>
                               <TableCell>{tag.product}</TableCell>
                               <TableCell>{tag.quantity}</TableCell>
+                              <TableCell>
+                                <button
+                                  className="flex items-center gap-2 px-3 py-1 text-xs font-semibold text-white bg-blue-600 rounded hover:bg-blue-700"
+                                  onClick={() => { window.location.href = `/Billing/Tagging/new-tagging?orderId=${tag.orderId}`;}}
+                                >
+                                  Tagging
+                                  <ArrowRightIcon className="w-4 h-4 text-white" />
+                                </button>
+                              </TableCell>
 
                               {/* <TableCell>
   {tag.status?.toLowerCase() == "finished" && (
