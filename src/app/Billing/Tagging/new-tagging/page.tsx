@@ -6,7 +6,7 @@ import QRCode  from 'qrcode';
 import noimage from "../../../../../assets/no.png";
 
 import {  useSearchParams,useRouter } from "next/navigation";
-
+import { X } from "lucide-react";
 
 import {
   Select,
@@ -53,6 +53,17 @@ interface TaggingModel {
   stoneCharges: number;
 }
 
+interface TaggedPiece {
+  pieceIndex: number;
+  uniquePieceNo: string;
+  pieceNo: number;
+  netWeight: string;
+  stoneWeight: string;
+  grossWeight: string;
+  stoneCharges: string;
+}
+
+
 // Interface for submitted tagged items
 interface SubmittedTaggedItem {
   id: string;
@@ -62,6 +73,8 @@ interface SubmittedTaggedItem {
   Net_Weight__c: string;
   Stone_Weight__c: string;
   Stone_Charge__c: string;
+   // 🔹 ADD PCS HERE ✅
+  pieces: TaggedPiece[];  
   PDF_URL__c?: string;
   pdfUrl?: string;
 }
@@ -121,35 +134,36 @@ const handlePreview = (model: TaggingModel) => {
   
 };
   
-
 const handlePrint = async (model: TaggingModel, pcIndex: number) => {
+  console.log("print click :", model);
+  console.log("order detail :", selectedOrder);
 
-  console.log("print click :",model);
-  console.log("order detail :",selectedOrder);
+  // 🔹 Extract order number safely
+  const orderNo =
+    selectedOrder && selectedOrder.includes("/")
+      ? selectedOrder.split("/").pop()
+      : selectedOrder || "order";
 
-const orderNo =
-  (selectedOrder && selectedOrder.includes("/"))
-    ? selectedOrder.split("/").pop() // take last part
-    : selectedOrder || "order";
+  // 🎯 PRINT SIZE: 50mm x 25mm (300 DPI)
+  const DPI = 300;
+  const width = Math.round((50 / 25.4) * DPI);   // ≈ 591 px
+  const height = Math.round((25 / 25.4) * DPI); // ≈ 295 px
 
-  const aspectRatio = 3.5;
-  const width = 940;
-  const height = Math.round(width / aspectRatio);
-
-  // Create canvas
+  // 🖼️ Create canvas
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
+
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
-  // Background
-  ctx.fillStyle = "#fff";
+  // ⚪ Background
+  ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, width, height);
 
-  // --- QR Column (40%) ---
+  /* ================= QR COLUMN (40%) ================= */
   const qrColumnWidth = width * 0.4;
-  const qrSize = Math.min(qrColumnWidth * 0.8, height * 0.8);
+  const qrSize = Math.min(qrColumnWidth * 0.85, height * 0.85);
 
   const qrCanvas = document.createElement("canvas");
   await QRCode.toCanvas(qrCanvas, `${model.modelName}-${pcIndex + 1}`, {
@@ -157,45 +171,48 @@ const orderNo =
     margin: 0,
   });
 
-  // Center QR
   const qrX = (qrColumnWidth - qrSize) / 2;
   const qrY = (height - qrSize) / 2;
   ctx.drawImage(qrCanvas, qrX, qrY);
 
-  // --- Details Column (60%) ---
+  /* ================= DETAILS COLUMN (60%) ================= */
   const detailsStartX = qrColumnWidth;
-  const padding = 30;
+  const padding = 10;
 
-  // get selected row (pc)
-  const pc = model.pcs[pcIndex] || { netWeight: 0, stoneWeight: 0, grossWeight: 0, stoneCharges: 0 };
+  // Selected piece
+  const pc =
+    model.pcs?.[pcIndex] || {
+      netWeight: 0,
+      stoneWeight: 0,
+      grossWeight: 0,
+      pieceNo: "-",
+    };
 
+  // 🔠 BIG + BOLD TEXT
   const lines = [
-    { text: `${model.modelName}`, font: "bold 40px Arial" },
-    { text: "N.wt | S.wt | G.wt", font: "25px Arial" },
-    { text: `${pc.netWeight || 0}g | ${pc.stoneWeight || 0}g | ${pc.grossWeight || 0}g`, font: "25px Arial" },
-    // { text: `Wastage : `, font: "bold 28px Arial" },
-    { text: `Piece : ${pc.pieceNo || "-"}`, font: "bold 28px Arial" },
-
-
-    // ${(pc.stoneCharges || 0).toLocaleString()} ₹
-
+    { text: model.modelName, font: "bold 40px Arial" },
+    { text: "N.wt | S.wt | G.wt", font: "bold 28px Arial" },
+    {
+      text: `${pc.netWeight || 0}g | ${pc.stoneWeight || 0}g | ${pc.grossWeight || 0}g`,
+      font: "bold 28px Arial",
+    },
+    { text: `Piece : ${pc.pieceNo || "-"}`, font: "bold 35px Arial" },
   ];
 
-  const lineHeight = 50;
+  const lineHeight = 36;
   const textBlockHeight = lines.length * lineHeight;
-
   let textY = (height - textBlockHeight) / 2 + lineHeight;
 
   lines.forEach(({ text, font }) => {
     ctx.font = font;
-    ctx.fillStyle = "#000";
+    ctx.fillStyle = "#000000";
     ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
     ctx.fillText(text, detailsStartX + padding, textY);
     textY += lineHeight;
   });
 
-  // --- Download (orderno/modelName/#rowNo) ---
-
+  /* ================= DOWNLOAD ================= */
   const fileName = `${orderNo}_${model.modelName}_#${pcIndex + 1}.png`;
 
   const link = document.createElement("a");
@@ -203,8 +220,93 @@ const orderNo =
   link.href = canvas.toDataURL("image/png");
   link.click();
 
-  alert("Tag Generated and Downloaded.....");
+  alert("Tag Generated and Downloaded Successfully!");
 };
+
+
+// const handlePrint = async (model: TaggingModel, pcIndex: number) => {
+
+//   console.log("print click :",model);
+//   console.log("order detail :",selectedOrder);
+
+// const orderNo =
+//   (selectedOrder && selectedOrder.includes("/"))
+//     ? selectedOrder.split("/").pop() // take last part
+//     : selectedOrder || "order";
+
+//   const aspectRatio = 3.5;
+//   const width = 940;
+//   const height = Math.round(width / aspectRatio);
+
+//   // Create canvas
+//   const canvas = document.createElement("canvas");
+//   canvas.width = width;
+//   canvas.height = height;
+//   const ctx = canvas.getContext("2d");
+//   if (!ctx) return;
+
+//   // Background
+//   ctx.fillStyle = "#fff";
+//   ctx.fillRect(0, 0, width, height);
+
+//   // --- QR Column (40%) ---
+//   const qrColumnWidth = width * 0.4;
+//   const qrSize = Math.min(qrColumnWidth * 0.8, height * 0.8);
+
+//   const qrCanvas = document.createElement("canvas");
+//   await QRCode.toCanvas(qrCanvas, `${model.modelName}-${pcIndex + 1}`, {
+//     width: qrSize,
+//     margin: 0,
+//   });
+
+//   // Center QR
+//   const qrX = (qrColumnWidth - qrSize) / 2;
+//   const qrY = (height - qrSize) / 2;
+//   ctx.drawImage(qrCanvas, qrX, qrY);
+
+//   // --- Details Column (60%) ---
+//   const detailsStartX = qrColumnWidth;
+//   const padding = 30;
+
+//   // get selected row (pc)
+//   const pc = model.pcs[pcIndex] || { netWeight: 0, stoneWeight: 0, grossWeight: 0, stoneCharges: 0 };
+
+//   const lines = [
+//     { text: `${model.modelName}`, font: "bold 40px Arial" },
+//     { text: "N.wt | S.wt | G.wt", font: "25px Arial" },
+//     { text: `${pc.netWeight || 0}g | ${pc.stoneWeight || 0}g | ${pc.grossWeight || 0}g`, font: "25px Arial" },
+//     // { text: `Wastage : `, font: "bold 28px Arial" },
+//     { text: `Piece : ${pc.pieceNo || "-"}`, font: "bold 28px Arial" },
+
+
+//     // ${(pc.stoneCharges || 0).toLocaleString()} ₹
+
+//   ];
+
+//   const lineHeight = 50;
+//   const textBlockHeight = lines.length * lineHeight;
+
+//   let textY = (height - textBlockHeight) / 2 + lineHeight;
+
+//   lines.forEach(({ text, font }) => {
+//     ctx.font = font;
+//     ctx.fillStyle = "#000";
+//     ctx.textAlign = "left";
+//     ctx.fillText(text, detailsStartX + padding, textY);
+//     textY += lineHeight;
+//   });
+
+//   // --- Download (orderno/modelName/#rowNo) ---
+
+//   const fileName = `${orderNo}_${model.modelName}_#${pcIndex + 1}.png`;
+
+//   const link = document.createElement("a");
+//   link.download = fileName;
+//   link.href = canvas.toDataURL("image/png");
+//   link.click();
+
+//   alert("Tag Generated and Downloaded.....");
+// };
 
 useEffect(() => {
   if (partyCode && partyLedgers.length > 0) {
@@ -829,23 +931,66 @@ const handleSubmitModels = async () => {
     }
 
     // ✅ Process models locally
-    const taggedItems = selectedModels.map((model) => {
-      const totals = computeModelTotals(model);
+  //   const taggedItems = selectedModels.map((model) => {
+  //     const totals = computeModelTotals(model);
 
-      const modelData = {
-        taggingId: taggingId,
-        modelDetails: model.modelName,
-        modelUniqueNumber: String(model.uniqueNumber),
-        grossWeight: Number(totals.grossTotal).toFixed(3),
-        netWeight: Number(totals.netTotal).toFixed(3),
-        stoneWeight: Number(totals.stoneTotal).toFixed(3),
-        stoneCharge: Number(totals.stoneChargesTotal).toFixed(2),
-      };
+  //      const pieces = (model.pcs || []).map((pc, pcIndex) => ({
+  //   pieceIndex: pcIndex + 1,
+  //   uniquePieceNo: `${model.uniqueNumber}-${pcIndex + 1}`,
+  //   pieceNo: Number(pc.pieceNo || 0),
+  //   netWeight: Number(pc.netWeight || 0).toFixed(3),
+  //   stoneWeight: Number(pc.stoneWeight || 0).toFixed(3),
+  //   grossWeight: Number(pc.grossWeight || 0).toFixed(3),
+  //   stoneCharges: Number(pc.stoneCharges || 0).toFixed(2),
+  // }));
 
-      console.log("✅ Local model data:", modelData);
+  //     const modelData = {
+  //       taggingId: taggingId,
+  //       modelDetails: model.modelName,
+  //       modelUniqueNumber: String(model.uniqueNumber),
+  //       grossWeight: Number(totals.grossTotal).toFixed(3),
+  //       netWeight: Number(totals.netTotal).toFixed(3),
+  //       stoneWeight: Number(totals.stoneTotal).toFixed(3),
+  //       stoneCharge: Number(totals.stoneChargesTotal).toFixed(2),
+  //         // 🔹 ADD PCS HERE ✅
+  //   pieces: pieces,
+  //     };
 
-      return modelData;
-    });
+  //     console.log("✅ Local model data:", modelData);
+
+  //     return modelData;
+  //   });
+
+  const taggedItems: SubmittedTaggedItem[] = selectedModels.map((model) => {
+  const totals = computeModelTotals(model);
+
+  const pieces: TaggedPiece[] = (model.pcs || []).map((pc, pcIndex) => ({
+    pieceIndex: pcIndex + 1,
+    uniquePieceNo: `${model.uniqueNumber}-${pcIndex + 1}`,
+    pieceNo: Number(pc.pieceNo || 0),
+    netWeight: Number(pc.netWeight || 0).toFixed(3),
+    stoneWeight: Number(pc.stoneWeight || 0).toFixed(3),
+    grossWeight: Number(pc.grossWeight || 0).toFixed(3),
+    stoneCharges: Number(pc.stoneCharges || 0).toFixed(2),
+  }));
+
+  const modelData: SubmittedTaggedItem = {
+    id: taggingId, // ✅ REQUIRED
+
+    modelDetails: model.modelName,
+    Model_Unique_Number__c: String(model.uniqueNumber),
+
+    Gross_Weight__c: Number(totals.grossTotal).toFixed(3),
+    Net_Weight__c: Number(totals.netTotal).toFixed(3),
+    Stone_Weight__c: Number(totals.stoneTotal).toFixed(3),
+    Stone_Charge__c: Number(totals.stoneChargesTotal).toFixed(2),
+
+    pieces, // ✅ PCS INCLUDED
+  };
+
+  return modelData;
+});
+
 
     // ✅ Set locally processed items
     console.log("All tagged items :", taggedItems);      
@@ -860,6 +1005,11 @@ const handleSubmitModels = async () => {
   }
 };
 
+const handleRemoveModel = (modelIndex: number) => {
+  setSelectedModels(prev =>
+    prev.filter((_, index) => index !== modelIndex)
+  );
+};
 
 
 
@@ -953,10 +1103,32 @@ const handleSubmitModels = async () => {
 
         Object.entries(modelData).forEach(([key, value]) => formData.append(key, value));
 
+          // 🔹 PCS DATA
+    const pieces = (model.pcs || []).map((pc, pcIndex) => ({      
+      tagID: `${taggingId}`,
+      modelName: `${model.modelName}`,
+      pieceIndex: pcIndex + 1,
+      uniquePieceNo: `${model.uniqueNumber}-${pcIndex + 1}`,
+      pieceNo: Number(pc.pieceNo || 0),
+      netWeight: Number(pc.netWeight || 0).toFixed(3),
+      stoneWeight: Number(pc.stoneWeight || 0).toFixed(3),
+      grossWeight: Number(pc.grossWeight || 0).toFixed(3),
+      stoneCharges: Number(pc.stoneCharges || 0).toFixed(2),
+    }));
+
+    // ✅ Append pieces as JSON
+    formData.append("pieces", JSON.stringify(pieces));
+
+
         const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
         const safeModelName = (model.modelName || "model").replace(/\s+/g, "_");
         const pdfFileName = `${taggingId}_${safeModelName}_${model.uniqueNumber}.pdf`;
         formData.append("pdf", pdfBlob, pdfFileName);
+
+        // console.log("🔍 FormData contents:");
+        // for (const [key, value] of formData.entries()) {
+        //   console.log(key, value);
+        // }
 
         const response = await fetch(`${apiBaseUrl}/api/create-tagged-item`, {
           method: "POST",
@@ -989,16 +1161,21 @@ const handleSubmitModels = async () => {
       };
     }, { grossWeight: 0, netWeight: 0, stoneWeight: 0, stoneCharges: 0 });
 
+    
+    const oID = orderId ? orderId : selectedOrder;
+    
     // Generate summary files
     const pdfBytes = await generateSummaryPDF(selectedModels);
-    const excelBlob = generateExcel(selectedModels,orderId);
+    const excelBlob = generateExcel(selectedModels,oID);
 
     // Prepare tagging submission
     const formData = new FormData();
+
     const formDataDetails = {
+      oID,
       taggingId,
       partyCode: selectedParty,
-      orderNo:selectedOrder,
+      // orderNo:selectedOrder,
       totalGrossWeight: totals.grossWeight.toFixed(3),
       totalNetWeight: totals.netWeight.toFixed(3),
       totalStoneWeight: totals.stoneWeight.toFixed(3),
@@ -1010,6 +1187,12 @@ const handleSubmitModels = async () => {
 
     formData.append("pdfFile", new Blob([pdfBytes], { type: "application/pdf" }), "tagging_summary.pdf");
     formData.append("excelFile", excelBlob, "tagging_summary.xlsx");
+
+        // console.log("🔍 FormData contents:");
+        // for (const [key, value] of formData.entries()) {
+        //   console.log(key, value);
+        // }
+   
 
     const response = await fetch(`${apiBaseUrl}/api/submit-tagging`, { method: "POST", body: formData });
     if (!response.ok) throw new Error(`Server error: ${response.status}`);
@@ -1042,270 +1225,6 @@ const handleSubmitModels = async () => {
 };
 
 
-//   const handleSubmitTagging = async () => {
-//     setIsSubmittingTagging(true);
-//     try {
-//       if (submittedItems.length === 0) {
-//         alert('Please submit models first');
-//         return;
-//         // throw new Error('Please submit models first');
-//       }
-      
-//       // Calculate totals with stone details
-
-//       console.log("selectedModels",  selectedModels);
-
-//       // const totals = selectedModels.reduce((acc, model) => ({
-//       //   grossWeight: acc.grossWeight + model.grossWeight,
-//       //   netWeight: acc.netWeight + model.netWeight,
-//       //   stoneWeight: acc.stoneWeight + model.stoneWeight,
-//       //   stoneCharges: acc.stoneCharges + ((model.stoneWeight * 600)) // 600₹ per kg
-//       // }), { grossWeight: 0, netWeight: 0, stoneWeight: 0, stoneCharges: 0 });
-
-//       const totals = selectedModels.reduce(
-//   (acc, model) => {
-//     const pcsTotals = model.pcs.reduce(
-//       (pcsAcc, p) => ({
-//         grossWeight: pcsAcc.grossWeight + (p.grossWeight || 0),
-//         netWeight: pcsAcc.netWeight + (p.netWeight || 0),
-//         stoneWeight: pcsAcc.stoneWeight + (p.stoneWeight || 0),
-//         stoneCharges: pcsAcc.stoneCharges + (p.stoneWeight || 0) * 600
-//       }),
-//       { grossWeight: 0, netWeight: 0, stoneWeight: 0, stoneCharges: 0 }
-//     );
-
-//     return {
-//       grossWeight: acc.grossWeight + pcsTotals.grossWeight,
-//       netWeight: acc.netWeight + pcsTotals.netWeight,
-//       stoneWeight: acc.stoneWeight + pcsTotals.stoneWeight,
-//       stoneCharges: acc.stoneCharges + pcsTotals.stoneCharges
-//     };
-//   },
-//   { grossWeight: 0, netWeight: 0, stoneWeight: 0, stoneCharges: 0 }
-// );
-
-
-//       // Log detailed calculations
-//       console.log('Calculated Totals:', {
-//         grossWeight: totals.grossWeight.toFixed(3),
-//         netWeight: totals.netWeight.toFixed(3),
-//         stoneWeight: totals.stoneWeight.toFixed(3),
-//         stoneCharges: totals.stoneCharges.toFixed(2),
-//         stoneRate: '600₹ per g',
-//         totalModels: selectedModels.length
-//       });
-
-//       // Log individual model details
-//       console.log('Model Details:', selectedModels.map(model => ({
-//         modelId: model.modelId,
-//         modelName: model.modelName,
-//         netWeight: model.netWeight.toFixed(3),
-//         stoneWeight: model.stoneWeight.toFixed(3),
-//         grossWeight: model.grossWeight.toFixed(3),
-//         stoneCharges: ((model.stoneWeight * 600)).toFixed(2)
-//       })));
-
-//       // Generate PDF and Excel
-//       const pdfBytes = await generateSummaryPDF(selectedModels);
-//       const excelBlob = generateExcel(selectedModels);
-
-//       // Create form data
-//       const formData = new FormData();
-//       const taggingId = generateTaggingId();
-      
-//       // Add basic details with stone information
-//       const formDataDetails = {
-//         taggingId,
-//         partyCode: selectedParty,
-//         totalGrossWeight: totals.grossWeight.toFixed(3),
-//         totalNetWeight: totals.netWeight.toFixed(3),
-//         totalStoneWeight: totals.stoneWeight.toFixed(3),
-//         totalStoneCharges: totals.stoneCharges.toFixed(2),
-//         stoneRate: '600', // Rate per kg
-//         modelCount: selectedModels.length
-//       };
-
-//       console.log(formDataDetails);
-
-//       // Log submission details
-//       console.log('Submitting Tagging Order:', {
-//         ...formDataDetails,
-//         selectedModelsCount: selectedModels.length,
-//         submittedItemsCount: submittedItems.length,
-//         hasPDF: !!pdfBytes,
-//         hasExcel: !!excelBlob
-//       });
-
-//       // Append all form data
-//       Object.entries(formDataDetails).forEach(([key, value]) => {
-//         formData.append(key, value);
-//       });
-      
-//       // Append files
-//       const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
-//       formData.append('pdfFile', pdfBlob, 'tagging_summary.pdf');
-//       formData.append('excelFile', excelBlob, 'tagging_summary.xlsx');
-
-//       // Log request URL and data
-//       console.log('Sending request to:', `${apiBaseUrl}/api/submit-tagging`);
-//       console.log('Form Data Keys:', Array.from(formData.keys()));
-
-//       // Submit the tagging
-//       const response = await fetch(`${apiBaseUrl}/api/submit-tagging`, {
-//         method: 'POST',
-//         body: formData
-//       });
-
-//       // Log response status
-//       console.log('Server Response Status:', response.status);
-
-//       if (!response.ok) {
-//         throw new Error(`Server error: ${response.status} ${response.statusText}`);
-//       }
-
-//       const result = await response.json();
-      
-//       // Log server response
-//       console.log('Server Response:', {
-//         success: result.success,
-//         message: result.message,
-//         data: result.data
-//       });
-
-//       if (!result.success) {
-//         throw new Error(result.message || 'Failed to submit tagging');
-//       }
-
-//       // Log success details
-//       console.log('Tagging Order created successfully:', {
-//         taggingId,
-//         partyCode: selectedParty,
-//         modelsCount: selectedModels.length,
-//         totalStoneWeight: totals.stoneWeight.toFixed(3),
-//         totalStoneCharges: totals.stoneCharges.toFixed(2)
-//       });
-
-//       // Increment tagging number and save to localStorage
-//       const newNumber = lastTaggingNumber + 1;
-//       setLastTaggingNumber(newNumber);
-//       localStorage.setItem('lastTaggingNumber', newNumber.toString());
-
-//       alert('Tagging order submitted successfully!');
-      
-//       // Reset form
-//       setSelectedParty('');
-//       setSelectedOrder('');
-//       setOrderModels([]);
-//       setSelectedModels([]);
-//       setPreviewData(null);
-//       setModelCounts({});
-//       setSubmittedItems([]);
-//       setOrders([]);
-//       setIsLoadingOrders(false);
-//       setIsLoadingModels(false);
-//           router.push(`/Billing/Tagging`);
-
-//     } catch (error) {
-//       console.error('Error submitting tagging:', {
-//         error: error.message,
-//         stack: error.stack,
-//         selectedModels: selectedModels.length,
-//         submittedItems: submittedItems.length
-//       });
-//       // alert(`Error submitting tagging: ${error.message}`);
-//     } finally {
-//       setIsSubmittingTagging(false);
-//     }
-//   };
-
-  // Update the generateSummaryPDF function
-  // const generateSummaryPDF = async (models: TaggingModel[]): Promise<Uint8Array> => {
-  //   try {
-  //     const pdfDoc = await PDFDocument.create();
-  //     const page = pdfDoc.addPage([595, 842]); // A4 size
-  //     const { width, height } = page.getSize();
-  //     const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-  //     const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  //     const black = rgb(0, 0, 0);
-    
-  //     // Add title
-  //     page.drawText('Tagging Summary', {
-  //       x: 50,
-  //       y: height - 50,
-  //       size: 16,
-  //       font: helveticaBold,
-  //       color: black
-  //     });
-
-  //     // Add table headers
-  //     const headers = ['Model', 'Unique #', 'Net Weight', 'Stone Weight', 'Gross Weight', 'Stone Charges'];
-  //     let yPos = height - 100;
-  //     let xPos = 50;
-
-  //     headers.forEach((header, index) => {
-  //       page.drawText(header, {
-  //         x: xPos,
-  //         y: yPos,
-  //         size: 12,
-  //         font: helveticaBold,
-  //         color: black
-  //       });
-  //       xPos += 90;
-  //     });
-
-  //     // Add table rows
-  //     models.forEach((model, index) => {
-  //       yPos -= 30;
-  //       page.drawText(model.modelName, {
-  //         x: 50,
-  //         y: yPos,
-  //         size: 10,
-  //         font: helvetica,
-  //         color: black
-  //       });
-  //       page.drawText(model.uniqueNumber.toString(), {
-  //         x: 140,
-  //         y: yPos,
-  //         size: 10,
-  //         font: helvetica,
-  //         color: black
-  //       });
-  //       page.drawText(model.netWeight.toFixed(3), {
-  //         x: 230,
-  //         y: yPos,
-  //         size: 10,
-  //         font: helvetica,
-  //         color: black
-  //       });
-  //       page.drawText(model.stoneWeight.toFixed(3), {
-  //         x: 320,
-  //         y: yPos,
-  //         size: 10,
-  //         font: helvetica,
-  //         color: black
-  //       });
-  //       page.drawText(model.grossWeight.toFixed(3), {
-  //         x: 410,
-  //         y: yPos,
-  //         size: 10,
-  //         font: helvetica,
-  //         color: black
-  //       });
-  //       page.drawText(model.stoneCharges.toFixed(2), {
-  //         x: 500,
-  //         y: yPos,
-  //         size: 10,
-  //         font: helvetica,
-  //         color: black
-  //       });
-  //     });
-
-  //     return pdfDoc.save();
-  //   } catch (error) {
-  //     console.error('Error generating summary PDF:', error);
-  //     throw new Error(`Failed to generate summary PDF: ${error.message}`);
-  //   }
-  // };
 
 const generateSummaryPDF = async (models: TaggingModel[]): Promise<Uint8Array> => {
   try {
@@ -1514,7 +1433,7 @@ const generateSummaryPDF = async (models: TaggingModel[]): Promise<Uint8Array> =
 
 const generateExcel = (
   models: TaggingModel[],
-  orderId: string
+  oID: string
 ): Blob => {
 
   const excelData: any[] = [];
@@ -1562,7 +1481,7 @@ const generateExcel = (
   XLSX.utils.sheet_add_aoa(
     ws,
     [
-      [`Order ID : ${orderId}`], // Row 1
+      [`Order ID : ${oID}`], // Row 1
       [],                         // Row 2 (blank)
     ],
     { origin: "A1" }
@@ -1593,8 +1512,10 @@ const generateExcel = (
 
   // Add preview Excel function
   const previewExcel = () => {
+
+    const oID = orderId ? orderId : selectedOrder;
     try {
-      const excelBlob = generateExcel(selectedModels, orderId);
+      const excelBlob = generateExcel(selectedModels, oID);
       const url = window.URL.createObjectURL(excelBlob);
       window.open(url, '_blank');
     } catch (error) {
@@ -1806,7 +1727,7 @@ const generateExcel = (
             const stoneRate = 600; // Rs per gram
 
             return (
-             <div key={model.uniqueNumber} className="border rounded-lg p-4 bg-white shadow-sm">
+             <div key={model.uniqueNumber} className="border rounded-lg p-4 bg-white shadow-sm"> 
   {/* Header */}
   <div className="flex justify-between items-center mb-3">
     <p className="font-medium text-gray-800">
@@ -1841,6 +1762,16 @@ const generateExcel = (
         }}
         className="w-16 h-8 text-sm px-2 border border-gray-300 rounded"
       />
+
+       {/* REMOVE MODEL BUTTON */}
+    <button
+      onClick={() => handleRemoveModel(index)}
+      className="p-1 text-red-600 hover:text-red-800"
+      title="Remove Model"
+    >
+      {/* <Trash2 className="w-5 h-5" />  */}
+       <X className="w-5 h-5" /> 
+    </button>
     </div>
   </div>
 
@@ -1939,7 +1870,7 @@ const generateExcel = (
   <input
     type="number"
     min="1"
-    value={pc.pieceNo || ""}
+    value={pc.pieceNo || "0"}
     onChange={(e) => {
       const pieceNo = Number(e.target.value || 0);
 

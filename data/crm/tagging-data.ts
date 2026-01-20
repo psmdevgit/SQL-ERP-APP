@@ -16,8 +16,9 @@ export const fetchTaggingData = async (): Promise<ITagging[]> => {
       if (Array.isArray(result.data)) {
         return result.data.map((tagging: any) => {
           return {
-            id: tagging.taggingId,
+            id: tagging.taggingId,            
             PartyName: tagging.partyCode || '',
+            OrderID: tagging.orderId || '-',
             createdDate: tagging.createdDate || '',
             TotalWeight: tagging.totalGrossWeight || 0,
             TotalNetWeight: tagging.totalNetWeight || 0,

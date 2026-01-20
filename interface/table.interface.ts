@@ -548,6 +548,7 @@ export interface ITagging {
   TotalWeight: number;
   pdfUrl: string;
   excelUrl: string;
+  OrderID: string;
 }
 
 export interface ITag {

@@ -207,6 +207,7 @@ console.log("Deals State:", deals);
     orderBy,
     selected,
     handleDelete,
+    handleTagDelete,
     handleRequestSort,
     handleSelectAllClick,
     handleClick,
@@ -337,6 +338,7 @@ console.log("Deals State:", deals);
                         </TableCell>
                         <TableCell>Tagging Id</TableCell>
                         <TableCell>Party Name</TableCell>
+                        <TableCell>Order ID</TableCell>
                         <TableCell>Created Date</TableCell>
                         <TableCell>Total Gross Weight</TableCell>
                         <TableCell>Total Net Weight</TableCell>
@@ -364,6 +366,7 @@ console.log("Deals State:", deals);
                               </TableCell>
                               <TableCell>{deal.id}</TableCell>
                               <TableCell>{deal.PartyName}</TableCell>
+                              <TableCell>{deal.OrderID}</TableCell>
                               <TableCell>{deal.createdDate}</TableCell>
                               <TableCell>{deal.TotalWeight}</TableCell>
                               <TableCell>{deal.TotalNetWeight}</TableCell>
@@ -451,7 +454,7 @@ console.log("Deals State:", deals);
                                     }}
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      handleDelete(deal.id);
+                                      handleTagDelete(deal.id);
                                     }}
                                     title="Delete"
                                   >
@@ -513,7 +516,7 @@ console.log("Deals State:", deals);
         <DeleteModal
           open={modalDeleteOpen}
           setOpen={setModalDeleteOpen}
-          handleDeleteFunc={handleDelete}
+          handleDeleteFunc={handleTagDelete}
           deleteId={deleteId}
         />
       )}

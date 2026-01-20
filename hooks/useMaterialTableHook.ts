@@ -124,6 +124,44 @@ const handleDelete = async (id: number | string) => {
 };
 
 
+
+const handleTagDelete = async (id: number | string) => {
+  // ✅ Confirmation prompt
+  const isConfirmed = window.confirm(
+    "Are you sure you want to delete this tag?\n"
+  );
+
+  if (!isConfirmed) {
+    return; // ❌ Stop if user cancels
+  }
+
+  console.log(`Deleting item with ID: ${id}`);
+
+  try {
+    const response = await fetch(`${apiurl}/tag-delete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      console.log(data.message);
+      alert("Tag Deletion Failed");
+      return;
+    }
+
+    alert("Tags Deleted successfully!");
+    window.location.reload();
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong");
+  }
+};
+
+
+
   return {
     order,
     orderBy,
@@ -137,6 +175,7 @@ const handleDelete = async (id: number | string) => {
     startIndex,
     endIndex,
     handleDelete,
+    handleTagDelete,
     handleRequestSort,
     handleSelectAllClick,
     handleClick,
