@@ -6,12 +6,15 @@ import { useSearchParams } from 'next/navigation';
 interface TaggedItem {
   id: string;
   name: string;
+  model: string;
   modelDetails: string;
   modelUniqueNumber: string;
   grossWeight: number;
   netWeight: number;
   stoneWeight: number;
   stoneCharge: number;
+  pieces: number;
+  createdDate: string;
   pdfUrl: string;
 }
 
@@ -19,18 +22,22 @@ interface TaggingDetail {
   tagging: {
     id: string;
     taggingId: string;
-    partyCode: string;
+    partyCode: string; 
+    orderID: string;
     totalGrossWeight: number;
     pdfUrl: string;
-    excelUrl: string;
+    excelUrl: string;    
+    totalStoneCharges: number;
     createdDate: string;
   };
   taggedItems: TaggedItem[];
   summary: {
     totalItems: number;
+    totalPieces: number;
     totalGrossWeight: number;
     totalNetWeight: number;
     totalStoneWeight: number;
+    totalStoneCharge: number;
   };
 }
 
@@ -132,22 +139,42 @@ export default function TaggingDetailsPage() {
               </a>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-3 text-sm">
+          <div className="grid grid-cols-5 gap-3 text-sm">
             <div>
               <p className="text-gray-600">Party Code</p>
               <p className="font-semibold">{details.tagging.partyCode}</p>
+            </div>
+            <div>
+              <p className="text-gray-600">Order ID</p>
+              <p className="font-semibold">{details.tagging.orderID}</p>
             </div>
             <div>
               <p className="text-gray-600">Created Date</p>
               <p className="font-semibold">{new Date(details.tagging.createdDate).toLocaleDateString()}</p>
             </div>
             <div>
-              <p className="text-gray-600">Total Items</p>
+              <p className="text-gray-600">Total Models</p>
               <p className="font-semibold">{details.summary.totalItems}</p>
+            </div> 
+            <div>
+              <p className="text-gray-600">Total Pieces</p>
+              <p className="font-semibold">{details.summary.totalPieces}</p>
             </div>
             <div>
-              <p className="text-gray-600">Total Gross Weight</p>
+              <p className="text-gray-600">Total Gross Wt</p>
               <p className="font-semibold">{details.summary.totalGrossWeight.toFixed(3)}</p>
+            </div>
+            <div>
+              <p className="text-gray-600">Total Net Wt</p>
+              <p className="font-semibold">{details.summary.totalNetWeight.toFixed(3)}</p>
+            </div>
+            <div>
+              <p className="text-gray-600">Total Stone Wt</p>
+              <p className="font-semibold">{details.summary.totalStoneWeight.toFixed(3)}</p>
+            </div>
+            <div>
+              <p className="text-gray-600">Total Stone Charge</p>
+              <p className="font-semibold">Rs.  {details.tagging.totalStoneCharges}</p>
             </div>
           </div>
         </div>
@@ -168,7 +195,7 @@ export default function TaggingDetailsPage() {
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Net Weight</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stone Weight</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stone Charge</th>
-                {/* <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th> */}
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pieces</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 text-sm">
@@ -182,12 +209,13 @@ export default function TaggingDetailsPage() {
 
                 return (
                   <tr key={item.id}>
-                    <td className="px-4 py-2 whitespace-nowrap">{item.name || 'N/A'}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{item.model || 'N/A'}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{item.modelUniqueNumber}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{item.grossWeight.toFixed(3)}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{item.netWeight.toFixed(3)}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{item.stoneWeight.toFixed(3)}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{calculatedStoneCharge.toFixed(2)}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{item.pieces}</td>
                     {/* <td className="px-4 py-2 whitespace-nowrap">
                       {item.pdfUrl && (
                         <a 
@@ -214,7 +242,7 @@ export default function TaggingDetailsPage() {
                 <td className="px-4 py-2 font-semibold">
                   {((details.summary.totalStoneWeight * 600)).toFixed(2)}
                 </td>
-                <td className="px-4 py-2"></td>
+                <td className="px-4 py-2 font-semibold">{details.summary.totalPieces}</td>
               </tr>
             </tfoot>
           </table>
