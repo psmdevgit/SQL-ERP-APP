@@ -28,7 +28,7 @@ interface SelectedItem {
   issueWeight: number;
 }
 
-const apiUrl = "http://localhost:4001";
+const apiUrl = "https://kalash.app";
 
 export default function Handmade() {
 
@@ -521,3 +521,4 @@ onClick={handleAddInventoryItem}
 
   );
 }
+
