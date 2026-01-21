@@ -5,7 +5,7 @@ import { Input  } from "@mui/material";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-const apiUrl = "http://localhost:4001";
+const apiUrl = "https://kalash.app";
 
 export default function HandmadeReports() {
 
@@ -182,3 +182,4 @@ export default function HandmadeReports() {
     </div>
   );
 }
+
