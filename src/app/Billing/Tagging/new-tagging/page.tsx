@@ -133,23 +133,29 @@ const handlePreview = (model: TaggingModel) => {
   console.log("Preview clicked for:", model);
   
 };
-  
+
 const handlePrint = async (model: TaggingModel, pcIndex: number) => {
   console.log("print click :", model);
   console.log("order detail :", selectedOrder);
 
-  // 🔹 Extract order number safely
+  /* ================= ORDER NO ================= */
   const orderNo =
     selectedOrder && selectedOrder.includes("/")
       ? selectedOrder.split("/").pop()
       : selectedOrder || "order";
 
-  // 🎯 PRINT SIZE: 50mm x 25mm (300 DPI)
+  /* ================= PRINT SIZE ================= */
+  // 🎯 90mm x 15mm @ 300 DPI
   const DPI = 300;
-  const width = Math.round((50 / 25.4) * DPI);   // ≈ 591 px
-  const height = Math.round((25 / 25.4) * DPI); // ≈ 295 px
+  const width = Math.round((90 / 25.4) * DPI);   // ≈ 1063 px
+  const height = Math.round((15 / 25.4) * DPI); // ≈ 177 px
 
-  // 🖼️ Create canvas
+  /* ================= SAFE PADDING ================= */
+  const PAGE_PADDING = 20; // 🔥 printer-safe margin
+  const contentWidth = width - PAGE_PADDING * 2;
+  const contentHeight = height - PAGE_PADDING * 2;
+
+  /* ================= CANVAS ================= */
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
@@ -157,13 +163,13 @@ const handlePrint = async (model: TaggingModel, pcIndex: number) => {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
-  // ⚪ Background
+  /* ================= BACKGROUND ================= */
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, width, height);
 
-  /* ================= QR COLUMN (40%) ================= */
-  const qrColumnWidth = width * 0.4;
-  const qrSize = Math.min(qrColumnWidth * 0.85, height * 0.85);
+  /* ================= QR COLUMN ================= */
+  const qrColumnWidth = contentWidth * 0.3;
+  const qrSize = Math.min(qrColumnWidth * 0.9, contentHeight * 0.9);
 
   const qrCanvas = document.createElement("canvas");
   await QRCode.toCanvas(qrCanvas, `${model.modelName}-${pcIndex + 1}`, {
@@ -171,15 +177,14 @@ const handlePrint = async (model: TaggingModel, pcIndex: number) => {
     margin: 0,
   });
 
-  const qrX = (qrColumnWidth - qrSize) / 2;
-  const qrY = (height - qrSize) / 2;
+  const qrX = PAGE_PADDING + (qrColumnWidth - qrSize) / 2;
+  const qrY = PAGE_PADDING + (contentHeight - qrSize) / 2;
   ctx.drawImage(qrCanvas, qrX, qrY);
 
-  /* ================= DETAILS COLUMN (60%) ================= */
-  const detailsStartX = qrColumnWidth;
-  const padding = 10;
+  /* ================= DETAILS COLUMN ================= */
+  const detailsStartX = PAGE_PADDING + qrColumnWidth;
+  const innerPadding = 6;
 
-  // Selected piece
   const pc =
     model.pcs?.[pcIndex] || {
       netWeight: 0,
@@ -188,27 +193,30 @@ const handlePrint = async (model: TaggingModel, pcIndex: number) => {
       pieceNo: "-",
     };
 
-  // 🔠 BIG + BOLD TEXT
   const lines = [
-    { text: model.modelName, font: "bold 40px Arial" },
-    { text: "N.wt | S.wt | G.wt", font: "bold 28px Arial" },
+    { text: model.modelName, font: "bold 30px Arial" },
+    { text: "N.wt | S.wt | G.wt", font: "bold 25px Arial" },
     {
       text: `${pc.netWeight || 0}g | ${pc.stoneWeight || 0}g | ${pc.grossWeight || 0}g`,
-      font: "bold 28px Arial",
+      font: "bold 25px Arial",
     },
-    { text: `Piece : ${pc.pieceNo || "-"}`, font: "bold 35px Arial" },
+    { text: `Pc: ${pc.pieceNo || "-"}`, font: "bold 28px Arial" },
   ];
 
-  const lineHeight = 36;
+  const lineHeight = 30;
   const textBlockHeight = lines.length * lineHeight;
-  let textY = (height - textBlockHeight) / 2 + lineHeight;
+
+  let textY =
+    PAGE_PADDING +
+    (contentHeight - textBlockHeight) / 2 +
+    lineHeight / 1.3;
 
   lines.forEach(({ text, font }) => {
     ctx.font = font;
     ctx.fillStyle = "#000000";
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    ctx.fillText(text, detailsStartX + padding, textY);
+    ctx.fillText(text, detailsStartX + innerPadding, textY);
     textY += lineHeight;
   });
 
@@ -222,6 +230,121 @@ const handlePrint = async (model: TaggingModel, pcIndex: number) => {
 
   alert("Tag Generated and Downloaded Successfully!");
 };
+
+  
+// const handlePrint = async (model: TaggingModel, pcIndex: number) => {
+//   console.log("print click :", model);
+//   console.log("order detail :", selectedOrder);
+
+//   // 🔹 Extract order number safely
+//   const orderNo =
+//     selectedOrder && selectedOrder.includes("/")
+//       ? selectedOrder.split("/").pop()
+//       : selectedOrder || "order";
+
+//   // 🎯 PRINT SIZE: 50mm x 25mm (300 DPI)
+//   // const DPI = 300;
+//   // const width = Math.round((50 / 25.4) * DPI);   // ≈ 591 px
+//   // const height = Math.round((25 / 25.4) * DPI); // ≈ 295 px
+//   // 🎯 PRINT SIZE: 90mm x 15mm (1A) @ 300 DPI
+// const DPI = 300;
+// const width = Math.round((90 / 25.4) * DPI);   // ≈ 1063 px
+// const height = Math.round((15 / 25.4) * DPI); // ≈ 177 px
+
+
+//   // 🖼️ Create canvas
+//   const canvas = document.createElement("canvas");
+//   canvas.width = width;
+//   canvas.height = height;
+
+//   const ctx = canvas.getContext("2d");
+//   if (!ctx) return;
+
+//   // ⚪ Background
+//   ctx.fillStyle = "#ffffff";
+//   ctx.fillRect(0, 0, width, height);
+
+//   /* ================= QR COLUMN (40%) ================= */
+//   // const qrColumnWidth = width * 0.4;
+//   // const qrSize = Math.min(qrColumnWidth * 0.85, height * 0.85);
+
+//   /* ================= QR COLUMN (30%) ================= */
+
+// const qrColumnWidth = width * 0.3;
+// const qrSize = Math.min(qrColumnWidth * 0.9, height * 0.9);
+
+
+//   const qrCanvas = document.createElement("canvas");
+//   await QRCode.toCanvas(qrCanvas, `${model.modelName}-${pcIndex + 1}`, {
+//     width: qrSize,
+//     margin: 0,
+//   });
+
+//   const qrX = (qrColumnWidth - qrSize) / 2;
+//   const qrY = (height - qrSize) / 2;
+//   ctx.drawImage(qrCanvas, qrX, qrY);
+
+//   /* ================= DETAILS COLUMN (60%) ================= */
+//   const detailsStartX = qrColumnWidth;
+//   const padding = 6;
+
+//   // Selected piece
+//   const pc =
+//     model.pcs?.[pcIndex] || {
+//       netWeight: 0,
+//       stoneWeight: 0,
+//       grossWeight: 0,
+//       pieceNo: "-",
+//     };
+
+//   // 🔠 BIG + BOLD TEXT
+//   // const lines = [
+//   //   { text: model.modelName, font: "bold 40px Arial" },
+//   //   { text: "N.wt | S.wt | G.wt", font: "bold 28px Arial" },
+//   //   {
+//   //     text: `${pc.netWeight || 0}g | ${pc.stoneWeight || 0}g | ${pc.grossWeight || 0}g`,
+//   //     font: "bold 28px Arial",
+//   //   },
+//   //   { text: `Piece : ${pc.pieceNo || "-"}`, font: "bold 35px Arial" },
+//   // ];
+
+//   // const lineHeight = 36;
+  
+//   const lines = [
+//   { text: model.modelName, font: "bold 32px Arial" },
+//   { text: "N.wt | S.wt | G.wt", font: "bold 28px Arial" },
+//   {
+//     text: `${pc.netWeight || 0}g | ${pc.stoneWeight || 0}g | ${pc.grossWeight || 0}g`,
+//     font: "bold 28px Arial",
+//   },
+//   { text: `Pc: ${pc.pieceNo || "-"}`, font: "bold 30px Arial" },
+// ];
+
+// const lineHeight = 35;
+
+
+//   const textBlockHeight = lines.length * lineHeight;
+//   let textY = (height - textBlockHeight) / 2 + lineHeight / 1.3;
+
+//   lines.forEach(({ text, font }) => {
+//     ctx.font = font;
+//     ctx.fillStyle = "#000000";
+//     ctx.textAlign = "left";
+//     ctx.textBaseline = "middle";
+//     ctx.fillText(text, detailsStartX + padding, textY);
+//     textY += lineHeight;
+//   });
+
+//   /* ================= DOWNLOAD ================= */
+//   const fileName = `${orderNo}_${model.modelName}_#${pcIndex + 1}.png`;
+
+//   const link = document.createElement("a");
+//   link.download = fileName;
+//   link.href = canvas.toDataURL("image/png");
+//   link.click();
+
+//   alert("Tag Generated and Downloaded Successfully!");
+// };
 
 
 // const handlePrint = async (model: TaggingModel, pcIndex: number) => {
