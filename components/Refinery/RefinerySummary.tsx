@@ -366,6 +366,32 @@ const RefinerySummary: React.FC = () => {
     return `${yyyy}-${mm}-${dd}`;
   };
 
+
+  
+      const [lossData, setLossData] = useState([]);
+  
+      
+      const fetchCastingLossReport = async () => {
+        try {
+          const res = await fetch(`${apiBaseUrl}/api/CastingLossReport`);
+      
+          if (!res.ok) {
+            throw new Error("Failed to fetch casting loss report");
+          }
+      
+          const data = await res.json();
+          setLossData(data);
+          console.log("losses summarey :", data);
+      
+        } catch (error) {
+          console.error("Error loading casting loss report", error);
+        }
+      };
+      
+      useEffect(() => {
+        fetchCastingLossReport();
+      }, []);
+
   const fetchSummaryData = async (startDate: Date, endDate: Date) => {
     try {
       setLoading(true);
@@ -433,6 +459,9 @@ const RefinerySummary: React.FC = () => {
     setShowCustomDatePicker(range === "custom");
   };
 
+  
+    const totalLoss = Number(lossData.totalLoss || 0 );
+
   const summaryCards = useMemo(() => {
     if (!summaryData?.summary) return [];
 
@@ -442,7 +471,9 @@ const RefinerySummary: React.FC = () => {
       {
         iconClass: "fa-light fa-gear",
         title: "Casting Loss",
-        value: `${s.totalCastingLoss.toFixed(3)} g`,
+        // value: `${s.totalCastingLoss.toFixed(3)} g`,
+        value: `${totalLoss.toFixed(3)} g`,
+        
         description: "Total casting loss",
         isIncrease: false,
       },,

@@ -14,6 +14,37 @@ const CastingSummary: React.FC = () => {
   const [customEndDate, setCustomEndDate] = useState<Date | null>(null);
   const [showCustomDatePicker, setShowCustomDatePicker] = useState<boolean>(false);
 
+
+  
+  
+// const apiBaseUrl = "http://localhost:4001"; 
+
+const apiBaseUrl = "https://kalash.app"; 
+
+
+    const [lossData, setLossData] = useState([]);
+
+    
+    const fetchCastingLossReport = async () => {
+      try {
+        const res = await fetch(`${apiBaseUrl}/api/CastingLossReport`);
+    
+        if (!res.ok) {
+          throw new Error("Failed to fetch casting loss report");
+        }
+    
+        const data = await res.json();
+        setLossData(data);
+        console.log("losses summarey :", data);
+      } catch (error) {
+        console.error("Error loading casting loss report", error);
+      }
+    };
+    
+    useEffect(() => {
+      fetchCastingLossReport();
+    }, []);
+
   // Fetch casting data
   useEffect(() => {
     const getData = async () => {
@@ -139,6 +170,9 @@ const CastingSummary: React.FC = () => {
       0
     );
 
+
+    const totalLoss = Number(lossData.totalLoss || 0 );
+
     // Calculate percentages
     const castingLossPercentage = totalIssuedWeight
       ? ((totalCastingLoss / totalIssuedWeight) * 100).toFixed(2)
@@ -184,7 +218,9 @@ const CastingSummary: React.FC = () => {
       {
         iconClass: "fa-light fa-arrow-trend-down",
         title: "Casting Loss",
-        value: totalCastingLoss.toFixed(2) + " g",
+        // value: totalCastingLoss.toFixed(2) + " g",        
+        value: totalLoss.toFixed(2) + " g",
+        
         description: castingLossPercentage + "% of issued",
         percentageChange: castingLossPercentage,
         isIncrease: false,

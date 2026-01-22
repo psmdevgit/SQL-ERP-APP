@@ -29,7 +29,7 @@ import { Checkbox, Button } from "@mui/material";
 import { fetchDealData } from "@/data/crm/casting-data";
 import TableControls from "@/components/elements/SharedInputs/TableControls";
 import DeleteModal from "@/components/common/DeleteModal";
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, values } from 'pdf-lib';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -45,7 +45,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 
-// const apiBaseUrl = "http:localhost:4001"; 
+// const apiBaseUrl = "http://localhost:4001"; 
 
 const apiBaseUrl = "https://kalash.app"; 
 
@@ -179,77 +179,226 @@ export default function CastingTable() {
   }, []);
 
 
-const handleScrapUpSubmit = async () => {
+const fetchCastingLossReport = async () => {
+  try {
+    const res = await fetch(`${apiBaseUrl}/api/CastingLossReport`);
 
+    if (!res.ok) {
+      throw new Error("Failed to fetch casting loss report");
+    }
+
+    const data = await res.json();
+    setLossData(data);
+    console.log("losses :", data);
+
+  } catch (error) {
+    console.error("Error loading casting loss report", error);
+  }
+};
+
+useEffect(() => {
+  fetchCastingLossReport();
+}, []);
+
+
+const [calculatedBalanceLoss, setCalculatedBalanceLoss] = useState(0);
+const [enteredDust, setEnteredDust] = useState(0);
+
+
+const lossCalculate = (value) => {
+  const receivedDust = parseFloat(value || 0);
+  setEnteredDust(receivedDust);
+
+  const currentLoss = parseFloat(lossData.totalLoss );
+
+  const balance = currentLoss - receivedDust;
+
+  setCalculatedBalanceLoss(balance);
+};
+
+const handleScrapUpSubmit = async () => {
   if (!receivedWeight || !partycode) {
     alert("⚠️ Please fill in both Received Weight and Party Code.");
-    return; // Stop function here
-  }  
-  console.log({
-    castingScrap,
-    receivedWeight,
-    partycode,
-  });
-
-  try {
-  const payload = {
-  itemName: castingScrap,
-  purity: "91.7%",
-  availableWeight: parseFloat(receivedWeight),
-  unitOfMeasure: "gram",
-  partyLedger: partycode
-};
-
-
-    console.log('Submitting payload:', payload);
-
-    const response = await fetch(`${apiBaseUrl}/update-inventory`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Failed to update inventory');
-    }
-
-    alert("Inventory updated successfully!");
-  } catch (err) {
-    console.error('Error updating inventory:', err);    
-    alert("Error updating inventory!");
+    return;
   }
 
-      //minus in losss
+  if (calculatedBalanceLoss < 0) {
+    alert("Dust weight cannot be greater than loss weight !!!");
+    return;
+  }
 
   try {
-    const response = await fetch(`${apiBaseUrl}/adjust-dust-loss`, {
+    /* =======================
+       1️⃣ FIRST API CALL
+    ======================= */
+    const inventoryPayload = {
+      itemName: castingScrap,
+      purity: "91.7%",
+      availableWeight: parseFloat(receivedWeight),
+      unitOfMeasure: "gram",
+      partyLedger: partycode,
+    };
+
+
+    const inventoryRes = await fetch(`${apiBaseUrl}/update-inventory`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ castingDustWeight: parseFloat(receivedWeight) }),
+      body: JSON.stringify(inventoryPayload),
     });
 
-    const data = await response.json();
+    const inventoryData = await inventoryRes.json();
 
-    if (data.success) {
-      alert(`Casting Los adjusted successfully! `);
-    } else {
-      alert(data.message);
+    if (!inventoryRes.ok) {
+      throw new Error(inventoryData.message || "Inventory update failed");
     }
-  } catch (err) {
-    console.error(err);
-    alert("Error adjusting casting dust");
+
+    console.log("✅ Inventory updated");
+
+    /* =======================
+       2️⃣ SECOND API CALL
+       (Runs ONLY if above succeeds)
+    ======================= */
+    const lossRes = await fetch(`${apiBaseUrl}/adjust-casting-loss`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        castingDustWeight: Number(receivedWeight),
+        issedCastingLoss: Number(lossData.totalLoss),
+        Balancewt: Number(calculatedBalanceLoss),
+      }),
+    });
+
+    const lossDataRes = await lossRes.json();
+
+    if (!lossDataRes.success) {
+      throw new Error(lossDataRes.message || "Casting loss adjustment failed");
+    }
+
+    console.log("✅ Casting loss adjusted");
+
+    /* =======================
+       ✅ SUCCESS UI UPDATES
+    ======================= */
+    alert("Inventory & Casting Loss updated successfully!");
+    fetchCastingLossReport();
+    setEnteredDust(0);
+
+    setIsModalOpen(false);
+    setCastingScrap("");
+    setReceivedWeight("");
+    setPartycode("");
+
+  } catch (error: any) {
+    console.error("❌ Error:", error);
+    alert(error.message || "Failed to Update Casting Dust!");
   }
-  
-  // Reset modal and fields
-  setIsModalOpen(false);
-  setCastingScrap("");
-  setReceivedWeight("");
-  setPartycode("");
 };
+
+  
+
+// const handleScrapUpSubmit = async () => {
+
+//   if (!receivedWeight || !partycode) {
+//     alert("⚠️ Please fill in both Received Weight and Party Code.");
+//     return; // Stop function here
+//   }  
+//   console.log({
+//     castingScrap,
+//     receivedWeight,
+//     partycode,
+//   });
+
+//     if(calculatedBalanceLoss <= 0){
+//     alert("dust weight cannot be greater than loss weight !!!");
+//     return;
+//   }
+
+//   try {
+//   const payload = {
+//   itemName: castingScrap,
+//   purity: "91.7%",
+//   availableWeight: parseFloat(receivedWeight),
+//   unitOfMeasure: "gram",
+//   partyLedger: partycode
+// };
+
+//     console.log('Submitting payload:', payload);
+
+//     const response = await fetch(`${apiBaseUrl}/update-inventory`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify(payload)
+//     });
+
+//     const data = await response.json();
+
+//     if (!response.ok) {
+//       throw new Error(data.message || 'Failed to update inventory');
+//     }
+
+//     alert("Inventory updated successfully!");
+//   } catch (err) {
+//     console.error('Error updating inventory:', err);    
+//     alert("Error updating inventory!");
+//   }
+
+//         //minus in losss
+
+//   // try {
+//   //   const response = await fetch(`${apiBaseUrl}/adjust-dust-loss`, {
+//   //     method: "POST",
+//   //     headers: { "Content-Type": "application/json" },
+//   //     body: JSON.stringify({ castingDustWeight: parseFloat(receivedWeight) }),
+//   //   });
+
+//   //   const data = await response.json();
+
+//   //   if (data.success) {
+//   //     alert(`Casting Loss adjusted successfully! `);
+//   //   } else {
+//   //     alert(data.message);
+//   //   }
+//   // } catch (err) {
+//   //   console.error(err);
+//   //   alert("Error adjusting casting dust");
+//   // }
+// try {
+//   const response = await fetch(`${apiBaseUrl}/adjust-casting-loss`, {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({
+//       castingDustWeight: Number(receivedWeight),
+//       issedCastingLoss: Number(lossData.totalLoss),
+//       Balancewt: Number(calculatedBalanceLoss)
+//     }),
+//   });
+
+//   const data = await response.json();
+
+//   if (data.success) {
+//     alert("Casting Loss adjusted successfully!");
+//     fetchCastingLossReport();
+//     setEnteredDust(0);
+//     } else {
+//     alert(data.message);
+//   }
+
+// } catch (err) {
+//   console.error(err);
+//   alert("Error adjusting casting dust");
+// }
+
+  
+//   // Reset modal and fields
+//   setIsModalOpen(false);
+//   setCastingScrap("");
+//   setReceivedWeight("");
+//   setPartycode("");
+// };
+
+
 
   const [modalOpen, setModalOpen] = useState(false);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
@@ -263,6 +412,10 @@ const handleScrapUpSubmit = async () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   
+  
+  const [lossData, setLossData] = useState([]);
+
+
   // Custom pagination control functions
   const handlePageChange = (newPage: number) => {
     console.log(`Changing page from ${page} to ${newPage}`);
@@ -291,8 +444,9 @@ const handleScrapUpSubmit = async () => {
         setLoading(true);
         const data = await fetchDealData();
         setDeals(data);
-        console.log(`Loaded ${data} deals from API`);
-        
+        console.log("data : ", data);      
+      
+      
         // Initial data is loaded - filters will be applied in the next useEffect
       } catch (error) {
         console.error("Error loading deals:", error);
@@ -596,7 +750,32 @@ const handleScrapUpSubmit = async () => {
     </DialogHeader>
 
     <div className="flex flex-col gap-4 mt-4">
-      <div>
+
+<div className="flex flex-row gap-10">
+  <div className="flex flex-col">
+    <label className="font-bold">Current Loss</label>
+    <label className="font-medium text-sm">
+      {Number(lossData.totalLoss || 0).toFixed(4)}
+    </label>
+  </div>
+
+  <div className="flex flex-col">
+    <label className="font-bold">Updated Dust</label>
+    <label className="font-medium text-sm">
+      {Number(enteredDust || 0).toFixed(4)}
+    </label>
+  </div>
+
+  <div className="flex flex-col">
+    <label className="font-bold">Balance Casting Loss</label>
+    <label className="font-medium text-sm">
+      {Number(calculatedBalanceLoss || 0).toFixed(4)}
+    </label>
+  </div>
+</div>
+
+
+      <div >
         <label className="text-sm font-medium">Casting Dust</label>
         <Input
           type="text"
@@ -609,12 +788,24 @@ const handleScrapUpSubmit = async () => {
 
       <div>
         <label className="text-sm font-medium">Received Weight</label>
-        <Input
+        {/* <Input
           type="number"
           value={receivedWeight}
-          onChange={(e) => setReceivedWeight(e.target.value)}
+          onChange={(e) => ( setReceivedWeight(e.target.value), lossCalculate(e.target.value))}
           placeholder="Enter Received Weight"
-        />
+        /> */}
+
+        <Input
+            type="number"
+            value={receivedWeight}
+            onChange={(e) => {
+              const value = e.target.value;
+              setReceivedWeight(value);
+              lossCalculate(value);
+            }}
+            placeholder="Enter Received Weight"
+          />
+
       </div>
 {/* 
       <div>
