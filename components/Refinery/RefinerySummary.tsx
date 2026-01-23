@@ -214,10 +214,26 @@ const [totalWeightLoading, setTotalWeightLoading] = useState(false);
   // ? totalLossData.totalLoss
   // : totalLoss;
 
-    const castingLossValue =
-  dateRange === "custom" && totalLossData
-    ? totalLossData.totalLoss
-    : totalLoss;
+  //   const castingLossValue =
+  // dateRange === "custom" && totalLossData
+  //   ? totalLossData.totalLoss
+  //   : totalLoss;
+  // const [castingLossValue, setCastingLossValue] = useState<number>(0);
+
+  useEffect(() => {
+  if (dateRange === "custom" && totalLossData) {
+    setCastingLossValue(totalLossData.totalLoss);
+  } else {
+    setCastingLossValue(totalLoss);
+  }
+}, [dateRange, totalLossData, totalLoss]);
+
+useEffect(() => {
+  if (dateRange !== "custom") {
+    settotalLossData(null);
+  }
+}, [dateRange]);
+  
   
   const summaryCards = useMemo(() => {
     if (!summaryData?.summary) return [];
