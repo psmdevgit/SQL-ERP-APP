@@ -210,10 +210,15 @@ const [totalWeightLoading, setTotalWeightLoading] = useState(false);
 
     const totalLoss = Number(lossData.totalLoss || 0 );
 
-      const castingLossValue = totalLossData
-  ? totalLossData.totalLoss
-  : totalLoss;
+  //     const castingLossValue = totalLossData
+  // ? totalLossData.totalLoss
+  // : totalLoss;
 
+    const castingLossValue =
+  dateRange === "custom" && totalLossData
+    ? totalLossData.totalLoss
+    : totalLoss;
+  
   const summaryCards = useMemo(() => {
     if (!summaryData?.summary) return [];
 
