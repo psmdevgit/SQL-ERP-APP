@@ -1,0 +1,310 @@
+
+
+"use client";
+import React, { useEffect, useState } from "react";
+
+interface Report {
+  Id: string;
+  Name: string; 
+  ReceivedDate: string,
+  Purity: number;
+  PureMetalweight: number;
+  AlloyWeight: number;       
+  ReceivedWeight: number;
+  PartyCode: string;
+  Remark: string;
+
+}
+
+// For input field date format
+const formatDateInput = (date: Date) => {
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${year}-${month}-${day}`;
+};
+
+const InwardInventory: React.FC = () => {
+  const [reports, setReports] = useState<Report[]>([]);
+  const [filteredReports, setFilteredReports] = useState<Report[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const today = new Date();
+  const startOfYear = new Date(today.getFullYear(), 0, 1);
+
+  const [fromDate, setFromDate] = useState(formatDateInput(today));
+  const [toDate, setToDate] = useState(formatDateInput(today));
+  const [selectedName, setSelectedName] = useState("All");
+  const [selectedOrder, setSelectedOrder] = useState("All");
+
+  const [selectedScrapType, setSelectedScrapType] = useState("All");
+
+
+  const [allNames, setAllNames] = useState<string[]>([]);
+
+  
+  const [scrapType, setScrapType] = useState<string[]>([]);
+
+  const [allOrders, setAllOrders] = useState<string[]>([]);
+
+  // const API_URL = "http://localhost:4001";
+
+  
+  const API_URL = "https://kalash.app";
+
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const response = await fetch(`${API_URL}/get-inventory-inward`);
+        if (!response.ok) throw new Error("Failed to fetch reports");
+
+        const data = await response.json();
+
+        console.log("data",data)
+
+        let reportData: Report[] = [];
+        if (Array.isArray(data.data)) {
+          reportData = data.data.map((item: any) => ({
+            Id: item.id,
+            Name: item.name,
+            ReceivedDate: item.receivedDate,
+            Purity: item.purity,
+            PureMetalweight: item.pureMetalWeight,
+            AlloyWeight: item.alloyWeight,
+            ReceivedWeight: item.receivedWeight,
+            PartyCode: item.partyCode,
+            Remark: item.remark
+          }));
+        }
+
+        // build dropdown lists
+        const uniqueNames = Array.from(new Set(reportData.map((r) => r.Name))).filter(Boolean);
+        const uniqueOrders = Array.from(new Set(reportData.map((r) => r.PartyCode))).filter(Boolean);
+        const uniqueScrap = Array.from(new Set(reportData.map((r) => r.Remark))).filter(Boolean);
+
+        setAllNames(["All", ...uniqueNames]);
+        setAllOrders(["All", ...uniqueOrders]);
+        setScrapType(["All", ...uniqueScrap]);
+
+        setReports(reportData);
+        setFilteredReports(reportData);
+
+        console.log(reportData);
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, [API_URL]);
+
+  // 🔁 Filter on date, name, order
+// 🔁 Filter on date, name, order
+useEffect(() => {
+  const from = new Date(fromDate);
+  const to = new Date(toDate);
+
+  // ⏰ Adjust toDate to end of the selected day
+  to.setHours(23, 59, 59, 999);
+
+  const filtered = reports.filter((report) => {
+    const created = new Date(report.ReceivedDate);
+    const dateInRange = created >= from && created <= to;
+    const nameMatch = selectedName === "All" || report.Name === selectedName;
+    const orderMatch = selectedOrder === "All" || report.PartyCode === selectedOrder;
+    const scrapMatch = selectedScrapType === "All" || report.Remark === selectedScrapType;
+    return dateInRange && nameMatch && orderMatch && scrapMatch;
+  });
+
+  setFilteredReports(filtered);
+}, [fromDate, toDate, selectedName, selectedOrder,selectedScrapType, reports]);
+
+
+const formatDate24 = (dateStr: string) => {
+  const date = new Date(dateStr);
+
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+};
+
+
+
+  return (
+    <div className="w-full mt-20">
+      <div className="max-w-screen-lg mx-auto p-6 bg-white shadow rounded-lg">
+        <h1 className="text-2xl font-bold mb-4 text-[#1A7A75]">
+          Inventory Inward
+        </h1>
+
+        {/* 🔎 Filter Controls */}
+        <div className="flex gap-2 mb-6 flex-wrap">
+        <div>
+  <label className="text-sm text-gray-700">From Date</label>
+  <input
+    type="date"
+    className="border rounded px-3 py-1 w-full"
+    value={fromDate}
+    onChange={(e) => {
+      const newFrom = e.target.value;
+      if (new Date(newFrom) > new Date(toDate)) {
+        alert("From Date cannot be greater than To Date");
+        setFromDate(formatDateInput(startOfYear)); // reset to default
+      } else {
+        setFromDate(newFrom);
+      }
+    }}
+  />
+</div>
+
+<div>
+  <label className="text-sm text-gray-700">To Date</label>
+  <input
+    type="date"
+    className="border rounded px-3 py-1 w-full"
+    value={toDate}
+    onChange={(e) => {
+      const newTo = e.target.value;
+      if (new Date(newTo) < new Date(fromDate)) {
+        alert("To Date cannot be earlier than From Date");
+        setToDate(formatDateInput(today)); // reset to today
+      } else {
+        setToDate(newTo);
+      }
+    }}
+  />
+</div>
+
+
+          <div>
+            <label className="text-sm text-gray-700">Filter by Item </label>
+            <select
+              className="border rounded px-3 py-1 w-full"
+              value={selectedName}
+              onChange={(e) => setSelectedName(e.target.value)}
+            >
+              {allNames.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+            <div>
+            <label className="text-sm text-gray-700">Scrap Type</label>
+            <select
+              className="border rounded px-3 py-1 w-full"
+              value={selectedScrapType}
+              onChange={(e) => setSelectedScrapType(e.target.value)}
+            >
+              {scrapType.map((remark) => (
+                <option key={remark} value={remark}>
+                  {remark}
+                </option>
+              ))}
+            </select>
+          </div>
+
+
+          <div>
+            <label className="text-sm text-gray-700">Filter by Party Code</label>
+            <select
+              className="border rounded px-3 py-1 w-full"
+              value={selectedOrder}
+              onChange={(e) => setSelectedOrder(e.target.value)}
+            >
+              {allOrders.map((order) => (
+                <option key={order} value={order}>
+                  {order}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {isLoading && <p className="text-gray-500">Loading...</p>}
+        {error && <p className="text-red-500">Error: {error}</p>}
+
+        {!isLoading && !error && filteredReports.length === 0 && (
+          <p className="text-gray-500">No reports found.</p>
+        )}
+
+        {!isLoading && !error && filteredReports.length > 0 && (
+          <div className="space-y-10">
+            {Object.entries(
+              filteredReports.reduce<Record<string, Report[]>>((acc, report) => {
+                if (!acc[report.Name]) acc[report.Name] = [];
+                acc[report.Name].push(report);
+                return acc;
+              }, {})
+            ).map(([name, items]) => (
+              <div key={name}>
+                <h2 className="text-xl font-semibold mb-2 text-[#1A7A75]">{name}</h2>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200 border rounded-md">
+                    <thead className="bg-[#1A7A75] text-white">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-sm font-semibold">Name</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold">Received Wt</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold">Purity</th>
+                        {/* <th className="px-4 py-2 text-left text-sm font-semibold">Pure Metal Wt</th> */}
+                        {/* <th className="px-4 py-2 text-left text-sm font-semibold">Alloy Wt</th> */}
+                        <th className="px-4 py-2 text-left text-sm font-semibold">Received Date</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold">Remark</th>
+
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {items.map((report, index) => (
+                        <tr key={`${report.Id}-${index}`} className="hover:bg-gray-50">
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {report.Name || "-"}
+                          </td>
+                           <td className="px-4 py-2 text-sm text-gray-800">
+                            {report.ReceivedWeight != null ? report.ReceivedWeight.toFixed(4) : "-"}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {report.Purity || "-"}
+                          </td>                        
+
+                        {/* <td className="px-4 py-2 text-sm text-gray-800">
+                            {report.PureMetalweight != null ? report.PureMetalweight.toFixed(4) : "-"}
+                          </td> */}
+                          {/* <td className="px-4 py-2 text-sm text-gray-800">
+                            {report.AlloyWeight != null ? report.AlloyWeight.toFixed(4) : "-"}
+                          </td> */}
+
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {report.ReceivedDate != null ? formatDate24(report.ReceivedDate) : "-"}
+                          </td>
+
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {report.Remark != null ? report.Remark : "-"}
+                          </td>
+
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default InwardInventory;
