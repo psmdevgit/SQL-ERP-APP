@@ -1060,7 +1060,8 @@ const handleAddBag = (e: React.FormEvent) => {
       pouches: pouchesPayload,
       receivedWeight: receivedWeight,
       product: selectedCategory,
-      selectedCastings: selectedCastings,
+      selectedCastings: selectedCastings,      
+      mode: castingMode,
     };
 
     console.log("submit details", payload);
@@ -1503,4 +1504,5 @@ const handleAddBag = (e: React.FormEvent) => {
     </div>
   );
 }
+
 
