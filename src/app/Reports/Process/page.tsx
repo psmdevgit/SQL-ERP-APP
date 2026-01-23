@@ -189,7 +189,7 @@ const formatDate = (date: Date) => {
 
 
   const hiddenItems = [
-    // "alloy",
+    "alloy",
   // "cutting dust",
   "dust",
   "g machine dust",
