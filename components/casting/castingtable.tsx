@@ -678,7 +678,11 @@ const handleScrapUpSubmit = async () => {
 };
 
   // Function to render weight breakdown tooltip content
-  const renderWeightBreakdown = (deal: ICasting) => {
+const renderWeightBreakdown = (deal: ICasting) => {
+const stoneWeight =
+  deal.receivedWeight - deal.ornamentWeight ;
+
+
     return (
       <div className="bg-white p-3 rounded-lg shadow-xl border border-gray-200 text-sm w-[250px]">
         <div className="font-semibold mb-3 text-gray-800 border-b pb-2">
@@ -691,6 +695,14 @@ const handleScrapUpSubmit = async () => {
               {formatWeight(deal.ornamentWeight)}g
             </div>
           </div>
+         <div className="flex justify-between items-center bg-red-50 p-2 rounded">
+  <div className="text-red-700">Stone Weight:</div>
+  <div className="font-medium text-red-800">
+    {formatWeight(stoneWeight)}g
+  </div>
+</div>
+
+
           <div className="flex justify-between items-center bg-green-50 p-2 rounded">
             <div className="text-green-700">Scrap Weight:</div>
             <div className="font-medium text-green-800">
@@ -704,7 +716,7 @@ const handleScrapUpSubmit = async () => {
             </div>
           </div>
           <div className="flex justify-between items-center bg-gray-100 p-2 rounded mt-3 border-t border-gray-200">
-            <div className="font-semibold text-gray-700">Total:</div>
+            <div className="font-semibold text-gray-700">Total Product Wt:</div>
             <div className="font-bold text-gray-800">
               {formatWeight(deal.receivedWeight)}g
             </div>

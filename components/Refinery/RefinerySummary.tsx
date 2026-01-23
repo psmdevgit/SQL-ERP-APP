@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo ,useRef} from "react";
 import SummarySingleCard from "@/components/common/SummarySingleCard";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -27,9 +27,9 @@ interface DepartmentSummary {
   };
 }
 
-// const apiBaseUrl = "https://kalash.app";
+const apiBaseUrl = "https://kalash.app";
 
-const apiBaseUrl = "http://localhost:4001";
+// const apiBaseUrl = "http://localhost:4001";
 
 
 const SapiBaseUrl = "https://kalash.app";
@@ -56,6 +56,76 @@ const [receivedDust, setReceivedDust] = useState({
 
 
       const [lossData, setLossData] = useState([]);
+      
+const [totalLossData, settotalLossData] =
+  useState<{ totalLoss: number } | null>(null);
+
+  
+
+// useEffect(() => {
+//   if (!customStartDate || !customEndDate){
+
+//   fetchFilterCastingLoss(customStartDate, customEndDate);
+//   }else{
+//   fetchFilterCastingLoss(customStartDate, customEndDate);
+//   }
+// }, [customStartDate, customEndDate]);
+
+// useEffect(() => {
+//   const today = new Date();
+//   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+
+//   if (customStartDate && customEndDate) {
+//     fetchFilterCastingLoss(customStartDate, customEndDate);
+//   } else {
+//     fetchFilterCastingLoss(monthStart, today);
+//   }
+// }, [customStartDate, customEndDate]);
+
+useEffect(() => {
+  const today = new Date();
+  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+
+  if (customStartDate && customEndDate) {
+    fetchFilterCastingLoss(customStartDate, customEndDate);
+  } else {
+    fetchFilterCastingLoss(monthStart, today);
+  }
+}, [customStartDate, customEndDate]);
+
+
+const fetchFilterCastingLoss = async (fromDate: Date, toDate: Date) => {
+  try {
+    setTotalWeightLoading(true);
+
+    const res = await fetch(
+      `${apiBaseUrl}/api/castingLoss?fromDate=${formatDate(fromDate)}&toDate=${formatDate(toDate)}`
+    );
+
+    if (!res.ok) throw new Error("Failed to fetch total loss");
+
+    const data = await res.json();
+
+    console.log("casting loss : ",data)
+
+    setcastingTotalLossData({
+      totalLoss: data.Loss || 0,
+      currentLoss: data.currentLoss || 0,
+    });
+    
+    setCLoss(data.currentLoss || 0);
+    
+  } catch (err) {
+    console.error(err);
+    setcastingTotalLossData(null);
+  } finally {
+    setTotalWeightLoading(false);
+  }
+};
+
+
+
+//=====================================================================================================
 
 
 useEffect(() => {
@@ -92,8 +162,6 @@ const fetchFilterLossWeight = async (fromDate: Date, toDate: Date) => {
   }
 };
 
-const [totalLossData, settotalLossData] =
-  useState<{ totalLoss: number } | null>(null);
 
 const [totalWeightLoading, setTotalWeightLoading] = useState(false);
 
@@ -210,9 +278,53 @@ const [totalWeightLoading, setTotalWeightLoading] = useState(false);
 
     const totalLoss = Number(lossData.totalLoss || 0 );
 
-      const castingLossValue = totalLossData
-  ? totalLossData.totalLoss
-  : totalLoss;
+  //     const castingLossValue = totalLossData
+  // ? totalLossData.totalLoss
+  // : totalLoss;
+
+  // const castingLossValue =
+  // dateRange === "custom" && totalLossData
+  //   ? totalLossData.totalLoss
+  //   : totalLoss;
+  const [castingLossValue, setCastingLossValue] = useState<number>(0);
+
+//   useEffect(() => {
+//   if (dateRange === "custom" && totalLossData) {
+//     setCastingLossValue(totalLossData.totalLoss);
+//   } else {
+//     setCastingLossValue(totalLoss);
+//   }
+// }, [dateRange, totalLossData, totalLoss]);
+
+// useEffect(() => {
+//   if (dateRange !== "custom") {
+//     settotalLossData(null);
+//   }
+// }, [dateRange]);
+
+const [castingTotalLossData, setcastingTotalLossData] =
+  useState<{ totalLoss: number; currentLoss: number } | null>(null);
+
+const [cLoss, setCLoss] = useState<number>(0);
+
+
+useEffect(() => {
+  if (!castingTotalLossData) {
+    // setCLoss(0);
+    return;
+  }
+
+  // ✅ If custom date range is active → show filtered total
+  if (customStartDate && customEndDate) {
+    setCLoss(castingTotalLossData.totalLoss);
+  } else {
+    // ✅ Default (day/week/month/initial load)
+    setCLoss(castingTotalLossData.currentLoss);
+  }
+}, [customStartDate, customEndDate, castingTotalLossData]);
+
+
+
 
   const summaryCards = useMemo(() => {
     if (!summaryData?.summary) return [];
@@ -225,7 +337,10 @@ const [totalWeightLoading, setTotalWeightLoading] = useState(false);
         title: "Casting Loss",
         // value: `${s.totalCastingLoss.toFixed(3)} g`,
         // value: `${totalLoss.toFixed(3)} g`,
-         value: `${castingLossValue.toFixed(3)} g`,
+        //  value: `${castingLossValue.toFixed(3)} g`,
+         
+        value:  `${cLoss.toFixed(3)} g`,
+
         description: "Total casting loss",
         isIncrease: false,
       },
@@ -524,7 +639,7 @@ const handleReceivedChange = (e: any) => {
               <tbody>
                 {[
                   // ["Casting Loss", "Casting_Loss", summaryData.summary.totalCastingLoss],
-                  ["Casting Loss", "Casting_Loss", castingLossValue],
+                  ["Casting Loss", "Casting_Loss", cLoss],
                   ["Grinding Dust", "Grinding_dust", summaryData.summary.totalGrindingDust],
                   ["Media Dust", "Media_dust", summaryData.summary.totalMediaDust],
                   ["Correction Dust", "Correction_dust", summaryData.summary.totalCorrectionDust],

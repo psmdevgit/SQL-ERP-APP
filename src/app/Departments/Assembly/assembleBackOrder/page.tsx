@@ -1,0 +1,579 @@
+
+
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
+
+interface Pouch {
+  Id: string;
+  Name: string;
+  Order_Id__c?: string;
+  Product__c?: string;
+  Quantity__c?: number;
+  Received_Weight_Grinding__c?: number;
+  Received_Weight_Media__c?: number;
+  Received_Weight_Setting__c?: number;
+  Received_Weight_Polishing__c?: number;
+  Received_Weight_Dull__c?: number;
+  Received_Weight_Cutting__c?: number;
+  Received_Weight_Plating__c?: number;
+  Received_Weight_Correction__c?: number;
+}
+
+interface DepartmentRecord {
+  attributes: {
+    type: string;
+    url: string;
+  };
+  Id: string;
+  Name: string;
+  status__c: string;
+  Issued_Weight__c: number;
+  Received_Weight__c: number | null;
+}
+
+export default function CreateFilingFromDepartment() {
+  const [selectedDepartment, setSelectedDepartment] = useState<string>('');
+  const [departmentRecords, setDepartmentRecords] = useState<DepartmentRecord[]>([]);
+  const [selectedRecord, setSelectedRecord] = useState<string>('');
+  const [selectedRecordData, setSelectedRecordData] = useState<DepartmentRecord | null>(null);
+  const [pouches, setPouches] = useState<Pouch[]>([]);
+  const [pouchWeights, setPouchWeights] = useState<{ [key: string]: number }>({});
+  const [totalWeight, setTotalWeight] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [filingId, setFilingId] = useState<string>('');
+  const [filingWeight, setFilingWeight] = useState<number>(0);
+  const [selectedPouches, setSelectedPouches] = useState<{ [key: string]: boolean }>({});
+
+  const router = useRouter();
+
+
+const apiBaseUrl = "https://kalash.app"; 
+
+// const apiBaseUrl = "http://localhost:4001"; 
+ 
+
+  useEffect(() => {
+    const fetchDepartmentRecords = async () => {
+      if (!selectedDepartment) return;
+
+      try {
+        setLoading(true);
+        const endpoint = `${apiBaseUrl}/api/${selectedDepartment.toLowerCase()}`;
+        console.log('Fetching from endpoint:', endpoint);
+        
+        const response = await fetch(endpoint);
+        const result = await response.json();
+
+        if (result.success) {
+          // Filter for received records
+        //   const receivedRecords = result.data
+        //     .filter((record: DepartmentRecord) => 
+        //       // Check for 'Finished' status instead of 'Received'            
+        //       record.status__c  === "Finished" 
+        //     );
+
+        const receivedRecords = result.data.filter((record: DepartmentRecord) => {
+  const status =
+    record.status__c?.trim() ||
+    (record as any).Status__c?.trim();
+
+  return status === "Finished";
+});
+
+
+            console.log(result.data);
+          
+          console.log('Received records:', receivedRecords);
+          setDepartmentRecords(receivedRecords);
+        } else {
+          toast.error(`Failed to fetch ${selectedDepartment} records`);
+        }
+      } catch (error) {
+        console.error(`Error fetching ${selectedDepartment} records:`, error);
+        toast.error('Failed to fetch records');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDepartmentRecords();
+  }, [selectedDepartment]);
+
+  // Fetch pouches when record is selected
+  useEffect(() => {
+    const fetchPouches = async () => {
+console.log('Selected Record for fetching pouches:', selectedRecord);
+
+      if (!selectedRecord || !selectedDepartment) return;
+
+      try {
+        setLoading(true);
+        const [prefix, date, month, year, number,subnumber] = selectedRecord.split('/');
+        // Use the standard API pattern for pouches
+        const endpoint = `${apiBaseUrl}/api/${selectedDepartment.toLowerCase()}/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`;
+        console.log('Fetching pouches from:', endpoint);
+        
+        const response = await fetch(endpoint);
+        const result = await response.json();
+
+        console.log('Pouches fetch result:', result);
+
+        if (result.success) {
+          console.log('Fetched pouches:', result.data.pouches);
+          setPouches(result.data.pouches);
+          // Initialize weights to 0
+          const weights: { [key: string]: number } = {};
+          result.data.pouches.forEach((pouch: Pouch) => {
+            weights[pouch.Id] = 0;
+          });
+          setPouchWeights(weights);
+        } else {
+          toast.error('Failed to fetch pouches');
+          // alert('Failed to fetch pouches');
+        }
+      } catch (error) {
+        console.error('Error fetching pouches:', error);
+        toast.error('Failed to fetch pouches');
+        // alert('Failed to fetch pouches');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPouches();
+  }, [selectedRecord, selectedDepartment]);
+
+  // Generate Filing ID and Pouch IDs
+  // useEffect(() => {
+  //   if (selectedRecord) {
+  //     const [_, date, month, year, number, subnumber] = selectedRecord.split('/');
+  //     const deptPrefix = {
+  //       'Grinding': 'AG',
+  //       'Setting': 'AS',
+  //       'Polishing': 'AP',
+  //       'Dull': 'AD',
+  //       'Media': 'AM',
+  //       'Correction': 'AC',
+  //       'Plating': 'APT',
+  //       'Cutting': 'ACT'
+  //     }[selectedDepartment] || 'AA';
+      
+  //     const newFilingId = `${deptPrefix}/${date}/${month}/${year}/${number}/${subnumber || '001'}BC`;
+  //     setFilingId(newFilingId);
+  //   }
+  // }, [selectedRecord, selectedDepartment]);
+
+  useEffect(() => {
+  if (selectedRecord) {
+    const [_, date, month, year, number, subnumber] =
+      selectedRecord.split("/");
+
+    const deptPrefix =
+      {
+        Grinding: "AG",
+        Setting: "AS",
+        Polishing: "AP",
+        Dull: "AD",
+        Media: "AM",
+        Correction: "AC",
+        Plating: "APT",
+        Cutting: "ACT",
+      }[selectedDepartment] || "AA";
+
+    // 🔹 Convert "02-02" → "0202"
+    const formattedNumber = number?.replace("-", "") || "0000";
+
+    // 🔹 Convert "A-01" → "A01"
+    const formattedSub = subnumber?.replace("-", "") || "A01";
+
+    // ✅ Final format
+    const newFilingId = `${date}/${month}/${year}/${formattedNumber}/${formattedSub}BC/${deptPrefix}`;
+
+    setFilingId(newFilingId);
+  }
+}, [selectedRecord, selectedDepartment]);
+
+  // Handle pouch weight change
+  const handlePouchWeightChange = (pouchId: string, weight: number, maxWeight: number) => {
+    if (weight > maxWeight) {
+      toast.error(`Weight cannot exceed ${maxWeight.toFixed(4)}g`); 
+      return;
+    }
+
+    setPouchWeights(prev => {
+      const newWeights = { ...prev, [pouchId]: weight };
+      const newTotal = Object.values(newWeights).reduce((sum, w) => sum + (w || 0), 0);
+      setTotalWeight(newTotal);
+      return newWeights;
+    });
+  };
+
+  // Update record selection handler
+  const handleRecordSelection = (recordName: string) => {
+    setSelectedRecord(recordName);
+    const recordData = departmentRecords.find(record => record.Name === recordName);
+    setSelectedRecordData(recordData || null);
+  };
+
+  // Handle filing weight change
+  const handleFilingWeightChange = (weight: number) => {
+    setFilingWeight(weight);
+    // Recalculate total weight including pouches
+    const pouchTotal = Object.values(pouchWeights).reduce((sum, w) => sum + (w || 0), 0);
+    setTotalWeight(pouchTotal + weight);
+  };
+
+  // Add handler for pouch selection
+  const handlePouchSelection = (pouchId: string, isSelected: boolean) => {
+    setSelectedPouches(prev => ({
+      ...prev,
+      [pouchId]: isSelected
+    }));
+    
+    // Reset weight if pouch is deselected
+    if (!isSelected) {
+      setPouchWeights(prev => {
+        const { [pouchId]: removed, ...rest } = prev;
+        return rest;
+      });
+    }
+  };
+
+  // Handle form submission
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    setLoading(true);
+
+    if (!selectedRecordData) {
+      toast.error("No record selected");
+      return;
+    }
+
+    console.log("🧾 Starting Filing Submission...");
+    console.log("Selected Record Data:", selectedRecordData);
+    console.log("Selected Pouches:", selectedPouches);
+    console.log("All Pouches from API:", pouches);
+
+    // Create pouch data with new IDs
+    // const pouchData = Object.entries(selectedPouches)
+    //   .filter(([_, isSelected]) => isSelected)
+    //   .map(([pouchId]) => {
+    //     console.log("🔍 Checking pouch match for:", pouchId);
+
+    //     // ✅ FIX: Ensure consistent comparison (convert both to string)
+    //     const sourcePouch = pouches.find((p) => String(p.Id) === String(pouchId));
+
+    //     if (!sourcePouch) {
+    //       console.warn("⚠️ No matching pouch found for ID:", pouchId);
+    //       return null;
+    //     }
+
+    //     // Debug log for matched pouch
+    //     console.log("✅ Matched Source Pouch:", sourcePouch);
+
+    //     // Extract pouch number (e.g., "POUCH1" → "1")
+    //     const sourcePouchNumber =
+    //       sourcePouch.Name.split("/").pop()?.replace("POUCH", "") ||
+    //       sourcePouch.Name.split("/").pop()?.replace("P", "") ||
+    //       "";
+    //     const paddedPouchNumber = sourcePouchNumber.padStart(2, "0");
+
+    //     // Construct new pouch ID
+    //     const newPouchId = `${filingId}/P${paddedPouchNumber}`;
+
+    //     // Get the weight (default to 0)
+    //     const weight = pouchWeights[pouchId] || 0;
+
+    //     console.log("📦 Processing Pouch:", {
+    //       sourcePouchId: pouchId,
+    //       newId: newPouchId,
+    //       OrderId: sourcePouch.Order_Id__c,
+    //       product: sourcePouch.Product__c,
+    //       quantity: sourcePouch.Quantity__c,
+    //       weight: weight,
+    //     });
+
+    //     return {
+    //       pouchId: newPouchId,
+    //       orderId: sourcePouch.Order_Id__c,
+    //       name: sourcePouch.Product__c,
+    //       quantity: sourcePouch.Quantity__c,
+    //       weight: parseFloat(weight.toFixed(4)),
+    //     };
+    //   })
+    //   .filter(Boolean); // Remove nulls
+
+    const pouchData = Object.entries(selectedPouches)
+  .filter(([pouchId, isSelected]) => {
+    if (!isSelected) {
+      console.log("⛔ Skipping unselected pouch:", pouchId);
+      return false;
+    }
+    return true;
+  })
+  .map(([pouchId]) => {
+    console.log("🔍 Matching pouchId:", pouchId);
+
+    const sourcePouch = pouches.find(
+      (p) => String(p.Id).trim() === String(pouchId).trim()
+    );
+
+    if (!sourcePouch) {
+      console.error("❌ Pouch ID NOT FOUND in API:", pouchId);
+      return null;
+    }
+
+    console.log("✅ Found pouch:", sourcePouch);
+
+    const pouchNumber =
+      sourcePouch.Name?.split("/")?.pop()?.replace(/[^\d]/g, "") || "0";
+
+    const newPouchId = `${filingId}/P${pouchNumber.padStart(2, "0")}`;
+
+    const weight = pouchWeights[pouchId] ?? 0;
+
+    return {
+      pouchId: newPouchId,
+      orderId: sourcePouch.Order_Id__c,
+      name: sourcePouch.Product__c,
+      quantity: sourcePouch.Quantity__c,
+      weight: Number(weight.toFixed(4)),
+    };
+  })
+  .filter((p): p is NonNullable<typeof p> => p !== null);
+
+
+    console.log("🧩 Final pouchData before submission:", pouchData);
+
+   if (pouchData.length === 0) {
+        toast.error("Please select at least one pouch");
+        return;
+        }
+
+    const firstPouch = pouchData[0];
+
+    console.log("pouch : ",firstPouch);
+
+    const requestData = {
+    filingId,
+    issuedWeight: Number(totalWeight.toFixed(4)),
+    issuedDate: new Date().toISOString(),
+    orderId: firstPouch.orderId,
+    name: firstPouch.name,
+    quantity: firstPouch.quantity,
+    pouches: pouchData,
+    };
+
+
+
+    console.log("📤 Full Request Payload:", JSON.stringify(requestData, null, 2));
+
+    // Send to backend
+    const response = await fetch(`${apiBaseUrl}/api/assemblyBack/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    const result = await response.json();
+    console.log("✅ Server Response:", result);
+
+    if (result.success) {
+      toast.success("Assembly record created successfully");
+      alert("Assembly record created successfully");
+      router.push("/Departments/Assembly/assemblePouch");
+    } else {
+      throw new Error(result.message || "Failed to create assembly record");
+    }
+  } catch (error: any) {
+    console.error("❌ Error creating assembly:", error);
+    toast.error(error.message || "Failed to create assembly record");
+    alert(error.message || "Failed to create assembly record");
+  } finally {
+    setLoading(false);
+  }
+};
+
+  return (
+    <div className="p-6">
+      <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-sm">
+        <div className="p-6">
+          <h2 className="text-xl font-semibold mb-6">Create Assembly from Department</h2>
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Department Selection with white background */}
+            <div>
+              <Label>Select Department</Label>
+              <Select
+                value={selectedDepartment}
+                onValueChange={setSelectedDepartment}
+              >
+                <SelectTrigger className="w-full bg-white border-gray-200">
+                  <SelectValue placeholder="Select department" />
+                </SelectTrigger>
+                <SelectContent 
+                  className="bg-white border border-gray-200"
+                  style={{ backgroundColor: 'white' }}
+                >
+                  <SelectItem value="Grinding">Grinding</SelectItem>
+                  <SelectItem value="Setting">Setting</SelectItem>
+                  <SelectItem value="Polishing">Polishing</SelectItem>
+                  <SelectItem value="Media">Media</SelectItem>
+                  <SelectItem value="Correction">Correction</SelectItem>
+                  <SelectItem value="Dull">Dull</SelectItem>
+                  <SelectItem value="Plating">Plating</SelectItem>
+                  <SelectItem value="Cutting">Cutting</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Record Selection with white background */}
+            {selectedDepartment && (
+              <div>
+                <Label>Select {selectedDepartment} Record</Label>
+                <Select
+                  value={selectedRecord}
+                  onValueChange={handleRecordSelection}
+                >
+                  <SelectTrigger className="w-full bg-white border-gray-200">
+                    <SelectValue placeholder={`Select ${selectedDepartment} record`} />
+                  </SelectTrigger>
+                  <SelectContent 
+                    className="bg-white border border-gray-200 max-h-64 overflow-y-auto"
+                    style={{ backgroundColor: 'white' }}
+                  >
+                    {departmentRecords.map(record => (
+                      <SelectItem 
+                        key={record.Id} 
+                        value={record.Name}
+                        className="hover:bg-gray-100"
+                      >
+                        {record.Name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Filing ID Display */}
+            {filingId && (
+              <div>
+                <Label>Assemply ID</Label>
+                <div className="mt-1 p-2 bg-gray-50 rounded">
+                  {filingId}
+                </div>
+              </div>
+            )}
+
+            {/* Pouches */}
+            {pouches.length > 0 && (
+              <div className="space-y-4 mt-6">
+                <h3 className="text-lg font-semibold">Select Pouches to Include</h3>
+                {pouches.map((pouch) => {
+                  const receivedWeightField = {
+                    'Grinding': 'Received_Weight_Grinding__c',
+                    'Setting': 'Received_Weight_Setting__c',
+                    'Polishing': 'Received_Weight_Polishing__c',
+                    'Dull': 'Received_Weight_Dull__c',
+                    'Media': 'Received_Weight_Media__c',
+                    'Cutting': 'Received_Weight_Cutting__c',
+                    'Plating': 'Received_Weight_Plating__c',
+                    'Correction': 'Received_Weight_Correction__c'            
+
+
+                     
+
+                  }[selectedDepartment];
+                  
+                  const maxWeight = pouch[receivedWeightField] || 0;
+                  const pouchNumber = pouch.Name?.split('/').pop()?.replace('P', '') || '';
+                  const newPouchId = `${filingId}/P${pouchNumber.padStart(2, '0')}`;
+
+                  return (
+                    <div key={pouch.Id} className="border rounded-lg p-4">
+                      <div className="grid grid-cols-5 gap-4">
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={selectedPouches[pouch.Id] || false}
+                            onChange={(e) => handlePouchSelection(pouch.Id, e.target.checked)}
+                            className="h-4 w-4 rounded border-gray-300"
+                          />
+                          <Label className="ml-2">Select Pouch</Label>
+                        </div>
+                        <div>
+                          <Label>Source Pouch</Label>
+                          <div className="mt-1">{pouch.Name}</div>
+                        </div>
+                        <div>
+                          <Label>New Assembly Pouch</Label>
+                          <div className="mt-1">{newPouchId}</div>
+                        </div>
+                        <div>
+                          <Label>Available Weight</Label>
+                          <div className="mt-1">{maxWeight.toFixed(4)}g</div>
+                        </div>
+                        <div>
+                          <Label>Weight to Filing</Label>
+                          <Input
+                            type="number"
+                            step="0.0001"
+                            value={selectedPouches[pouch.Id] ? (pouchWeights[pouch.Id] || '') : ''}
+                            onChange={(e) => handlePouchWeightChange(
+                              pouch.Id,
+                              parseFloat(e.target.value) || 0,
+                              maxWeight
+                            )}
+                            disabled={!selectedPouches[pouch.Id]}
+                            max={maxWeight}
+                            className="mt-1"
+                            required={selectedPouches[pouch.Id]}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Total Weight Display */}
+            <div>
+              <Label>Total Weight</Label>
+              <div className="mt-1 text-lg font-semibold">
+                {totalWeight.toFixed(4)}g
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              disabled={loading || totalWeight === 0}
+              className="w-full"
+            >
+              {loading ? 'Creating...' : 'Create Assembly Record'}
+            </Button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
