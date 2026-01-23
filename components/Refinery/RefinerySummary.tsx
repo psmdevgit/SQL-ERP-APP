@@ -71,6 +71,17 @@ const [totalLossData, settotalLossData] =
 //   }
 // }, [customStartDate, customEndDate]);
 
+// useEffect(() => {
+//   const today = new Date();
+//   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+
+//   if (customStartDate && customEndDate) {
+//     fetchFilterCastingLoss(customStartDate, customEndDate);
+//   } else {
+//     fetchFilterCastingLoss(monthStart, today);
+//   }
+// }, [customStartDate, customEndDate]);
+
 useEffect(() => {
   const today = new Date();
   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -81,6 +92,7 @@ useEffect(() => {
     fetchFilterCastingLoss(monthStart, today);
   }
 }, [customStartDate, customEndDate]);
+
 
 const fetchFilterCastingLoss = async (fromDate: Date, toDate: Date) => {
   try {
@@ -295,7 +307,7 @@ const [cLoss, setCLoss] = useState<number>(0);
 
 useEffect(() => {
   if (!castingTotalLossData) {
-    setCLoss(0);
+    // setCLoss(0);
     return;
   }
 
@@ -324,7 +336,10 @@ useEffect(() => {
         // value: `${totalLoss.toFixed(3)} g`,
         //  value: `${castingLossValue.toFixed(3)} g`,
          
-  value: `${cLoss.toFixed(3)} g`,
+        value: totalWeightLoading
+          ? "Loading..."
+          : `${cLoss.toFixed(3)} g`,
+
         description: "Total casting loss",
         isIncrease: false,
       },
