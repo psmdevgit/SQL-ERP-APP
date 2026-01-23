@@ -218,7 +218,7 @@ const [totalWeightLoading, setTotalWeightLoading] = useState(false);
   // dateRange === "custom" && totalLossData
   //   ? totalLossData.totalLoss
   //   : totalLoss;
-  // const [castingLossValue, setCastingLossValue] = useState<number>(0);
+  const [castingLossValue, setCastingLossValue] = useState<number>(0);
 
   useEffect(() => {
   if (dateRange === "custom" && totalLossData) {
