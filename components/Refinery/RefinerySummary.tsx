@@ -112,6 +112,9 @@ const fetchFilterCastingLoss = async (fromDate: Date, toDate: Date) => {
       totalLoss: data.Loss || 0,
       currentLoss: data.currentLoss || 0,
     });
+    
+    setCLoss(data.currentLoss || 0);
+    
   } catch (err) {
     console.error(err);
     setcastingTotalLossData(null);
@@ -336,9 +339,7 @@ useEffect(() => {
         // value: `${totalLoss.toFixed(3)} g`,
         //  value: `${castingLossValue.toFixed(3)} g`,
          
-        value: totalWeightLoading
-          ? "Loading..."
-          : `${cLoss.toFixed(3)} g`,
+        value:  `${cLoss.toFixed(3)} g`,
 
         description: "Total casting loss",
         isIncrease: false,
