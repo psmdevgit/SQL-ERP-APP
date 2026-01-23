@@ -27,13 +27,19 @@ interface DepartmentSummary {
   };
 }
 
-const apiBaseUrl = "https://kalash.app";
+// const apiBaseUrl = "https://kalash.app";
+
+const apiBaseUrl = "http://localhost:4001";
+
+
 const SapiBaseUrl = "https://kalash.app";
 
 const RefinerySummary: React.FC = () => {
   const [summaryData, setSummaryData] = useState<DepartmentSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState("month");
+  
+  
 
   const [customStartDate, setCustomStartDate] = useState<Date | null>(null);
   const [customEndDate, setCustomEndDate] = useState<Date | null>(null);
@@ -49,14 +55,87 @@ const [receivedDust, setReceivedDust] = useState({
 });
 
 
+      const [lossData, setLossData] = useState([]);
+
+
+useEffect(() => {
+  if (!customStartDate || !customEndDate) return;
+  fetchFilterLossWeight(customStartDate, customEndDate);
+}, [customStartDate, customEndDate]);
+
+
+
+const fetchFilterLossWeight = async (fromDate: Date, toDate: Date) => {
+  try {
+    setTotalWeightLoading(true);
+
+    const formattedFromDate = formatDate(fromDate);
+    const formattedToDate = formatDate(toDate);
+
+    const res = await fetch(
+      `${apiBaseUrl}/api/castingLossFilter?fromDate=${formattedFromDate}&toDate=${formattedToDate}`
+    );
+
+    if (!res.ok) throw new Error("Failed to fetch total loss");
+
+    const data = await res.json();
+    console.log("loss :", data);
+
+    // ✅ correct mapping
+    settotalLossData({ totalLoss: data.Loss });
+
+  } catch (err) {
+    console.error(err);
+    settotalLossData(null);
+  } finally {
+    setTotalWeightLoading(false);
+  }
+};
+
+const [totalLossData, settotalLossData] =
+  useState<{ totalLoss: number } | null>(null);
+
+const [totalWeightLoading, setTotalWeightLoading] = useState(false);
+
+
+
+
+       const fetchCastingLossReport = async () => {
+        try {
+          const res = await fetch(`${apiBaseUrl}/api/CastingLossReport`);
+      
+          if (!res.ok) {
+            throw new Error("Failed to fetch casting loss report");
+          }
+      
+          const data = await res.json();
+          setLossData(data);
+          console.log("losses summarey :", data);
+      
+        } catch (error) {
+          console.error("Error loading casting loss report", error);
+        }
+      };
+      
+      useEffect(() => {
+        fetchCastingLossReport();
+      }, []);
+
 
   // ✅ SAFE date formatter (NO timezone conversion)
+  // const formatDate = (date: Date) => {
+  //   const yyyy = date.getFullYear();
+  //   const mm = String(date.getMonth() + 1).padStart(2, "0");
+  //   const dd = String(date.getDate()).padStart(2, "0");
+  //   return `${yyyy}-${mm}-${dd}`;
+  // };
   const formatDate = (date: Date) => {
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, "0");
-    const dd = String(date.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
-  };
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+};
+
 
   const fetchSummaryData = async (startDate: Date, endDate: Date) => {
     try {
@@ -126,6 +205,15 @@ const [receivedDust, setReceivedDust] = useState({
   };
 
   
+
+
+
+    const totalLoss = Number(lossData.totalLoss || 0 );
+
+      const castingLossValue = totalLossData
+  ? totalLossData.totalLoss
+  : totalLoss;
+
   const summaryCards = useMemo(() => {
     if (!summaryData?.summary) return [];
 
@@ -135,10 +223,12 @@ const [receivedDust, setReceivedDust] = useState({
       {
         iconClass: "fa-light fa-gear",
         title: "Casting Loss",
-        value: `${s.totalCastingLoss.toFixed(3)} g`,
+        // value: `${s.totalCastingLoss.toFixed(3)} g`,
+        // value: `${totalLoss.toFixed(3)} g`,
+         value: `${castingLossValue.toFixed(3)} g`,
         description: "Total casting loss",
         isIncrease: false,
-      },,
+      },
       {
         iconClass: "fa-light fa-gear",
         title: "Grinding Dust",
@@ -318,7 +408,7 @@ const handleReceivedChange = (e: any) => {
         
         {showCustomDatePicker && (
           <div className="flex items-center gap-2">
-            <DatePickerComponent
+            {/* <DatePickerComponent
               selected={customStartDate}
               onChange={setCustomStartDate}
               selectsStart
@@ -339,7 +429,33 @@ const handleReceivedChange = (e: any) => {
               placeholderText="End Date"
               className="px-2 py-1 text-sm border rounded"
               dateFormat="yyyy-MM-dd"
-            />
+            /> */}
+
+            <DatePicker
+  selected={customStartDate}
+  onChange={(date) => setCustomStartDate(date)}
+  selectsStart
+  startDate={customStartDate}
+  endDate={customEndDate}
+  placeholderText="Start Date"
+  className="px-2 py-1 text-sm border rounded"
+  dateFormat="yyyy-MM-dd"
+/>
+
+<span>to</span>
+
+<DatePicker
+  selected={customEndDate}
+  onChange={(date) => setCustomEndDate(date)}
+  selectsEnd
+  startDate={customStartDate}
+  endDate={customEndDate}
+  minDate={customStartDate}
+  placeholderText="End Date"
+  className="px-2 py-1 text-sm border rounded"
+  dateFormat="yyyy-MM-dd"
+/>
+
           </div>
         )}
       </div>
@@ -371,6 +487,16 @@ const handleReceivedChange = (e: any) => {
         </button>
       </div>
 
+{/* {totalLossData && (
+  <div className="mt-4 bg-white border rounded p-4 text-sm">
+    <b>Total Casting Loss Till {formatDate(customEndDate!)}:</b>{" "}
+    {totalWeightLoading
+      ? "Loading..."
+      : `${totalLossData.totalLoss.toFixed(3)} g`}
+  </div>
+)} */}
+
+
       {/* Modal / Popup */}
       {showRecovery  && summaryData && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -397,7 +523,8 @@ const handleReceivedChange = (e: any) => {
               </thead>
               <tbody>
                 {[
-                  ["Casting Loss", "Casting_Loss", summaryData.summary.totalCastingLoss],
+                  // ["Casting Loss", "Casting_Loss", summaryData.summary.totalCastingLoss],
+                  ["Casting Loss", "Casting_Loss", castingLossValue],
                   ["Grinding Dust", "Grinding_dust", summaryData.summary.totalGrindingDust],
                   ["Media Dust", "Media_dust", summaryData.summary.totalMediaDust],
                   ["Correction Dust", "Correction_dust", summaryData.summary.totalCorrectionDust],
@@ -424,6 +551,9 @@ const handleReceivedChange = (e: any) => {
                 ))}
               </tbody>
             </table>
+
+
+
 
             <div className="text-right mt-4">
               <button
