@@ -341,7 +341,7 @@ useEffect(() => {
          
         value:  `${cLoss.toFixed(3)} g`,
 
-        description: "Total casting loss",
+        description: "Total casting Dust",
         isIncrease: false,
       },
       {
