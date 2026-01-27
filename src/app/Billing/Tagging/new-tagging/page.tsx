@@ -228,38 +228,33 @@ const handlePrint = async (model: TaggingModel, pcIndex: number) => {
   link.href = canvas.toDataURL("image/png");
   link.click();
 
-  // alert("Tag Generated and Downloaded Successfully!");
-  const printWindow = window.open("", "_blank");
+  
+const printWindow = window.open("", "_blank");
 if (!printWindow) return;
 
 printWindow.document.write(`
-  <html>
-    <head>
-      <title>Print Tag</title>
-      <style>
-        @page {
-          size: 90mm 15mm;
-          margin: 0;
-        }
-        body {
-          margin: 0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-        img {
-          width: 90mm;
-          height: 15mm;
-        }
-      </style>
-    </head>
-    <body>
-      <img src="${imageData}" onload="window.print(); window.close();" />
-    </body>
-  </html>
+<html>
+<head>
+  <style>
+    @page { size: 90mm 15mm; margin: 0; }
+    body { margin: 0; }
+    img { width: 90mm; height: 15mm; display: block; }
+  </style>
+</head>
+<body>
+  <img src="${imageData}" />
+</body>
+</html>
 `);
 
 printWindow.document.close();
+
+printWindow.onload = () => {
+  setTimeout(() => {
+    printWindow.print();
+    printWindow.close();
+  }, 300);
+};
 
 alert("Tag Generated, Downloaded & Sent to Printer!");
 };
