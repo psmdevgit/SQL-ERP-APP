@@ -334,7 +334,7 @@ useEffect(() => {
     return [
       {
         iconClass: "fa-light fa-gear",
-        title: "Casting Loss",
+        title: "Casting Dust",
         // value: `${s.totalCastingLoss.toFixed(3)} g`,
         // value: `${totalLoss.toFixed(3)} g`,
         //  value: `${castingLossValue.toFixed(3)} g`,
