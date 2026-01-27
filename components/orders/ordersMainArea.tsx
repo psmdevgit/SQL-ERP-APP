@@ -34,7 +34,7 @@ const DealsMainArea = () => {
                 <li className="breadcrumb-item active">Orders</li>
               </ol>
             </nav>
-            <div className=" flex items-center gap-4">
+            <div className=" gap-4" style={{display:"flex", flexDirection:"row", width:"300px"}}>
   <Button 
     onClick={() => window.location.href = '/DesignBank/Design'}
     className="flex items-center gap-2 bg-primary hover:bg-primary/90"
