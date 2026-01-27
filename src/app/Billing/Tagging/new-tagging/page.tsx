@@ -138,6 +138,8 @@ const handlePrint = async (model: TaggingModel, pcIndex: number) => {
   console.log("print click :", model);
   console.log("order detail :", selectedOrder);
 
+  // return;
+
   /* ================= ORDER NO ================= */
   const orderNo =
     selectedOrder && selectedOrder.includes("/")
@@ -171,11 +173,35 @@ const handlePrint = async (model: TaggingModel, pcIndex: number) => {
   const qrColumnWidth = contentWidth * 0.3;
   const qrSize = Math.min(qrColumnWidth * 0.9, contentHeight * 0.9);
 
+  const pc =
+    model.pcs?.[pcIndex] || {
+      netWeight: 0,
+      stoneWeight: 0,
+      grossWeight: 0,
+      pieceNo: "-",
+    };
+
+// 🔥 format to 3 decimals (no commas)
+const gross = Number(pc.grossWeight || 0).toFixed(3);
+const stone = Number(pc.stoneWeight || 0).toFixed(3);
+const net   = Number(pc.netWeight || 0).toFixed(3);
+const piece = pc.pieceNo || 1;
+
+// 🔥 FINAL QR VALUE
+const qrValue = `${gross}${stone}${net}${piece}${model.modelName}`;
+
+
   const qrCanvas = document.createElement("canvas");
-  await QRCode.toCanvas(qrCanvas, `${model.modelName}-${pcIndex + 1}`, {
-    width: qrSize,
-    margin: 0,
-  });
+  // await QRCode.toCanvas(qrCanvas, `${model.modelName}-${pcIndex + 1}`, {
+  //   width: qrSize,
+  //   margin: 0,
+  // });
+
+  await QRCode.toCanvas(qrCanvas, qrValue, {
+  width: qrSize,
+  margin: 0,
+});
+
 
   const qrX = PAGE_PADDING + (qrColumnWidth - qrSize) / 2;
   const qrY = PAGE_PADDING + (contentHeight - qrSize) / 2;
@@ -185,13 +211,13 @@ const handlePrint = async (model: TaggingModel, pcIndex: number) => {
   const detailsStartX = PAGE_PADDING + qrColumnWidth;
   const innerPadding = 6;
 
-  const pc =
-    model.pcs?.[pcIndex] || {
-      netWeight: 0,
-      stoneWeight: 0,
-      grossWeight: 0,
-      pieceNo: "-",
-    };
+  // const pc =
+  //   model.pcs?.[pcIndex] || {
+  //     netWeight: 0,
+  //     stoneWeight: 0,
+  //     grossWeight: 0,
+  //     pieceNo: "-",
+  //   };
 
   const lines = [
     { text: model.modelName, font: "bold 30px Arial" },
@@ -222,13 +248,46 @@ const handlePrint = async (model: TaggingModel, pcIndex: number) => {
 
   /* ================= DOWNLOAD ================= */
   const fileName = `${orderNo}_${model.modelName}_#${pcIndex + 1}.png`;
-
+const imageData = canvas.toDataURL("image/png");
   const link = document.createElement("a");
   link.download = fileName;
   link.href = canvas.toDataURL("image/png");
   link.click();
 
-  
+  // alert("Tag Generated and Downloaded Successfully!");
+//   /* ---- Print ---- */
+// const printWindow = window.open("", "_blank");
+// if (!printWindow) return;
+
+// printWindow.document.write(`
+//   <html>
+//     <head>
+//       <title>Print Tag</title>
+//       <style>
+//         @page {
+//           size: 90mm 15mm;
+//           margin: 0;
+//         }
+//         body {
+//           margin: 0;
+//           display: flex;
+//           justify-content: center;
+//           align-items: center;
+//         }
+//         img {
+//           width: 90mm;
+//           height: 15mm;
+//         }
+//       </style>
+//     </head>
+//     <body>
+//       <img src="${imageData}" onload="window.print(); window.close();" />
+//     </body>
+//   </html>
+// `);
+
+// printWindow.document.close();
+
 const printWindow = window.open("", "_blank");
 if (!printWindow) return;
 
@@ -255,7 +314,6 @@ printWindow.onload = () => {
     printWindow.close();
   }, 300);
 };
-
 alert("Tag Generated, Downloaded & Sent to Printer!");
 };
 
@@ -1939,11 +1997,12 @@ const generateExcel = (
         <tr>
           <th className="border px-2 py-1">#</th>
           <th className="border px-2 py-1">Unique No.</th>
+          
+          <th className="border px-2 py-1">Gross Wt</th>
           <th className="border px-2 py-1">Stone Wt (g)</th>
           <th className="border px-2 py-1">Net Wt (g)</th>
           <th className="border px-2 py-1">Piece No</th>
 
-          <th className="border px-2 py-1">Gross Wt</th>
 
           <th className="border px-2 py-1">Stone Charges</th>
           <th className="border px-2 py-1">Preview</th>
@@ -1961,6 +2020,40 @@ const generateExcel = (
               {`${model.uniqueNumber}-${pcIndex + 1}`}
             </td>
 
+
+    {/* Gross & Charges (display only) */}
+            <td className="border px-2 py-1 text-center bg-gray-50">
+              {/* {(Number(pc.grossWeight || 0)).toFixed(3)} */}
+               <input
+                  type="number"
+                  step="0.001"
+                  min="0"
+                  value={pc.grossWeight}
+                  onChange={(e) => {
+                    const grossWeight = Number(e.target.value || 0);
+
+                    setSelectedModels(prev => {
+                      const updated = [...prev];
+                      const m = { ...updated[index] };
+                      const pcs = [...(m.pcs || [])];
+                      const newPc = { ...pcs[pcIndex] };
+
+                      newPc.grossWeight = grossWeight;
+
+                      // 🔥 Auto-calc net weight
+                      newPc.netWeight =
+                        grossWeight - Number(newPc.stoneWeight || 0);
+
+                      pcs[pcIndex] = newPc;
+                      m.pcs = pcs;
+                      updated[index] = m;
+                      return updated;
+                    });
+                  }}
+                  className="w-full h-7 px-2 border border-gray-300 rounded"
+                />
+            </td>
+
             {/* Stone Weight */}
             <td className="border px-2 py-1">
               <input
@@ -1976,9 +2069,17 @@ const generateExcel = (
                     const pcs = m.pcs ? [...m.pcs] : [];
                     const newPc = { ...pcs[pcIndex] };
                     newPc.stoneWeight = stoneWeight;
+
                     // recalc gross & stoneCharges
-                    newPc.grossWeight = (Number(newPc.netWeight || 0) + stoneWeight);
-                    newPc.stoneCharges = stoneWeight * (typeof stoneRate !== 'undefined' ? stoneRate : 600);
+                    // newPc.grossWeight = (Number(newPc.netWeight || 0) + stoneWeight);
+                    // newPc.stoneCharges = stoneWeight * (typeof stoneRate !== 'undefined' ? stoneRate : 600);
+                    newPc.netWeight =
+                          Number(newPc.grossWeight || 0) - stoneWeight;
+
+                        // Charges
+                        newPc.stoneCharges =
+                          stoneWeight * (typeof stoneRate !== "undefined" ? stoneRate : 600);
+        
                     pcs[pcIndex] = newPc;
                     m.pcs = pcs;
                     updated[index] = m;
@@ -1991,7 +2092,7 @@ const generateExcel = (
 
             {/* Net Weight */}
             <td className="border px-2 py-1">
-              <input
+              {/* <input
                 type="number"
                 step="0.001"
                 min="0"
@@ -2014,7 +2115,14 @@ const generateExcel = (
                   });
                 }}
                 className="w-full h-7 px-2 border border-gray-300 rounded"
-              />
+              /> */}
+              <input
+  type="number"
+  value={(Number(pc.netWeight || 0)).toFixed(3)}
+  readOnly
+  className="w-full h-7 px-2 border border-gray-300 rounded bg-gray-50"
+/>
+
             </td>
 
             <td className="border px-2 py-1">
@@ -2041,10 +2149,7 @@ const generateExcel = (
 
 
 
-            {/* Gross & Charges (display only) */}
-            <td className="border px-2 py-1 text-center bg-gray-50">
-              {(Number(pc.grossWeight || 0)).toFixed(3)}
-            </td>
+        
             <td className="border px-2 py-1 text-center bg-gray-50">
                 {(Number(pc.stoneCharges || 0)).toFixed(2)} ₹
             </td>
@@ -2075,13 +2180,13 @@ const generateExcel = (
            <td className="print border text-center">
               <button
                 onClick={() => { 
-                   const stoneWeight = Number(pc.stoneWeight || 0);
+                   const piece = Number(pc.pieceNo || 0);
                   const netWeight = Number(pc.netWeight || 0); // Add this if you want to check netWeight too
 
                   // if (stoneWeight === 0 || netWeight === 0)
-                  if (netWeight === 0)
+                  if (netWeight === 0 || piece === 0 )
                      {
-                    alert('Please enter Net Weight before Tag Printing.');
+                    alert('Please enter Net Weight and piece before Tag Printing.');
                     return;
                   }
                   handlePrint(model, pcIndex)}}
