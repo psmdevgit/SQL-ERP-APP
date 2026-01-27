@@ -4,7 +4,9 @@ import { useSearchParams } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { PDFDocument, StandardFonts, rgb, degrees, PDFPage, PDFFont } from "pdf-lib";
 
-import COMPANY_LOGO from "@/assets/PothysLogo.png"
+// import COMPANY_LOGO from "@/assets/PothysLogo.png"
+
+import COMPANY_LOGO from "@/assets/appLogo.png"
 
 const apiBaseUrl = "https://kalash.app";
 
@@ -115,8 +117,132 @@ const OrderDetailsPage = () => {
     }
   };
 
+  // printing the pdf   ============================================================================================
+
+  async function handlePrintOrderPDF() {
+  setIsLoadingPDF(true);
+  const minDelay = new Promise(res => setTimeout(res, 2000));
+
+  try {
+    const orderInfo: OrderDetails = {
+      orderId: data?.orderDetails?.orderId || "-",
+      partyName: data?.orderDetails?.partyName || "-",
+      deliveryDate: data?.orderDetails?.deliveryDate || "-",
+      advanceMetal: data?.orderDetails?.advanceMetal || "-",
+      status: data?.orderDetails?.status || "-",
+      purity: data?.orderDetails?.purity || "-",
+      remarks: data?.orderDetails?.remarks || "-",
+      createdBy: data?.orderDetails?.createdBy || "-",
+      createdDate: data?.orderDetails?.createdDate || "-",
+      category: data?.orderDetails?.category || "-",
+    };
+
+    const orderItems = data?.regularModels || [];
+
+    const [pdfBlob] = await Promise.all([
+      createOrderPDF(orderInfo, orderItems),
+      minDelay,
+    ]);
+
+    openPDFAndPrint(pdfBlob);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setIsLoadingPDF(false);
+  }
+}
+
+async function handlePrintImagePDF() {
+  setIsLoadingPDF(true);
+  const minDelay = new Promise(res => setTimeout(res, 2000));
+
+  try {
+    const pdfDoc = await PDFDocument.create();
+
+    await Promise.all([
+      generateImagesOnlyPDF(pdfDoc, data.regularModels),
+      minDelay,
+    ]);
+
+    const pdfBytes = await pdfDoc.save();
+    const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+
+    openPDFAndPrint(pdfBlob);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setIsLoadingPDF(false);
+  }
+}
+
+function openPDFAndPrint(pdfBlob: Blob) {
+  const pdfUrl = URL.createObjectURL(pdfBlob);
+
+  const printWindow = window.open(pdfUrl, "_blank");
+  if (!printWindow) return;
+
+  printWindow.onload = () => {
+    printWindow.focus();
+    printWindow.print();
+  };
+
+  setTimeout(() => URL.revokeObjectURL(pdfUrl), 10000);
+}
+
+
+  //================================================================================================================
+
+// async function handleDownloadPDF() {
+//   try {
+//     console.log("checking data", data);
+
+//     const orderInfo: OrderDetails = {
+//       orderId: data?.orderDetails?.orderId || "-",
+//       partyName: data?.orderDetails?.partyName || "-",
+//       deliveryDate: data?.orderDetails?.deliveryDate || "-",
+//       advanceMetal: data?.orderDetails?.advanceMetal || "-",
+//       status: data?.orderDetails?.status || "-",
+//       purity: data?.orderDetails?.purity || "-",
+//       remarks: data?.orderDetails?.remarks || "-",
+//       createdBy: data?.orderDetails?.createdBy || "-",
+//       createdDate: data?.orderDetails?.createdDate || "-",
+//       category: data?.orderDetails?.category || "-",
+//     };
+
+//     const orderItems: ModelDetails[] = data?.regularModels || [];
+
+//     // Generate PDF blob
+//     const pdfBlob = await createOrderPDF(orderInfo, orderItems);
+
+//     // Create blob URL
+//     const pdfUrl = URL.createObjectURL(pdfBlob);
+
+//     // ✅ Open PDF in new tab
+//     window.open(pdfUrl, "_blank");
+
+//     // ✅ Trigger automatic download
+//     // const link = document.createElement("a");
+//     // link.href = pdfUrl;
+//     // link.download = `${orderInfo.orderId || "Order"}.pdf`;
+//     // link.style.display = "none";
+//     // document.body.appendChild(link);
+//     // link.click();
+//     // document.body.removeChild(link);
+
+//     // Optional: revoke URL after a short delay (so tab loads first)
+//     setTimeout(() => URL.revokeObjectURL(pdfUrl), 5000);
+//   } catch (error) {
+//     console.error("PDF generation failed:", error);
+//   }
+// }
+
+const [isLoadingPDF, setIsLoadingPDF] = useState(false);
 
 async function handleDownloadPDF() {
+  const startTime = Date.now();
+  setIsLoadingPDF(true);
+  
+
   try {
     console.log("checking data", data);
 
@@ -135,66 +261,101 @@ async function handleDownloadPDF() {
 
     const orderItems: ModelDetails[] = data?.regularModels || [];
 
-    // Generate PDF blob
+    // Generate PDF
     const pdfBlob = await createOrderPDF(orderInfo, orderItems);
 
-    // Create blob URL
     const pdfUrl = URL.createObjectURL(pdfBlob);
-
-    // ✅ Open PDF in new tab
     window.open(pdfUrl, "_blank");
 
-    // ✅ Trigger automatic download
-    // const link = document.createElement("a");
-    // link.href = pdfUrl;
-    // link.download = `${orderInfo.orderId || "Order"}.pdf`;
-    // link.style.display = "none";
-    // document.body.appendChild(link);
-    // link.click();
-    // document.body.removeChild(link);
-
-    // Optional: revoke URL after a short delay (so tab loads first)
     setTimeout(() => URL.revokeObjectURL(pdfUrl), 5000);
   } catch (error) {
     console.error("PDF generation failed:", error);
+  } finally {
+    const elapsed = Date.now() - startTime;
+    const remaining = Math.max(2000 - elapsed, 0);
+
+    setTimeout(() => {
+      setIsLoadingPDF(false);
+    }, remaining);
   }
 }
 
+
+// async function handleImagePDF() {
+//   try {
+//     if (!data?.regularModels?.length) {
+//       alert("No models available");
+//       return;
+//     }
+
+//     // 🧾 Step 1: Create a new PDF document
+//     const pdfDoc = await PDFDocument.create();
+
+//     console.log("models ",data.regularModels)
+
+//     // 🖼️ Step 2: Generate all model pages
+//     await generateImagesOnlyPDF(pdfDoc, data.regularModels);
+
+//     // 💾 Step 3: Save and open the PDF
+//     const pdfBytes = await pdfDoc.save();
+//     const blob = new Blob([pdfBytes], { type: "application/pdf" });
+//     const pdfUrl = URL.createObjectURL(blob);
+
+//     // Open PDF in a new tab
+//     window.open(pdfUrl, "_blank");
+
+//     // Trigger auto download
+//     // const link = document.createElement("a");
+//     // link.href = pdfUrl;
+//     // link.download = `${data?.orderDetails?.orderId || "Order"}_Images.pdf`;
+//     // document.body.appendChild(link);
+//     // link.click();
+//     // document.body.removeChild(link);
+
+//     // Clean up
+//     setTimeout(() => URL.revokeObjectURL(pdfUrl), 5000);
+//   } catch (error) {
+//     console.error("❌ PDF generation failed:", error);
+//   }
+// }
+
 async function handleImagePDF() {
+  setIsLoadingPDF(true);
+
+  // ⏱️ Minimum loader time
+  const minDelay = new Promise(resolve => setTimeout(resolve, 2000));
+
   try {
     if (!data?.regularModels?.length) {
       alert("No models available");
       return;
     }
 
-    // 🧾 Step 1: Create a new PDF document
+    // 🧾 Create PDF
     const pdfDoc = await PDFDocument.create();
 
-    console.log("models ",data.regularModels)
+    console.log("models", data.regularModels);
 
-    // 🖼️ Step 2: Generate all model pages
-    await generateImagesOnlyPDF(pdfDoc, data.regularModels);
+    // 🔄 Run PDF generation + min delay in parallel
+    await Promise.all([
+      generateImagesOnlyPDF(pdfDoc, data.regularModels),
+      minDelay,
+    ]);
 
-    // 💾 Step 3: Save and open the PDF
+    // 💾 Save PDF
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const pdfUrl = URL.createObjectURL(blob);
 
-    // Open PDF in a new tab
+    // 🖨️ Open PDF
     window.open(pdfUrl, "_blank");
 
-    // Trigger auto download
-    // const link = document.createElement("a");
-    // link.href = pdfUrl;
-    // link.download = `${data?.orderDetails?.orderId || "Order"}_Images.pdf`;
-    // document.body.appendChild(link);
-    // link.click();
-    // document.body.removeChild(link);
-
-    // Clean up
+    // 🧹 Cleanup
     setTimeout(() => URL.revokeObjectURL(pdfUrl), 5000);
   } catch (error) {
     console.error("❌ PDF generation failed:", error);
+  } finally {
+    setIsLoadingPDF(false);
   }
 }
 
@@ -305,6 +466,7 @@ async function generateImagesOnlyPDF(pdfDoc, models) {
 
   return pdfDoc;
 }
+
 async function createOrderPDF(orderInfo: OrderDetails, orderItems: ModelDetails[]) {
   let totalQuantity = 0;
   let totalWeight = 0;
@@ -397,14 +559,43 @@ async function createOrderPDF(orderInfo: OrderDetails, orderItems: ModelDetails[
   let page = pdfDoc.addPage([595.28, 841.89]); // A4
   drawWatermark(page, logoImage);
 
-  let y = 800;
-  const logoWidth = 60;
-  const logoHeight = (logoWidth * logoImage.height) / logoImage.width;
+  // let y = 800;
+  // const logoWidth = 50;
+  // const logoHeight = (logoWidth * logoImage.height) / logoImage.width;
 
-  // Header
-  page.drawImage(logoImage, { x: margin, y: y - logoHeight + 16, width: logoWidth, height: logoHeight });
-  page.drawText("Kalash jewellers Pvd Ltd Order Invoice", { x: margin + logoWidth + 10, y, size: 16, font: boldFont });
-  y -= Math.max(logoHeight, 25);
+  // // Header
+  // page.drawImage(logoImage, { x: margin, y: y - logoHeight + 16, width: logoWidth, height: logoHeight });
+  // page.drawText("Kalash jewellers Pvd Ltd Order Invoice", { x: margin + logoWidth + 10, y, size: 16, font: boldFont });
+  // y -= Math.max(logoHeight, 25);
+
+
+  let y = 820;
+
+const logoWidth = 50;
+const logoHeight = (logoWidth * logoImage.height) / logoImage.width;
+
+// 🔹 Calculate vertical center line
+const centerY = y - logoHeight / 2;
+
+// Draw logo
+page.drawImage(logoImage, {
+  x: margin,
+  y: y - logoHeight,
+  width: logoWidth,
+  height: logoHeight,
+});
+
+// Draw text centered to logo
+page.drawText("Kalash jewellers Pvt Ltd Order Invoice", {
+  x: margin + logoWidth + 10,
+  y: centerY - 6, // 👈 fine-tune text baseline
+  size: 16,
+  font: boldFont,
+});
+
+// Move cursor down
+y -= logoHeight + 10;
+
 
   // --- Order Details ---
   const detailsColumnWidths = [150, 350];
@@ -572,7 +763,8 @@ page.drawText(newLine, {
   const canceledModels = data?.canceledModels || [];
 
   return (
-    <div className="main-content" 
+    // className="main-content" 
+    <div  className={isLoadingPDF ? " pointer-events-none select-none" : ""}
       style={{ 
         marginLeft: '250px', 
         width: 'calc(100% - 250px)', 
@@ -584,6 +776,8 @@ page.drawText(newLine, {
         position: 'fixed'
       }}
     >
+ 
+
       <div className="container mx-auto px-4" 
         style={{ 
           display: 'flex', 
@@ -645,6 +839,7 @@ page.drawText(newLine, {
                 {data?.regularModels?.[0] && (
           <button
             onClick={() => handleDownloadPDF()}
+              disabled={isLoadingPDF}
             style={{
               padding: '8px 16px',
               border: 'none',
@@ -654,12 +849,26 @@ page.drawText(newLine, {
               cursor: 'pointer',
             }}
           >
-            <i className="fa-solid fa-file-pdf"></i> Download Order Sheet
+            <i className="fa-solid fa-file-pdf"></i> 
+            {/*Download Order Sheet*/} 
+            {isLoadingPDF ? "Preparing PDF..." : "Download PDF"}
           </button>
+
+          
         )}
+         <button
+    onClick={handlePrintOrderPDF}
+    disabled={isLoadingPDF}
+    className="btn btn-outline-success"
+    title="Print Order PDF"
+  >
+    <i className="fa-solid fa-print"></i>
+  </button>
+  
          {data?.regularModels?.[0] && (
           <button className="ms-3"
             onClick={() => handleImagePDF()}
+             disabled={isLoadingPDF}
             style={{
               padding: '8px 16px',
               border: 'none',
@@ -673,6 +882,15 @@ page.drawText(newLine, {
           </button>
         )}
 
+        <button
+          onClick={handlePrintImagePDF}
+          disabled={isLoadingPDF}
+          className="btn "
+          title="Print Image PDF"
+        >
+          <i className="fa-solid fa-print"></i>
+        </button>
+        
         </div>
 
 
@@ -907,8 +1125,23 @@ page.drawText(newLine, {
           </div>
         </div>
       )}
+      {isLoadingPDF && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div className="flex flex-col items-center gap-4 rounded-xl bg-white/90 px-8 py-6 shadow-lg">
+      <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
+      <p className="text-sm font-medium text-gray-700">
+        Preparing PDF…
+      </p>
     </div>
+  </div>
+)}
+
+
+    </div>
+
+    
   );
 };
 
 export default OrderDetailsPage;
+
