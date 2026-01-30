@@ -317,7 +317,7 @@ const handlePreview = (model: TaggingModel) => {
 // alert("Tag Generated, Downloaded & Sent to Printer!");
 // };
 
-    const handlePrint = async (model: TaggingModel, pcIndex: number) => {
+     const handlePrint = async (model: TaggingModel, pcIndex: number) => {
   /* ================= ORDER NO ================= */
   const orderNo =
     selectedOrder && selectedOrder.includes("/")
@@ -361,7 +361,7 @@ const handlePreview = (model: TaggingModel) => {
   /* ================= QR ================= */
   const qrValue = `${gross}${stone}${net}${piece}${model.modelName}`;
 
-  const qrSize = Math.min(contentHeight * 0.95, 155);
+  const qrSize = Math.min(contentHeight * 0.95, 100);
   const qrCanvas = document.createElement("canvas");
 
   await QRCode.toCanvas(qrCanvas, qrValue, {
@@ -374,41 +374,60 @@ const handlePreview = (model: TaggingModel) => {
   let leftY = PAGE_PADDING + 20;
 const lineGap = 38; // 🔥 increase this for more spacing
 
-  ctx.fillStyle = "#000";
+  ctx.fillStyle = "#000000";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
   ctx.font = "bold 32px Arial";
 
-  ctx.fillText(`Grs wt : ${gross}g`, leftX, leftY);
+  
+const drawBoldText = (
+  text: string,
+  x: number,
+  y: number
+) => {
+  ctx.fillText(text, x, y);
+  ctx.fillText(text, x + 0.6, y); // 🔥 makes print darker
+};
+
+
+  // ctx.fillText(`Grs wt : ${gross}g`, leftX, leftY);  
+  drawBoldText(`Grs wt : ${gross}g`, leftX, leftY);
   leftY += lineGap;
 
-  ctx.fillText(`St wt : ${stone}g`, leftX, leftY);
+  // ctx.fillText(`St wt : ${stone}g`, leftX, leftY);
+  drawBoldText(`St wt : ${stone}g`, leftX, leftY);
   leftY += lineGap;
 
-  ctx.fillText(`Nt wt : ${net}g`, leftX, leftY);
+  // ctx.fillText(`Nt wt : ${net}g`, leftX, leftY);
+  drawBoldText(`Nt wt : ${net}g`, leftX, leftY);
   leftY += lineGap;
 
-  ctx.fillText(`Pcs : ${piece}`, leftX, leftY);
+  // ctx.fillText(`Pcs : ${piece}`, leftX, leftY);
+  drawBoldText(`Pcs : ${piece}`, leftX, leftY);
 
   /* ================= RIGHT COLUMN ================= */
   const rightStartX = PAGE_PADDING + contentWidth * 0.55;
 
   /* MODEL NAME (TOP RIGHT) */
-  // ctx.font = "bold 30px Arial";
-  // ctx.textAlign = "left";
-  // ctx.fillText(model.modelName, rightStartX, PAGE_PADDING + 18);
+  ctx.font = "bold 30px Arial";
+  ctx.textAlign = "left";
+  // ctx.fillText(model.modelName, rightStartX - 240, PAGE_PADDING + 18);
+  
+    drawBoldText(model.modelName, rightStartX - 240, PAGE_PADDING + 18);
 
+
+  const qrTopGap = -30; 
   /* QR (CENTER RIGHT) */
-  const qrX = rightStartX - 250;
-  const qrY = PAGE_PADDING + (contentHeight - qrSize) / 2;
+  const qrX = rightStartX - 200;
+  const qrY = PAGE_PADDING + (contentHeight - qrSize  - qrTopGap) / 2;
   ctx.drawImage(qrCanvas, qrX, qrY);
 
   /* KJGC / 22KT (BOTTOM RIGHT) */
   // ctx.font = "bold 22px Arial";
   // ctx.fillText("KJGC", qrX + qrSize + 12, qrY + qrSize / 2 - 10);
   
-  ctx.font = "bold 32px Arial";
-  ctx.fillText(model.modelName, qrX + qrSize + 12, qrY + qrSize / 2 );
+  // ctx.font = "bold 32px Arial";
+  // ctx.fillText(model.modelName, qrX + qrSize + 12, qrY + qrSize / 2 );
 
   // ctx.font = "bold 20px Arial";
   // ctx.fillText("22KT", leftX + 110, PAGE_PADDING + contentHeight - 10);
