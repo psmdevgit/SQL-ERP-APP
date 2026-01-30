@@ -364,11 +364,23 @@ const handlePreview = (model: TaggingModel) => {
   const qrSize = Math.min(contentHeight * 0.95, 100);
   const qrCanvas = document.createElement("canvas");
 
-  await QRCode.toCanvas(qrCanvas, qrValue, {
-    width: qrSize,
-    margin: 0,
-  });
+  // await QRCode.toCanvas(qrCanvas, qrValue, {
+  //   width: qrSize,
+  //   margin: 0,
+  // });
 
+        await QRCode.toCanvas(qrCanvas, qrValue, {
+  width: qrSize,
+  margin: 0,
+  errorCorrectionLevel: "H", // 🔥 stronger QR = darker blocks
+  color: {
+    dark: "#000000",   // 🔥 PURE BLACK
+    light: "#FFFFFF", // 🔥 PURE WHITE
+  },
+  scale: 1, // 🔥 prevents anti-alias blur
+});
+
+       
   /* ================= LEFT COLUMN (WEIGHTS) ================= */
   let leftX = PAGE_PADDING + 30;
   let leftY = PAGE_PADDING + 20;
