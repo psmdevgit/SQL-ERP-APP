@@ -317,7 +317,7 @@ const handlePreview = (model: TaggingModel) => {
 // alert("Tag Generated, Downloaded & Sent to Printer!");
 // };
 
-     const handlePrint = async (model: TaggingModel, pcIndex: number) => {
+    const handlePrint = async (model: TaggingModel, pcIndex: number) => {
   /* ================= ORDER NO ================= */
   const orderNo =
     selectedOrder && selectedOrder.includes("/")
@@ -329,7 +329,7 @@ const handlePreview = (model: TaggingModel) => {
   const width = Math.round((90 / 25.4) * DPI);   // 1063px
   const height = Math.round((15 / 25.4) * DPI); // 177px
 
-  const PAGE_PADDING = 10;
+  const PAGE_PADDING = 20;
   const contentWidth = width - PAGE_PADDING * 2;
   const contentHeight = height - PAGE_PADDING * 2;
 
@@ -369,7 +369,7 @@ const handlePreview = (model: TaggingModel) => {
   //   margin: 0,
   // });
 
-        await QRCode.toCanvas(qrCanvas, qrValue, {
+  await QRCode.toCanvas(qrCanvas, qrValue, {
   width: qrSize,
   margin: 0,
   errorCorrectionLevel: "H", // 🔥 stronger QR = darker blocks
@@ -380,9 +380,8 @@ const handlePreview = (model: TaggingModel) => {
   scale: 1, // 🔥 prevents anti-alias blur
 });
 
-       
   /* ================= LEFT COLUMN (WEIGHTS) ================= */
-  let leftX = PAGE_PADDING + 30;
+  let leftX = PAGE_PADDING + 50;
   let leftY = PAGE_PADDING + 20;
 const lineGap = 38; // 🔥 increase this for more spacing
 
@@ -425,12 +424,12 @@ const drawBoldText = (
   ctx.textAlign = "left";
   // ctx.fillText(model.modelName, rightStartX - 240, PAGE_PADDING + 18);
   
-    drawBoldText(model.modelName, rightStartX - 240, PAGE_PADDING + 18);
+    drawBoldText(model.modelName, rightStartX - 210, PAGE_PADDING + 18);
 
 
-  const qrTopGap = -30; 
+  const qrTopGap = -40; 
   /* QR (CENTER RIGHT) */
-  const qrX = rightStartX - 200;
+  const qrX = rightStartX - 170;
   const qrY = PAGE_PADDING + (contentHeight - qrSize  - qrTopGap) / 2;
   ctx.drawImage(qrCanvas, qrX, qrY);
 
@@ -445,8 +444,8 @@ const drawBoldText = (
   // ctx.fillText("22KT", leftX + 110, PAGE_PADDING + contentHeight - 10);
 
   /* ================= DOWNLOAD ================= */
-  const fileName = `${orderNo}_${model.modelName}_#${pcIndex + 1}.png`;
-  const imageData = canvas.toDataURL("image/png");
+  const fileName = `${orderNo}_${model.modelName}_#${pcIndex + 1}.jpg`;
+  const imageData = canvas.toDataURL("image/jpg");
 
   const link = document.createElement("a");
   link.download = fileName;
@@ -482,6 +481,7 @@ const drawBoldText = (
 
   alert("Tag Generated !!!");
 };
+
   
 useEffect(() => {
   if (partyCode && partyLedgers.length > 0) {
