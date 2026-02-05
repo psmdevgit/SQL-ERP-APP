@@ -20,7 +20,9 @@ const apiBaseUrl ="https://kalash.app"
 // -----------------------------
 interface CastingRecord {
   Name: string;
-  Id?: number;
+  Id?: number;  
+  order_c: string;
+  Product_c: string;
   Issud_weight_c?: number;
   Issued_Weight_c?: number;
   Weight_Received_c?: number;
@@ -1165,7 +1167,20 @@ const handleAddBag = (e: React.FormEvent) => {
                             />
                             <div>
                               <div className="font-medium">{rec.Name}</div>
-                              <div className="text-xs text-gray-500">Received: {(rec.Weight_Received_c ?? rec.Received_Weight_c ?? rec.Issud_weight_c ?? 0).toFixed(4)} g</div>
+                     <div className="text-xs text-gray-500">
+                                <label>Received: {(rec.Weight_Received_c ?? rec.Received_Weight_c ?? rec.Issud_weight_c ?? 0).toFixed(2)}g </label>
+{    castingMode !== "CASTING" && 
+<>
+    <label style={{fontSize:"Bold"}}> | </label>
+                                <label>Order: {(rec.order_c ?? "-")} </label>
+                                <label style={{fontSize:"Bold"}}> | </label>
+                                <label>Product: {(rec.Product_c?? "-")} </label>
+</>
+
+}
+                            
+
+                               </div>
                             </div>
                           </div>
 
@@ -1504,5 +1519,6 @@ const handleAddBag = (e: React.FormEvent) => {
     </div>
   );
 }
+
 
 
