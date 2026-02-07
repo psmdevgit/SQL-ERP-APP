@@ -1,6 +1,5 @@
 
-
-  "use client";
+"use client";
 
 import { useEffect, useState } from "react";
 
@@ -43,6 +42,18 @@ interface DepartmentSummary {
   };
 }
 
+
+const rowsFromSummary = (summary: any) => [
+  { process: "Grinding", value: summary.totalGrindingDust },
+  { process: "Media", value: summary.totalMediaDust },
+  { process: "Correction", value: summary.totalCorrectionDust },
+  { process: "Setting", value: summary.totalSettingDust },
+  { process: "Polishing", value: summary.totalPolishingDust },
+  { process: "Dull", value: summary.totalDullDust },
+  { process: "Cutting", value: summary.totalCuttingDust },
+];
+
+
 export default function SummaryPage() {
   const [data, setData] = useState<ProcessRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,6 +61,13 @@ export default function SummaryPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [error, setError] = useState<string | null>(null);
   
+
+  const [dustRows, setDustRows] = useState<
+  { process: string; value: number }[]
+>([]);
+
+const [totalDUstReceived, setTotalDustReceived] = useState<number>(0);
+
 
   const [summaryData, setSummaryData] = useState<DepartmentSummary | null>(null);
 
@@ -91,6 +109,13 @@ useEffect(() => {
     if (!response.ok) throw new Error("Failed to fetch");
 
     const data = await response.json();
+    
+    const rows = rowsFromSummary(data.summary);
+
+
+    setDustRows(rows);
+    setTotalDustReceived(data.summary.totalOverallDust);
+
     setSummaryData(data);
   } catch (error) {
     console.error(error);
@@ -284,6 +309,7 @@ const totalRecoveryPurity = (summaryData?.summary.totalOverallDust * 91.7) / 100
 <div className="mt-8 w-full">
   <h1 className="text-xl font-bold mb-4">Final Summary</h1>
 
+
   <table
     className="border border-collapse w-full bg-white"
     style={{ width: "60%" }}
@@ -365,6 +391,7 @@ const totalRecoveryPurity = (summaryData?.summary.totalOverallDust * 91.7) / 100
       </tr>
     </tfoot>
   </table>
+
 </div>
 
 
@@ -607,10 +634,139 @@ const totalRecoveryPurity = (summaryData?.summary.totalOverallDust * 91.7) / 100
               </div>
             )}
           </div>
+        
+        {/* ==========================      Tagged    ================================= */}
+
+         <div>
+                <h1 className="text-xl font-bold mt-3">Tagged Items</h1>
+                        <div className=" overflow-x-auto">
+                          {loading ? (
+                            <p className="text-lg font-semibold">Loading...</p>
+                          ) : (
+                            <table
+                              className="border border-collapse"
+                              style={{ width: "100%", backgroundColor: "#fff" }}
+                            >
+                              <thead>
+                                <tr
+                                  className="bg-gray-100"
+                                  style={{
+                                    backgroundColor: "#1a7a75",
+                                    color: "#fff"
+                                  }}
+                                >
+                                  <th className="border p-2">Process</th>
+                                  <th className="border p-2">
+                                    Tagged Wt{" "}
+                                    <span className="text-xs ps-2 text-white-700">(gm)</span>
+                                  </th>
+                                      <th className="border p-2">
+                                          Purity Wt <span className="text-xs">(91.7%)</span>
+                                      </th>
+
+                                    
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {taggingRows.length === 0 ? (
+                                  <tr>
+                                    <td
+                                      colSpan={7}
+                                      className="text-center p-4 text-gray-500"
+                                    >
+                                      No records found
+                                    </td>
+                                  </tr>
+                                ) : (
+                                  // taggingRows.map((row, idx) => (
+                                  //   <tr key={idx} className="text-center">
+                                  //     <td
+                                  //       className="border p-2 text-left"
+                                  //       style={{ color: "#444", fontWeight: "500" }}
+                                  //     >
+                                  //       {row.process}
+                                  //     </td>
+                                  //     <td className="border p-2">
+                                  //       {Number(row.received_wt || 0).toFixed(4)}
+                                  //     </td>  
+                                      
+                                  //   </tr>
+                                  // ))
+
+                                  taggingRows.map((row, idx) => {
+                const taggedWt = Number(row.received_wt || 0);
+                const purityWt = (taggedWt * 91.7) / 100;
+
+                return (
+                  <tr key={idx} className="text-center">
+                    <td className="border p-2 text-left">
+                      {row.process}
+                    </td>
+
+                    <td className="border p-2">
+                      {taggedWt.toFixed(4)}
+                    </td>
+
+                    <td className="border p-2">
+                      {purityWt.toFixed(4)}
+                    </td>
+                  </tr>
+                );
+                })
+
+
+                                )
+                                }
+                              </tbody>
+                              {/* {taggingRows.length > 0 && ( */}
+                                <tfoot>
+                                  <tr
+                                    className="text-center"
+                                    style={{
+                                      backgroundColor: "#EDB652",
+                                      color: "#000",
+                                      fontWeight: "500",
+                                    }}
+                                  >
+                                    <td
+                                      className="border p-2 text-left"
+                                      style={{ color: "#000", fontWeight: "500" }}
+                                    >
+                                      Total:
+                                    </td>
+                                    <td className="border p-2">
+                                      {/* {taggingRows
+                                        .reduce(
+                                          (sum, row) => sum + Number(row.received_wt || 0),
+                                          0
+                                        )
+                                        .toFixed(4)} */}
+
+                                          {totalTagReceived.toFixed(4)}
+
+                                    </td>
+
+                  <td className="border p-2">
+                    {totalTagPurity.toFixed(4)}
+                  </td>
+                                    
+
+                                  </tr>
+                                </tfoot>
+                              {/* )} */}
+                            </table>
+                          )}
+                        </div>
+                </div>
+
         </div>
 
  <div>
-  <h1 className="text-xl font-bold mb-4">Tagged Items</h1>
+
+ 
+
+  <div className="">
+  <h1 className="text-xl font-bold">Departments Dust</h1>
           <div className="mt-5 overflow-x-auto">
             {loading ? (
               <p className="text-lg font-semibold">Loading...</p>
@@ -627,108 +783,47 @@ const totalRecoveryPurity = (summaryData?.summary.totalOverallDust * 91.7) / 100
                       color: "#fff"
                     }}
                   >
-                    <th className="border p-2">Process</th>
+                    <th className="border p-2">Departments</th>
                     <th className="border p-2">
-                      Tagged Wt{" "}
+                      Dust Wt{" "}
                       <span className="text-xs ps-2 text-white-700">(gm)</span>
                     </th>
-                        <th className="border p-2">
-                           Purity Wt <span className="text-xs">(91.7%)</span>
-                        </th>
-
-                      
+                                      
                   </tr>
                 </thead>
-                <tbody>
-                  {taggingRows.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan={7}
-                        className="text-center p-4 text-gray-500"
-                      >
-                        No records found
-                      </td>
-                    </tr>
-                  ) : (
-                    // taggingRows.map((row, idx) => (
-                    //   <tr key={idx} className="text-center">
-                    //     <td
-                    //       className="border p-2 text-left"
-                    //       style={{ color: "#444", fontWeight: "500" }}
-                    //     >
-                    //       {row.process}
-                    //     </td>
-                    //     <td className="border p-2">
-                    //       {Number(row.received_wt || 0).toFixed(4)}
-                    //     </td>  
-                       
-                    //   </tr>
-                    // ))
-
-                    taggingRows.map((row, idx) => {
-  const taggedWt = Number(row.received_wt || 0);
-  const purityWt = (taggedWt * 91.7) / 100;
-
-  return (
-    <tr key={idx} className="text-center">
-      <td className="border p-2 text-left">
-        {row.process}
-      </td>
-
-      <td className="border p-2">
-        {taggedWt.toFixed(4)}
-      </td>
-
-      <td className="border p-2">
-        {purityWt.toFixed(4)}
+               <tbody>
+  {dustRows.length === 0 ? (
+    <tr>
+      <td colSpan={2} className="text-center p-4 text-gray-500">
+        No records found
       </td>
     </tr>
-  );
-})
+  ) : (
+    dustRows.map((row, idx) => (
+      <tr key={idx} className="text-center">
+        <td className="border p-2 text-left">{row.process}</td>
+        <td className="border p-2">
+          {Number(row.value || 0).toFixed(4)}
+        </td>
+      </tr>
+    ))
+  )}
+</tbody>
 
-
-                  )
-                  }
-                </tbody>
-                {/* {taggingRows.length > 0 && ( */}
-                  <tfoot>
-                    <tr
-                      className="text-center"
-                      style={{
-                        backgroundColor: "#EDB652",
-                        color: "#000",
-                        fontWeight: "500",
-                      }}
-                    >
-                      <td
-                        className="border p-2 text-left"
-                        style={{ color: "#000", fontWeight: "500" }}
-                      >
-                        Total:
-                      </td>
-                      <td className="border p-2">
-                        {/* {taggingRows
-                          .reduce(
-                            (sum, row) => sum + Number(row.received_wt || 0),
-                            0
-                          )
-                          .toFixed(4)} */}
-
-                            {totalTagReceived.toFixed(4)}
-
-                      </td>
-
-    <td className="border p-2">
-      {totalTagPurity.toFixed(4)}
+                 <tfoot>
+  <tr style={{ backgroundColor: "#EDB652", fontWeight: "500" }}>
+    <td className="border p-2 text-left">Total:</td>
+    <td className="border p-2 text-center">
+      {totalDUstReceived.toFixed(4)}
     </td>
-                     
+  </tr>
+</tfoot>
 
-                    </tr>
-                  </tfoot>
-                {/* )} */}
               </table>
             )}
           </div>
+  </div>
+
 </div> 
 
 
