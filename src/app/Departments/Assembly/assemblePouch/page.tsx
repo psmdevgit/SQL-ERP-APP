@@ -458,7 +458,11 @@ const getActiveDetails = () => {
         if (castingMode === "ASSEMBLY") {
   const isValid = await checkAssemblyID(final);
 
-  if (!isValid) {
+   if (!isValid) {    
+  setMergedBaseId("");
+    setFormattedId("");
+      setMergedCastingId("");
+  setCastingId("");
     return; // ⛔ EXIT generateMergedBase
   }
 }
@@ -1557,6 +1561,7 @@ const handleAddBag = (e: React.FormEvent) => {
     </div>
   );
 }
+
 
 
 
