@@ -186,7 +186,7 @@ const resolveImage = (modelName, setImage) => {
                       background: "#FCF5E7",}}>{model.Name}</p>
                         <button
                       type="button"
-                      className="absolute top-1 right-1 bg-white rounded-full p-1 shadow"
+                      className="absolute  top-1 right-1 bg-white rounded-full p-1 shadow"
                       onClick={(e) => {
                         e.stopPropagation();
                         resolveImage(model.Name, setPreviewImage);
@@ -212,7 +212,7 @@ const resolveImage = (modelName, setImage) => {
   <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
     <div className="bg-white p-4 rounded-lg relative max-w-3xl">
       <button
-        className="absolute top-2 right-2 text-xl font-bold"
+        className="absolute  text-white bg-danger px-2 rounded-md top-2 right-2 text-xl font-bold"
         onClick={() => setPreviewImage(null)}
       >
         ✖
