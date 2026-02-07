@@ -144,6 +144,34 @@ useEffect(() => {
   fetchAllOrders();
 }, []);
 
+  
+//===========================   check assembly id exist or not  ====================================
+const checkAssemblyID = async (generateID) => {
+  try {
+    const AID = encodeURIComponent(generateID.trim());
+
+    const apiUrl = `${apiBaseUrl}/api/checkAssemblyId/${AID}`;
+    const res = await fetch(apiUrl);
+    const result = await res.json();
+
+    if (result.success && result.data.exists) {
+      alert(result.data.message); // already exists
+      return false;               // ❌ STOP
+    }
+
+    return true; // ✅ OK to continue
+
+  } catch (err) {
+    console.error("Failed to Check Exist Assembly ID", err);
+    return false;
+  }
+};
+
+
+
+
+
+  //============================================================
   //============================================================
   
   const loadCastingData = async () => {
@@ -425,6 +453,15 @@ const getActiveDetails = () => {
       : mergedSuffix || "AB";
 
   const final = `${base}/${suffix}`;
+
+        if (castingMode === "ASSEMBLY") {
+  const isValid = await checkAssemblyID(final);
+
+  if (!isValid) {
+    return; // ⛔ EXIT generateMergedBase
+  }
+}
+    
   setMergedCastingId(final);
   setCastingId(final);
 
@@ -1519,6 +1556,7 @@ const handleAddBag = (e: React.FormEvent) => {
     </div>
   );
 }
+
 
 
 
