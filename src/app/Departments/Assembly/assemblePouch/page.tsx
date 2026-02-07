@@ -150,22 +150,23 @@ const checkAssemblyID = async (generateID) => {
   try {
     const AID = encodeURIComponent(generateID.trim());
 
-    const apiUrl = `${apiBaseUrl}/api/checkAssemblyId/${AID}`;
+    const apiUrl = `${apiBaseUrl}/api/checkAssemblyId?aid=${AID}`;
     const res = await fetch(apiUrl);
     const result = await res.json();
 
     if (result.success && result.data.exists) {
-      alert(result.data.message); // already exists
-      return false;               // ❌ STOP
+      alert(result.data.message);
+      return false;
     }
-
-    return true; // ✅ OK to continue
+    return true;
 
   } catch (err) {
-    console.error("Failed to Check Exist Assembly ID", err);
+    console.error(err);
     return false;
   }
 };
+
+
 
 
 
@@ -1556,6 +1557,7 @@ const handleAddBag = (e: React.FormEvent) => {
     </div>
   );
 }
+
 
 
 
