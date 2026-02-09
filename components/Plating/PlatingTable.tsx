@@ -504,9 +504,7 @@ const PlatingTable = () => {
                 {`Showing ${startIndex + 1} to ${Math.min(endIndex, filteredDeals.length)} of ${filteredDeals.length} entries`}
               </Box>
               <Pagination
-                {/* count={Math.ceil(filteredDeals.length / rowsPerPage)}
-                page={page + 1}
-                onChange={(e, value) => handleChangePage(value - 1)} */}
+          }
 
                       count={Math.ceil(filteredDeals.length / rowsPerPage)}
                   page={page + 1}
