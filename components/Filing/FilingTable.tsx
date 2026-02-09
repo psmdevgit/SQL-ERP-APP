@@ -647,7 +647,7 @@ console.log("Deals State:", deals);
 
                                  
 
-                                  <button
+                                  {/* <button
                                     type="button"
                                     className="table__icon delete"
                                     onClick={(e) => {
@@ -656,7 +656,7 @@ console.log("Deals State:", deals);
                                     }}
                                   >
                                     <i className="fa-solid fa-trash"></i>
-                                  </button>
+                                  </button> */}
 
                                   <button
                                     type="button"
