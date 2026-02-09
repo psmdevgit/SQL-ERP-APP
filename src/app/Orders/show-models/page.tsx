@@ -386,8 +386,15 @@ async function generateImagesOnlyPDF(pdfDoc, models) {
       const extensions = [".png", ".jpg", ".jpeg"];
       for (const ext of extensions) {
         const url = `${imageBaseUrl}${model.name}${ext}`;
+        
         try {
-          const res = await fetch(url);
+          // const res = await fetch(url);
+
+            const res = await fetch(
+  `${apiBaseUrl}/get-model-image?name=${model.name}`
+);
+
+          
           if (res.ok) {
             imageBytes = await res.arrayBuffer();
             console.log(`✅ Found image for ${model.name}: ${url}`);
@@ -681,7 +688,12 @@ page.drawText(newLine, {
     if (item.name) {
       try {
         const imageUrl = `https://psmport.pothysswarnamahalapp.com/FactoryModels/${item.name}.jpg`;
-        const resp = await fetch(imageUrl);
+       //onst resp = await fetch(imageUrl);
+
+       const resp = await fetch(
+  `${apiBaseUrl}/get-model-image?name=${item.name}`
+);
+
         if (resp.ok) {
           const arr = await resp.arrayBuffer();
           const pdfImage = await pdfDoc.embedJpg(arr);
@@ -1144,4 +1156,3 @@ page.drawText(newLine, {
 };
 
 export default OrderDetailsPage;
-
