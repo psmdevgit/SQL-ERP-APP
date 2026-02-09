@@ -1014,7 +1014,7 @@ const stoneWeight =
                                       </button>
                                     )}
 
-                                  <button
+                                  {/* <button
                                     type="button"
                                     className="table__icon delete"
                                     onClick={(e) => {
@@ -1023,7 +1023,7 @@ const stoneWeight =
                                     }}
                                   >
                                     <i className="fa-solid fa-trash"></i>
-                                  </button>
+                                  </button> */}
 
                                   <button
                                     type="button"
