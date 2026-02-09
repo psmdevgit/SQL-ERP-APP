@@ -861,7 +861,7 @@ const stoneWeight =
 
 
 
-            <Box sx={{ width: "100%" }} className="table-responsive">
+            <Box sx={{ width: "100%" }} className="table-responsive overflow-y-hidden">
               <Paper sx={{ width: "100%", mb: 2 }}>
                 <TableContainer className="table mb-[20px] hover multiple_tables w-full">
                   <Table
