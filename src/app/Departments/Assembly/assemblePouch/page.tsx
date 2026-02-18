@@ -70,6 +70,8 @@ const [assemblyDetails, setAssemblyDetails] = useState<any>({
   const [receivedWeight, setReceivedWeight] = useState<number>(0);
   const [receivedDate, setReceivedDate] = useState<string>("");
   
+  const [assemblyAvlWt, setAssemblyAvlWt] = useState<string>("");
+  
 
   
   const [reorderRemark, setReorderRemark] = useState("");
@@ -131,6 +133,7 @@ const totalCastingUsedWeight = Object.values(castingUsedWeights)
 
     if (data.success) {
       setOrderDropdown(data.data); // data.data = [{Id:1,Name:'ORD001'}, ...]
+      setAssemblyAvlWt(data.assenblyAvlWt);
     } else {
       setOrderDropdown([]);
     }
@@ -1111,7 +1114,6 @@ const handleAddBag = (e: React.FormEvent) => {
     console.log("submit details", payload);
 
 
-
     try {
       setLoading(true);
       const res = await fetch(`${apiBaseUrl}/api/assembly/create`, {
@@ -1354,7 +1356,11 @@ const handleAddBag = (e: React.FormEvent) => {
                     </div>
 
                     <div className="mb-6 border p-4 rounded-lg">
+                      <div style={{display:"flex", justifyContent:'space-between', alignItems:'center'}}>
+
                       <h2 className="text-lg font-medium mb-4">Add Pouch Details</h2>
+                      <h6 className="font-medium mb-4">Avalible Assembly Finding Wt : {assemblyAvlWt} g</h6>
+                      </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
