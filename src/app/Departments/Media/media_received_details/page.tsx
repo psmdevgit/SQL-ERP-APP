@@ -256,6 +256,7 @@ if (invalidPouch) {
         grindingId: data.grinding.Id,
         sourceDepartment: data.grinding.Source_Department__c,
         issuedWeight: newissuedWeight,
+        ornamentWeight: ornamentWeight,
         receivedWeight: totalWeight,
         receivedDate: currentDateTime,
         scrapWeight: scrapReceivedWeight || 0,        
