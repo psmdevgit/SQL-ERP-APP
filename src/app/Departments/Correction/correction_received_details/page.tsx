@@ -249,6 +249,7 @@ useEffect(() => {
         issuedWeight: newissuedWeight,
         receivedWeight: totalWeight,
         receivedDate: currentDateTime,
+        ornamentWeight:ornamentWeight,
         scrapWeight: scrapReceivedWeight || 0,
         findingReceived: parseFloat(findingReceived.toFixed(4)),
         dustWeight: dustReceivedWeight || 0,
