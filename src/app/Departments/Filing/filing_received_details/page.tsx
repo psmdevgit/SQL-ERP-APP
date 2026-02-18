@@ -80,14 +80,29 @@ const FilingDetailsPage = () => {
   const [selectedRecord, setSelectedRecord] = useState<string>("");
 
 
- const handleReceivedFinding = (value) => {
-  const val = parseFloat(value) || 0;
-  setReceivedFinding(val);
+//  const handleReceivedFinding = (value) => {
+//   const val = parseFloat(value) || 0;
+//   setReceivedFinding(val);
 
-  // Always calculate using ORIGINAL loss
-  const diff = originalGrindingLoss - val;
- // setGrindingLoss(diff);
+//   // Always calculate using ORIGINAL loss
+//   const diff = originalGrindingLoss - val;
+//  // setGrindingLoss(diff);
+// };
+
+const handleReceivedFinding = (value) => {
+  const finding = parseFloat(value) || 0;
+
+  setReceivedFinding(finding);
+
+  // reduce loss
+  let newLoss = originalGrindingLoss - finding;
+
+  // avoid negative
+  if (newLoss < 0) newLoss = 0;
+
+  setGrindingLoss(newLoss);
 };
+
 
   
   const [checkIsuuedWt, setCheckIsuuedWt] = useState<number>(0);
