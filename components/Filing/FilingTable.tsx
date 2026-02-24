@@ -467,7 +467,7 @@ console.log("Deals State:", deals);
               handleDateChange={handleDateChange}
               handleResetDates={handleResetDates}
             />
-            <Box sx={{ width: "100%" }} className="table-responsive overflow-y-hidden">
+            <Box sx={{ width: "100%" }} className="table-responsive overflow-y-visible">
               <Paper sx={{ width: "100%", mb: 2 }}>
                 <TableContainer className="table mb-[20px] hover multiple_tables w-full">
                   <Table
@@ -544,7 +544,7 @@ console.log("Deals State:", deals);
                                   <span className="hover:text-blue-600 transition-colors">
                                     {formatWeight(deal.receivedWeight)}g
                                   </span>
-                                  <div className="absolute z-[1000] invisible group-hover:visible 
+                                  <div className="absolute z-[9999] invisible group-hover:visible 
                                                 left-0 top-full mt-1
                                                 animate-fade-in duration-200">
                                     {renderWeightBreakdown(deal)}
