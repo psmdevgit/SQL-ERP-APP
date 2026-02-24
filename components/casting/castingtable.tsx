@@ -685,7 +685,7 @@ const stoneWeight =
 
     return (
       <div className="bg-white p-3 rounded-lg shadow-xl border border-gray-200 text-sm w-[250px]">
-        <div className="font-semibold mb-3 text-gray-800 border-b pb-2">
+        <div className="font-semibold mb-3 text-gray-800 border-b pb-2" >
           Weight Breakdown
         </div>
         <div className="space-y-2">
@@ -861,7 +861,7 @@ const stoneWeight =
 
 
 
-            <Box sx={{ width: "100%" }} className="table-responsive overflow-y-hidden">
+            <Box sx={{ width: "100%" }} className="table-responsive overflow-y-visible">
               <Paper sx={{ width: "100%", mb: 2 }}>
                 <TableContainer className="table mb-[20px] hover multiple_tables w-full">
                   <Table
@@ -922,7 +922,7 @@ const stoneWeight =
                                   <span className="hover:text-blue-600 transition-colors">
                                     {formatWeight(deal.receivedWeight)}g
                                   </span>
-                                  <div className="absolute z-[1000] invisible group-hover:visible 
+                                  <div className="absolute z-[9999] invisible group-hover:visible 
                                                 left-0 top-full mt-1
                                                 animate-fade-in duration-200">
                                     {renderWeightBreakdown(deal)}
