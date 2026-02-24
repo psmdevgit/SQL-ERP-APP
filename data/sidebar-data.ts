@@ -26,6 +26,7 @@ const sidebarData: SidebarCategory[] = [
           { label: "Inventory Transactions", link: "/Reports/InventoryIssued" },
           { label: "Party Ledger", link: "/Reports/VendorRep/PartyLedger" },
           { label: "Order Transaction", link: "/Reports/OrderTransaction" },
+          { label: "Finding Transaction", link: "/Reports/Findings" },
         ],
       },
       {

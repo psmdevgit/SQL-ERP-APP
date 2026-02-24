@@ -43,10 +43,10 @@ const FindingReports : React.FC = () => {
   const [allNames, setAllNames] = useState<string[]>([]);
   const [allOrders, setAllOrders] = useState<string[]>([]);
 
-  const API_URL = "http://localhost:4001";
+  // const API_URL = "http://localhost:4001";
 
   
-  // const API_URL = "https://kalash.app";
+  const API_URL = "https://kalash.app";
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -144,7 +144,7 @@ const formatDateTime = (value?: string) => {
               Finding Used Details
           </h1>
 
-          <button className="btn text-white" style={{background:'#ffbf0d', fontWeight:'600'}}>Update Findings</button>
+          {/* <button className="btn text-white" style={{background:'#ffbf0d', fontWeight:'600'}}>Update Findings</button> */}
       </div>
        
 
