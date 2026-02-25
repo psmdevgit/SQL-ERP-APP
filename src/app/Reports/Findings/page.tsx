@@ -15,6 +15,8 @@ interface Report {
   Finding:number;
   ReceivedWeight: number;
   Status: string;
+  Product: string;
+  Order: string;
 }
 
 
@@ -71,6 +73,8 @@ const FindingReports : React.FC = () => {
   Finding: item.Finding,
   ReceivedWeight: item.ReceivedWeight,
   Status: item.Status,
+  Product: item.Product,
+  Order: item.orders
 }));
 
         }
@@ -127,9 +131,9 @@ const formatDateTime = (value?: string) => {
     day: "2-digit",
     month: "short",
     year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false, // ⬅ 24-hour format
+    // hour: "2-digit",
+    // minute: "2-digit",
+    // hour12: true, // ⬅ 24-hour format
   });
 };
 
@@ -137,7 +141,7 @@ const formatDateTime = (value?: string) => {
 
   return (
     <div className="w-full mt-20">
-      <div className="max-w-screen-lg mx-auto p-6 bg-white shadow rounded-lg">
+      <div className="mx-auto p-6 bg-white shadow rounded-lg" style={{width:'1500px'}}>
 
       <div style={{display:'flex', justifyContent:'space-between'}}>
           <h1 className="text-2xl font-bold mb-4 text-[#1A7A75]">
@@ -252,12 +256,14 @@ const formatDateTime = (value?: string) => {
                   <table className="min-w-full divide-y divide-gray-200 border rounded-md">
                     <thead className="bg-[#1A7A75] text-white whitespace-nowrap">
                       <tr>
-                        <th className="px-4 py-2 text-left text-sm font-semibold">Name</th>
-                        <th className="px-4 py-2 text-left text-sm font-semibold">Issued Date</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold">Product</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold">Order</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold">Name</th>                        
+                        <th className="px-4 py-2 text-left text-sm font-semibold">Finding Wt</th>
                         <th className="px-4 py-2 text-left text-sm font-semibold">Issued Wt</th>
                         <th className="px-4 py-2 text-left text-sm font-semibold">Ornam Wt</th>
-                        <th className="px-4 py-2 text-left text-sm font-semibold">Finding Wt</th>
                         <th className="px-4 py-2 text-left text-sm font-semibold">Received Wt</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold">Issued Date</th>
                         <th className="px-4 py-2 text-left text-sm font-semibold">Received Date</th>
                       </tr>
                     </thead>
@@ -265,10 +271,18 @@ const formatDateTime = (value?: string) => {
                       {items.map((report, index) => (
                         <tr key={`${report.Id}-${index}`} className="hover:bg-gray-50">
                           <td className="px-4 py-2 text-sm text-gray-800 whitespace-nowrap">
-                            {report.Name || "-"}
+                            {report.Product || "-"}
                           </td>
                           <td className="px-4 py-2 text-sm text-gray-800 whitespace-nowrap">
-                            {formatDateTime(report.Issued_Date) || "-"}
+                            {report.Order || "-"}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800 whitespace-nowrap">
+                            {report.Name || "-"}
+                          </td>
+
+
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {report.Finding != null ? report.Finding.toFixed(2) : "-"}
                           </td>
 
                              <td className="px-4 py-2 text-sm text-gray-800">
@@ -278,14 +292,14 @@ const formatDateTime = (value?: string) => {
                         <td className="px-4 py-2 text-sm text-gray-800">
                             {report.OrnamWeight != null ? report.OrnamWeight.toFixed(2) : "-"}
                           </td>
-                          <td className="px-4 py-2 text-sm text-gray-800">
-                            {report.Finding != null ? report.Finding.toFixed(2) : "-"}
-                          </td>
 
                           <td className="px-4 py-2 text-sm text-gray-800">
                             {report.ReceivedWeight != null ? report.ReceivedWeight.toFixed(2) : "-"}
                           </td>
 
+                          <td className="px-4 py-2 text-sm text-gray-800 whitespace-nowrap">
+                            {formatDateTime(report.Issued_Date) || "-"}
+                          </td>
                           <td className="px-4 py-2 text-sm text-gray-800 whitespace-nowrap">
                             {formatDateTime(report.Receieved_Date) || "-"}
                           </td>
@@ -298,10 +312,12 @@ const formatDateTime = (value?: string) => {
                         <tr>
                           <td className="px-4 py-2 text-sm text-gray-800">Total</td>
                           <td></td>
+                          <td></td>
+                          <td className="px-4 py-2 text-sm text-gray-800">{totalFinding.toFixed(2)}</td>
                           <td className="px-4 py-2 text-sm text-gray-800">{totalIssued.toFixed(2)}</td>
                           <td className="px-4 py-2 text-sm text-gray-800">{totalOrnam.toFixed(2)}</td>
-                          <td className="px-4 py-2 text-sm text-gray-800">{totalFinding.toFixed(2)}</td>
                           <td className="px-4 py-2 text-sm text-gray-800">{totalReceived.toFixed(2)}</td>
+                          <td></td>
                           <td></td>
                         </tr>
                       </tfoot>
