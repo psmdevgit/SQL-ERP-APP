@@ -685,32 +685,71 @@ page.drawText(newLine, {
     drawTableCell(currentX, y, columnWidths[0], rowHeight, "", page);
 
     // --- ✅ Fetch image directly using item.name ---
-    if (item.name) {
-      try {
-        const imageUrl = `https://psmport.pothysswarnamahalapp.com/FactoryModels/${item.name}.jpg`;
-       //onst resp = await fetch(imageUrl);
+if (item.name) {
+  try {
+    const resp = await fetch(
+      `${apiBaseUrl}/get-model-image?name=${item.name}&t=${Date.now()}`,
+      { cache: "no-store" }
+    );
 
-       const resp = await fetch(
-  `${apiBaseUrl}/get-model-image?name=${item.name}`
-);
-
-        if (resp.ok) {
-          const arr = await resp.arrayBuffer();
-          const pdfImage = await pdfDoc.embedJpg(arr);
-          const maxWidth = columnWidths[0] - 10;
-          const maxHeight = rowHeight - 10;
-          const scale = Math.min(maxWidth / pdfImage.width, maxHeight / pdfImage.height);
-          const width = pdfImage.width * scale;
-          const height = pdfImage.height * scale;
-          const xOffset = margin + (columnWidths[0] - width) / 2;
-          const yOffset = y - rowHeight + (rowHeight - height) / 2;
-          page.drawImage(pdfImage, { x: xOffset, y: yOffset, width, height });
-        }
-      } catch (err) {
-        console.error(`Image not found for ${item.name}`);
-      }
+    if (!resp.ok) {
+      console.warn("Image not found:", item.name);
+      return;
     }
 
+    const arr = await resp.arrayBuffer();
+
+    if (!arr || arr.byteLength < 1000) {
+      console.warn("Invalid image:", item.name);
+      return;
+    }
+
+    const bytes = new Uint8Array(arr);
+
+    // 🔥 Detect file type using magic numbers
+    const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8;
+    const isPng =
+      bytes[0] === 0x89 &&
+      bytes[1] === 0x50 &&
+      bytes[2] === 0x4e &&
+      bytes[3] === 0x47;
+
+    let pdfImage;
+
+    if (isJpeg) {
+      pdfImage = await pdfDoc.embedJpg(arr);
+    } else if (isPng) {
+      pdfImage = await pdfDoc.embedPng(arr);
+    } else {
+      console.warn("Unsupported image format:", item.name);
+      return;
+    }
+
+    const maxWidth = columnWidths[0] - 10;
+    const maxHeight = rowHeight - 10;
+
+    const scale = Math.min(
+      maxWidth / pdfImage.width,
+      maxHeight / pdfImage.height
+    );
+
+    const width = pdfImage.width * scale;
+    const height = pdfImage.height * scale;
+
+    const xOffset = margin + (columnWidths[0] - width) / 2;
+    const yOffset = y - rowHeight + (rowHeight - height) / 2;
+
+    page.drawImage(pdfImage, {
+      x: xOffset,
+      y: yOffset,
+      width,
+      height
+    });
+
+  } catch (err) {
+    console.error(`Image error for ${item.name}`, err);
+  }
+}
     currentX += columnWidths[0];
     const values = [
       item.name ?? "-",
