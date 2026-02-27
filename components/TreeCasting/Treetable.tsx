@@ -16,8 +16,9 @@ export default function CastingReport() {
   const [status, setStatus] = useState("All");
   const [dateRange, setDateRange] = useState<any>(null);
 
-  const apiUrl = "https://kalash.app";
-  // const apiUrl = "http://localhost:4001";
+const apiUrl = "https://kalash.app";
+  
+//const apiUrl = "http://localhost:4001";
 
   useEffect(() => {
     const fetchData = async () => {

@@ -27,7 +27,7 @@ interface TableControlsProps {
 const defaultStatusOptions: StatusOption[] = [
   { value: 'all', label: 'All Status' },
   { value: 'open', label: 'Open' },
-  { value: 'closed', label: 'Closed' }
+  { value: 'Finished', label: 'Finished' }
 ];
 
 const TableControls: React.FC<TableControlsProps> = ({
