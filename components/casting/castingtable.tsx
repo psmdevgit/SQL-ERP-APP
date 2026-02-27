@@ -15,6 +15,7 @@ import { visuallyHidden } from "@mui/utils";
 import useMaterialTableHook from "@/hooks/useMaterialTableHook";
 import { IDeal } from "@/interface/table.interface";
 import { ICasting } from "@/interface/table.interface";
+import dayjs from "dayjs";
 
 import { dealHeadCells } from "@/data/table-head-cell/table-head";
 import * as pdfjs from "pdfjs-dist";
@@ -45,7 +46,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 
-// const apiBaseUrl = "http://localhost:4001"; 
+//const apiBaseUrl = "http://localhost:4001"; 
 
 const apiBaseUrl = "https://kalash.app"; 
 
@@ -931,8 +932,17 @@ const stoneWeight =
                                   </div>
                                 </div>
                               </TableCell>
-                              <TableCell>{deal.issuedDate}</TableCell>
-                              <TableCell>{deal.receivedDate}</TableCell>
+                           <TableCell>
+  {deal.issuedDate
+    ? dayjs(deal.issuedDate).format("DD-MM-YYYY HH:mm")
+    : "-"}
+</TableCell>
+
+<TableCell>
+  {deal.receivedDate
+    ? dayjs(deal.receivedDate).format("DD-MM-YYYY HH:mm")
+    : "-"}
+</TableCell>
                               
                               <TableCell>
                                 <span 
@@ -972,7 +982,7 @@ const stoneWeight =
                                   </Link>
 
                                   {/* Edit button - disabled when status is Finished */}
-                                    {deal.status?.toLowerCase() !== 'finished' ? (
+                                    {deal.status?.toLowerCase() !== 'Finished' ? (
                                     <Link href={`/Departments/Casting/casting_received_details?castingId=${deal.id}`} passHref>
                                       <button
                                         type="button"

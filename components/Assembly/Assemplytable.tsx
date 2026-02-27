@@ -16,13 +16,14 @@ export default function CastingReport() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
+ const [dateRange, setDateRange] = useState<any>(null);
 
   
 const router = useRouter();
 
-const apiUrl = "https://kalash.app";
+ const apiUrl = "https://kalash.app";
 
-// const apiUrl = "http://localhost:4001";
+//const apiUrl = "http://localhost:4001";
 
 
   useEffect(() => {
@@ -43,7 +44,16 @@ const filteredData = (Array.isArray(data) ? data : []).filter((item) => {
     item.Name?.toLowerCase().includes(search.toLowerCase()) ||
     item.order_id_c?.toLowerCase().includes(search.toLowerCase());
   const matchesStatus = status === "All" || item.status_c === status;
-  return matchesSearch && matchesStatus;
+
+  let matchesDate = true;
+      if (dateRange) {
+        const itemDate = dayjs(item.issued_date_c);
+        matchesDate =
+          itemDate.isAfter(dateRange[0].startOf("day")) &&
+          itemDate.isBefore(dateRange[1].endOf("day"));
+      }
+  
+  return matchesSearch && matchesStatus && matchesDate;
 });
 
 
@@ -87,7 +97,9 @@ const filteredData = (Array.isArray(data) ? data : []).filter((item) => {
       <h2 className="text-xl font-bold mb-4">Assembly Report</h2>
 
       <div className="flex gap-2 mb-4">
-        <RangePicker format="DD-MM-YYYY" />
+        <RangePicker 
+        format="DD-MM-YYYY" 
+        onChange={(dates) => setDateRange(dates)} />
         <Select
           value={status}
           onChange={setStatus}
@@ -102,7 +114,7 @@ const filteredData = (Array.isArray(data) ? data : []).filter((item) => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Button onClick={() => { setStatus("All"); setSearch(""); }}>
+        <Button onClick={() => { setStatus("All"); setSearch("");  setDateRange(null);}}>
           Reset Filters
         </Button>
       </div>
