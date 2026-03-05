@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Table, DatePicker, Button, Typography } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-
 const { RangePicker } = DatePicker;
 const { Title } = Typography;
 
@@ -40,14 +39,14 @@ const DailyInventory: React.FC = () => {
       title: "Opening Date",
       dataIndex: "openingDate",
       key: "openingDate",
-      render: (d: string) => dayjs.utc(d).format("DD-MM-YYYY HH:mm"),
+      render: (d: string) => dayjs.utc(d).format("DD-MM-YYYY"),
     },
 
   {
   title: "Closing Date",
   dataIndex: "closingDate",
   key: "closingDate",
-  render: (d: string) => d ? dayjs.utc(d).format("DD-MM-YYYY HH:mm") : "-"
+  render: (d: string) => d ? dayjs.utc(d).format("DD-MM-YYYY") : "-"
 }
   ];
 
@@ -139,6 +138,7 @@ const DailyInventory: React.FC = () => {
 
         <Button
           type="primary"
+          style={{display:'none'}}
           onClick={() => {
             if (selectedDates) fetchReport(selectedDates);
           }}
