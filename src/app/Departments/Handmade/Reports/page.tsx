@@ -272,8 +272,14 @@ const saveModalData = async () => {
                 </td>
                 <td className="p-2 border">{row.FromLocation}</td>
                 <td className="p-2 border">{row.ToLocation}</td>
-                <td className="p-2 border">{row.FromMetal}</td>
-                <td className="p-2 border">{row.ToMetal}</td>
+               
+             <td className="p-2 border">
+  {row.FromLocation?.trim() === "From Inventory" ? row.FromMetal : row.ToMetal}
+</td>
+
+<td className="p-2 border">
+  {row.ToLocation?.trim() === "To Handmade" ? row.ToMetal : row.FromMetal}
+</td>
                <td>{Number(row.IssuedWeight).toFixed(3)}</td>
 
 <td className="p-2 border text-center">
