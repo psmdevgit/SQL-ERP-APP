@@ -1,52 +1,101 @@
 "use client";
 import React, { useEffect, useState } from "react";
-
 import { Table, DatePicker, Button, Typography } from "antd";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 const { RangePicker } = DatePicker;
 const { Title } = Typography;
 
 const DailyInventory: React.FC = () => {
-  const today = dayjs(); // ⬅️ today
-  
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-  const [selectedDates, setSelectedDates] = useState<any>([today, today]); // ⬅️ default
 
+  const today = dayjs();
+
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<any[]>([]);
+  const [selectedDates, setSelectedDates] = useState<any>([today, today]);
+
+  // const API_URL = "https://kalash.app";
+  
+  const API_URL = "http://localhost:4001";
+
+  dayjs.extend(utc);
+
+  // ✅ Table Columns
   const columns = [
     { title: "Item Name", dataIndex: "itemName", key: "itemName" },
+
     {
       title: "Purity",
       dataIndex: "purity",
       key: "purity",
       render: (v: any) => `${v}%`,
     },
+
     { title: "Opening Wt", dataIndex: "openingWeight", key: "openingWeight" },
-    // { title: "Opening Pure Wt", dataIndex: "openingPureWeight", key: "openingPureWeight" },
+
     { title: "Closing Wt", dataIndex: "closingWeight", key: "closingWeight" },
-    // { title: "Closing Pure Wt", dataIndex: "closingPureWeight", key: "closingPureWeight" },
+
     {
       title: "Opening Date",
       dataIndex: "openingDate",
       key: "openingDate",
-      render: (d: string) => dayjs(d).format("DD-MM-YYYY HH:mm"),
+      render: (d: string) => dayjs.utc(d).format("DD-MM-YYYY HH:mm"),
     },
-    {
-      title: "Closing Date",
-      dataIndex: "closingDate",
-      key: "closingDate",
-      render: (d: string) => (d ? dayjs(d).format("DD-MM-YYYY HH:mm") : "-"),
-    },
+
+  {
+  title: "Closing Date",
+  dataIndex: "closingDate",
+  key: "closingDate",
+  render: (d: string) => d ? dayjs.utc(d).format("DD-MM-YYYY HH:mm") : "-"
+}
   ];
 
-  
+  // ✅ GROUP DATA BY ITEM
+  const groupInventory = (rows: any[]) => {
 
-  const API_URL = "https://kalash.app";
+    const grouped: any = {};
 
-//   const API_URL = "http://localhost:4001";
+    rows.forEach((row) => {
 
+      if (!grouped[row.itemName]) {
+        grouped[row.itemName] = [];
+      }
+
+      grouped[row.itemName].push(row);
+
+    });
+
+    const result: any[] = [];
+
+    Object.keys(grouped).forEach((item) => {
+
+      const items = grouped[item].sort(
+        (a: any, b: any) =>
+          new Date(a.openingDate).getTime() -
+          new Date(b.openingDate).getTime()
+      );
+
+      const first = items[0];
+      const last = items[items.length - 1];
+
+      result.push({
+        itemName: item,
+        purity: first.purity,
+        openingWeight: first.openingWeight,
+        closingWeight: last.closingWeight,
+        openingDate: first.openingDate,
+        closingDate: last.closingDate,
+      });
+
+    });
+
+    return result;
+  };
+
+  // ✅ FETCH REPORT
   const fetchReport = async (dates: any) => {
+
     if (!dates) return;
 
     const from = dates[0].format("YYYY-MM-DD");
@@ -59,20 +108,26 @@ const DailyInventory: React.FC = () => {
     );
 
     const json = await res.json();
-    setData(json.data);
+
+    const groupedData = groupInventory(json.data);
+
+    setData(groupedData);
+
     setLoading(false);
   };
 
-  // ⬅️ Auto load today's report on page open
+  // ✅ Load today's data on page load
   useEffect(() => {
     fetchReport([today, today]);
   }, []);
 
   return (
-    <div style={{ padding: 20 ,marginTop:50}} className="w-[60%] mx-auto">
+    <div style={{ padding: 20, marginTop: 50 }} className="w-[60%] mx-auto">
+
       <Title level={3}>Opening / Closing Inventory Reports</Title>
 
       <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
+
         <RangePicker
           value={selectedDates}
           format="DD-MM-YYYY"
@@ -90,41 +145,35 @@ const DailyInventory: React.FC = () => {
         >
           Load Report
         </Button>
+
       </div>
 
-      {/* <Table
+      <Table
         columns={columns}
         dataSource={data}
         loading={loading}
         pagination={{ pageSize: 50 }}
         rowKey={(r) => r.itemName + r.openingDate}
-      /> */}
-      <Table
-  columns={columns}
-  dataSource={data}
-  loading={loading}
-  pagination={{ pageSize: 50 }}
-  rowKey={(r) => r.itemName + r.openingDate}
-  size="small"
-  bordered
-  style={{ fontSize: "12px" }}
-  components={{
-    header: {
-      cell: (props: any) => (
-        <th
-          {...props}
-          style={{
-            background: "#1A7A75",
-            color: "white",
-            fontSize: "14px",
-            padding: "6px",
-            textTransform: "capitalize",
-          }}
-        />
-      )
-    }
-  }}
-/>
+        size="small"
+        bordered
+        style={{ fontSize: "12px" }}
+        components={{
+          header: {
+            cell: (props: any) => (
+              <th
+                {...props}
+                style={{
+                  background: "#1A7A75",
+                  color: "white",
+                  fontSize: "14px",
+                  padding: "6px",
+                  textTransform: "capitalize",
+                }}
+              />
+            ),
+          },
+        }}
+      />
 
     </div>
   );
