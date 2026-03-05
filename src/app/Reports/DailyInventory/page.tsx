@@ -15,9 +15,9 @@ const DailyInventory: React.FC = () => {
   const [data, setData] = useState<any[]>([]);
   const [selectedDates, setSelectedDates] = useState<any>([today, today]);
 
-  // const API_URL = "https://kalash.app";
+  const API_URL = "https://kalash.app";
   
-  const API_URL = "http://localhost:4001";
+  // const API_URL = "http://localhost:4001";
 
   dayjs.extend(utc);
 
