@@ -180,7 +180,14 @@ const generateCastingNumber = () => {
 const handleSubmit = async (e?: React.FormEvent) => {
   e?.preventDefault();
 
-
+if (
+  !treecastingID ||
+  treecastingID.toLowerCase().includes("yyyy") ||
+  /^0+$/.test(treecastingID.replace(/\D/g, "")) // only zeros
+) {
+  alert("Please select Casting Date & Casting Number");
+  return;
+}
   // ✅ Validate required parent fields
   if (!treecastingID && !waxTreeWeight) {
     alert("Casting Number and Wax Tree Weight are mandatory");
@@ -197,6 +204,19 @@ const handleSubmit = async (e?: React.FormEvent) => {
     return;
   }
 
+// 🔥 Check duplicate ID
+const checkRes = await fetch(
+  `${apiUrl}/api/checkWaxingID?wid=${encodeURIComponent(treecastingID)}`
+);
+
+const checkData = await checkRes.json();
+
+console.log("test",checkData.data);
+
+if (checkData?.data?.exists) {
+  alert(checkData.data.message);
+  return; // ❌ stop saving
+}
 
 
   // ✅ Calculate total stone weight
@@ -205,6 +225,8 @@ const handleSubmit = async (e?: React.FormEvent) => {
     0
   );
 
+ 
+  
   // ✅ Prepare tree data
   const treeData = {
     Name: treecastingID || generateCastingNumber(), // safe fallback

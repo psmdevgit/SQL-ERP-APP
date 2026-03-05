@@ -189,10 +189,10 @@ const showScrapDropdown = isScrapItem && isNegativeWeight;
     }
 
     console.log("selected item : ", formData.itemName);
-
+// item !== "casting scrap"  && item !== "scrap" 
  const item = formData.itemName.toLowerCase();
 
-if (item !== "finding" && item !== "casting scrap"  && item !== "assesmbly finding"  && item !== "scrap") {
+if (item !== "finding" && item !== "assesmbly finding"  ) {
   if (parseFloat(formData.availableWeight) <= 0) {
     alert("Available weight cannot be 0 or negative.");
     setIsLoading(false);
