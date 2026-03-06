@@ -13,6 +13,7 @@ interface Report {
   ReceivedWeight: number;
   PartyCode: string;
   Remark: string;
+  Remarks: string;
 
 }
 
@@ -74,7 +75,8 @@ const InwardInventory: React.FC = () => {
             AlloyWeight: item.alloyWeight,
             ReceivedWeight: item.receivedWeight,
             PartyCode: item.partyCode,
-            Remark: item.remark
+            Remark: item.remark,            
+            Remarks: item.remarks
           }));
         }
 
@@ -261,7 +263,8 @@ const formatDate24 = (dateStr: string) => {
                         {/* <th className="px-4 py-2 text-left text-sm font-semibold">Pure Metal Wt</th> */}
                         {/* <th className="px-4 py-2 text-left text-sm font-semibold">Alloy Wt</th> */}
                         <th className="px-4 py-2 text-left text-sm font-semibold">Received Date</th>
-                        <th className="px-4 py-2 text-left text-sm font-semibold">Remark</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold">Type</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold">Remarks</th>
 
                       </tr>
                     </thead>
@@ -291,6 +294,10 @@ const formatDate24 = (dateStr: string) => {
 
                           <td className="px-4 py-2 text-sm text-gray-800">
                             {report.Remark != null ? report.Remark : "-"}
+                          </td>
+
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {report.Remarks != null ? report.Remarks : "-"}
                           </td>
 
                         </tr>
