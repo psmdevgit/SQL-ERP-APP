@@ -45,6 +45,8 @@ const InventoryUpdateForm = () => {
   const [selectedItem, setSelectedItem] = useState<string>('');
 
   const [scrapType, setScrapType] = useState('');
+  
+  const [remarks, setRemarks] = useState('');
 
   
   const [formData, setFormData] = useState({
@@ -227,7 +229,8 @@ if (showScrapDropdown && !scrapType) {
          partyLedger: formData.partyLedger,
         isCustomItem: isCustomItem,
         originalItem: isCustomItem ? null : selectedItem,
-        scrapType: showScrapDropdown ? scrapType : ""
+        scrapType: showScrapDropdown ? scrapType : "",
+        remarks: remarks ? remarks : ""
       };
 
       console.log('Submitting payload:', payload);
@@ -411,6 +414,20 @@ if (showScrapDropdown && !scrapType) {
               </Select>
             </div>
 
+            {/* Remarks */}
+            <div className="space-y-2">
+              <Label htmlFor="remarks">Remarks</Label>
+              
+              <Input
+              required
+                id="remarks"
+                name="availableWeight"
+                type="text"
+                onChange={(e) => setRemarks(e.target.value)}
+                placeholder="Enter ramarks"
+                className="w-full"
+              />
+            </div>
 
          
             {/* Error Alert */}
