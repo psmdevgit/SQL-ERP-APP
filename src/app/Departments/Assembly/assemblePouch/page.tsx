@@ -149,13 +149,17 @@ useEffect(() => {
 
   
 //===========================   check assembly id exist or not  ====================================
+
 const checkAssemblyID = async (generateID) => {
   try {
     const AID = encodeURIComponent(generateID.trim());
+    // const TYPE = encodeURIComponent(type.toLowerCase().trim());
 
     const apiUrl = `${apiBaseUrl}/api/checkAssemblyId?aid=${AID}`;
     const res = await fetch(apiUrl);
     const result = await res.json();
+
+    console.log(result);
 
     if (result.success && result.data.exists) {
       alert(result.data.message);
@@ -458,7 +462,12 @@ const getActiveDetails = () => {
 
   const final = `${base}/${suffix}`;
 
-        if (castingMode === "ASSEMBLY") {
+  // console.log("final",final);
+  // return;
+
+  // console.log(castingMode);
+
+        // if (castingMode === "ASSEMBLY") {
   const isValid = await checkAssemblyID(final);
 
    if (!isValid) {    
@@ -468,7 +477,7 @@ const getActiveDetails = () => {
   setCastingId("");
     return; // ⛔ EXIT generateMergedBase
   }
-}
+// }
     
   setMergedCastingId(final);
   setCastingId(final);
