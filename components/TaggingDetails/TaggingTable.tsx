@@ -31,9 +31,14 @@ const TaggingTable = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-
+const [openModal, setOpenModal] = useState(false);
+const [selectedTag, setSelectedTag] = useState(null);
+const [scrapWeight, setScrapWeight] = useState("");
+const [scrapQty, setScrapQty] = useState("");
 
   const apiurl = "https://kalash.app";
+  
+  // const apiurl = "http://localhost:4001";
 
   const handlePageChange = (newPage: number) => setPage(newPage);
   const handleRowsPerPageChange = (newRowsPerPage: number) => {
@@ -52,6 +57,7 @@ const TaggingTable = () => {
     setStatusFilter("all");
   };
 
+  
   const handleStatusChange = (value: string) => setStatusFilter(value);
 
   useEffect(() => {
@@ -199,6 +205,58 @@ const TaggingTable = () => {
   if (loading) return <div>Loading tagging data...</div>;
   if (error) return <div>Error: {error}</div>;
 
+const openEditModal = (tag) => {
+  setSelectedTag(tag);
+  setOpenModal(true);
+};
+
+const handleUpdateScrap = async () => {
+
+  console.log("Updating scrap for Tag ID:", selectedTag, scrapQty,scrapWeight);
+
+  try {
+    const response = await fetch(`${apiurl}/api/tagging/updateScrap`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        
+      },
+      body: JSON.stringify({
+        taggingId: selectedTag.taggingId,
+        scrapWeight,
+        scrapQty,
+        issuedWeight: selectedTag.receivedWeight,
+        issuedQty: selectedTag.quantity,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      alert("Scrap Updated Successfully");
+      setOpenModal(false);
+      setScrapWeight("");
+      setScrapQty("");
+      fetchTaggingData();
+       const loadTags = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchTaggingData();
+        setTags(data);
+      } catch (err) {
+        console.error("Error loading tagging data:", err);
+        setError("Failed to load tagging data");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadTags();
+    
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 
   return (
@@ -264,6 +322,7 @@ const TaggingTable = () => {
                         <TableCell>Product</TableCell>
                         <TableCell>Quantity</TableCell>
                         <TableCell>Transfer</TableCell>
+                        <TableCell>Scrap</TableCell>
                         <TableCell>Action</TableCell>
                       </TableRow>
                     </TableHead>
@@ -301,6 +360,20 @@ const TaggingTable = () => {
                                   <ArrowRightIcon className="w-4 h-4 text-white" />
                                 </button>
                               </TableCell>
+                              <TableCell className="flex gap-2">
+  {tag.flag === 1 && (
+     <button
+    className="px-3 py-1 text-xs font-semibold text-white bg-blue-600 rounded hover:bg-blue-700"
+    onClick={(e) => {
+      e.stopPropagation();
+      openEditModal(tag);
+    }}
+  >
+    Edit
+  </button>
+  )}
+
+</TableCell>
 
                               {/* <TableCell>
   {tag.status?.toLowerCase() == "finished" && (
@@ -382,6 +455,70 @@ const TaggingTable = () => {
           </div>
         </div>
       </div>
+      {openModal && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
+    <div className="bg-white rounded-lg p-6 w-96">
+
+      <h2 className="text-lg font-bold mb-4">Update Scrap</h2>
+
+      <div className="mb-2">
+        <label className="text-sm font-semibold">Issued Weight</label>
+        <input
+          type="text"
+          value={selectedTag?.receivedWeight}
+          disabled
+          className="w-full border p-2 rounded"
+        />
+      </div>
+
+      <div className="mb-2">
+        <label className="text-sm font-semibold">Quantity</label>
+        <input
+          type="text"
+          value={selectedTag?.quantity}
+          disabled
+          className="w-full border p-2 rounded"
+        />
+      </div>
+
+      <div className="mb-2">
+        <label className="text-sm font-semibold">Received Scrap Weight</label>
+        <input
+          type="number"
+          value={scrapWeight}
+          onChange={(e) => setScrapWeight(e.target.value)}
+          className="w-full border p-2 rounded"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="text-sm font-semibold">Scrap Quantity</label>
+        <input
+          type="number"
+          value={scrapQty}
+          onChange={(e) => setScrapQty(e.target.value)}
+          className="w-full border p-2 rounded"
+        />
+      </div>
+
+      <div className="flex justify-end gap-2">
+        <button
+          className="px-3 py-1 bg-gray-400 text-white rounded"
+          onClick={() => setOpenModal(false)}
+        >
+          Cancel
+        </button>
+
+        <button
+          className="px-3 py-1 bg-blue-600 text-white rounded"
+          onClick={handleUpdateScrap}
+        >
+          Update
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </>
   );
 };
