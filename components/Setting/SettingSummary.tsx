@@ -220,13 +220,26 @@ import "react-datepicker/dist/react-datepicker.css";
     // Calculate setting loss as the difference between issued and received weight
     const totalSettingLoss = totalIssuedWeight - totalReceivedWeight;
 
- const totalProcessingWeight = filteredData.reduce((sum, item) => {
-    const received = Number(item.receivedWeight || 0);
-    if (!received) {
-      return sum + Number(item.issuedWeight || 0);
-    }
-    return sum;
-  }, 0);
+//  const totalProcessingWeight = filteredData.reduce((sum, item) => {
+//     const received = Number(item.receivedWeight || 0);
+//     if (!received) {
+//       return sum + Number(item.issuedWeight || 0);
+//     }
+//     return sum;
+//   }, 0);
+
+
+    const totalProcessingWeight = filteredData.reduce((sum, item) => {
+            const issued = Number(item.issuedWeight || 0);
+            const received = Number(item.receivedWeight || 0);
+  
+  
+            if (item.status.trim() !== "Finished") {
+              return sum + (issued - received);
+            }
+  
+            return sum;
+          }, 0);
 
     // Calculate percentages
     const settingLossPercentage = totalIssuedWeight

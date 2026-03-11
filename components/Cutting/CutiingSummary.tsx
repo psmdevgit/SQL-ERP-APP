@@ -174,13 +174,25 @@ const CuttingSummary: React.FC = () => {
       0
     );
 
+  //   const totalProcessingWeight = filteredData.reduce((sum, item) => {
+  //   const received = Number(item.returnedWeight || 0);
+  //   if (!received) {
+  //     return sum + Number(item.issuedWeight || 0);
+  //   }
+  //   return sum;
+  // }, 0);
+
     const totalProcessingWeight = filteredData.reduce((sum, item) => {
-    const received = Number(item.returnedWeight || 0);
-    if (!received) {
-      return sum + Number(item.issuedWeight || 0);
-    }
-    return sum;
-  }, 0);
+          const issued = Number(item.issuedWeight || 0);
+          const received = Number(item.returnedWeight || 0);
+
+
+          if (item.status?.trim() !== "Finished") {
+            return sum + (issued - received);
+          }
+
+          return sum;
+        }, 0);
     // Calculate percentages
     const cuttingLossPercentage = totalIssuedWeight
       ? ((totalCuttingLoss / totalIssuedWeight) * 100).toFixed(2)
