@@ -240,7 +240,7 @@ export default function SummaryPage() {
       }
     }
 
-    const query = `${API_URL}/api/process-summarytest?fromDate=${fromDate}&toDate=${toDate}`;
+    const query = `${API_URL}/api/process-summary?fromDate=${fromDate}&toDate=${toDate}`;
     setLoading(true);
     try {
       const res = await fetch(query);
