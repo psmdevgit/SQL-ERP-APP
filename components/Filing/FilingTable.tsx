@@ -32,6 +32,8 @@ import DeleteModal from "@/components/common/DeleteModal";
 import { PDFDocument } from 'pdf-lib';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
+import dayjs from "dayjs";
+
 import {
   Select,
   SelectContent,
@@ -64,10 +66,10 @@ const departments: Department[] = [
 //const apiBaseUrl = "https://erp-server-r9wh.onrender.com"; // Ensure this is set correctly
 
 
-const apiBaseUrl = "https://kalash.app";
+//const apiBaseUrl = "https://kalash.app";
 
 
-// const apiBaseUrl = "http://localhost:4001";
+const apiBaseUrl = "http://localhost:4001";
 
 
 const downloadPDF = async (pdfUrl: string) => {
@@ -558,8 +560,20 @@ console.log("Deals State:", deals);
                               <TableCell>{deal.dustWeight}</TableCell>
                               <TableCell>{deal.AddedFindingWeight}</TableCell>
 
-                              <TableCell>{deal.issuedDate}</TableCell>
-                              <TableCell>{deal.receivedDate}</TableCell>
+                     {/* <TableCell>{deal.issuedDate}</TableCell>
+                     <TableCell>{deal.receivedDate}</TableCell> */}
+
+                       <TableCell>
+                       {deal.issuedDate
+                         ? dayjs(deal.issuedDate).format("DD-MM-YYYY HH:mm")
+                         : "-"}
+                     </TableCell>
+                     
+                     <TableCell>
+                       {deal.receivedDate
+                         ? dayjs(deal.receivedDate).format("DD-MM-YYYY HH:mm")
+                         : "-"}
+                     </TableCell>
                               <TableCell>{deal.orderId}</TableCell> 
                               <TableCell>{deal.product}</TableCell>
                               <TableCell>{deal.quantity}</TableCell>

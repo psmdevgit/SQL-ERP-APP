@@ -2,6 +2,8 @@ import { ICutting } from "@/interface/table.interface";
 
 const apiUrl = "https://kalash.app";
 
+//const apiUrl = "https://localhost:4001";
+
 // Function to fetch grinding data from the server
 export const fetchcuttingData = async (): Promise<ICutting[]> => {
   try {
