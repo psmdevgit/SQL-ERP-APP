@@ -605,7 +605,7 @@ export interface IPlating {
   Name: string;
   Issued_Date__c: string;
   Issued_Weight__c: number;
-  Received_Weight__c: number;
+  Returned_weight__c: number;
   Received_Date__c: string;
   Status__c: string;
   Plating_Loss__c: number;

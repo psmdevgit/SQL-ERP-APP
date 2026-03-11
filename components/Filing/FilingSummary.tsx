@@ -229,17 +229,30 @@ const calculateSummary = () => {
     0
   );
     const totalFilingDust = filteredData.reduce(
-    (sum, item) => sum + (Number(item.filingDust) || 0),
+    (sum, item) => sum + (Number(item.dustWeight) || 0),
     0
   );
 
-  const totalProcessingWeight = filteredData.reduce((sum, item) => {
-    const received = Number(item.receivedWeight || 0);
-    if (!received) {
-      return sum + Number(item.issuedWeight || 0);
-    }
-    return sum;
-  }, 0);
+  // const totalProcessingWeight = filteredData.reduce((sum, item) => {
+  //   const received = Number(item.receivedWeight || 0);
+  //   if (!received) {
+  //     return sum + Number(item.issuedWeight || 0);
+  //   }
+  //   return sum;
+  // }, 0);
+
+    const totalProcessingWeight = filteredData.reduce((sum, item) => {
+          const issued = Number(item.issuedWeight || 0);
+          const received = Number(item.receivedWeight || 0);
+
+
+          if (item.status.trim() !== "Finished") {
+            return sum + (issued - received);
+          }
+
+          return sum;
+        }, 0);
+
 
   const filingLossPercentage = totalIssuedWeight > 0
     ? ((totalFilingLoss / totalIssuedWeight) * 100).toFixed(2)

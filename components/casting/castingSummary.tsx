@@ -151,10 +151,22 @@ const apiBaseUrl = "https://kalash.app";
   // Calculate summary statistics
   const calculateSummary = () => {
 
-      const totalProcessingWeight = castingData.reduce((sum, item) => {
-    const received = Number(item.receivedWeight || 0);
-    return received ? sum : sum + Number(item.issuedWeight || 0);
-  }, 0);
+  //     const totalProcessingWeight = castingData.reduce((sum, item) => {
+  //   const received = Number(item.receivedWeight || 0);
+  //   return received ? sum : sum + Number(item.issuedWeight || 0);
+  // }, 0);
+
+     const totalProcessingWeight = filteredData.reduce((sum, item) => {
+            const issued = Number(item.issuedWeight || 0);
+            const received = Number(item.receivedWeight || 0);
+  
+  
+            if (item.status.trim() !== "Finished") {
+              return sum + (issued - received);
+            }
+  
+            return sum;
+          }, 0);
 
     const totalCastings = filteredData.length;
     const totalIssuedWeight = filteredData.reduce(

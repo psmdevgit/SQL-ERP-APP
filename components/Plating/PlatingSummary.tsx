@@ -198,13 +198,25 @@ const PlatingSummary: React.FC = () => {
       (sum, item) => sum + Number(item.Plating_Dust_Weight__c || 0),
       0
     );
+  // const totalProcessingWeight = filteredData.reduce((sum, item) => {
+  //   const received = Number(item.Returned_weight__c || 0);
+  //   if (!received) {
+  //     return sum + Number(item.Returned_weight__c || 0);
+  //   }
+  //   return sum;
+  // }, 0);
+
   const totalProcessingWeight = filteredData.reduce((sum, item) => {
-    const received = Number(item.Returned_weight__c || 0);
-    if (!received) {
-      return sum + Number(item.Returned_weight__c || 0);
-    }
-    return sum;
-  }, 0);
+  const issued = Number(item.Issued_Weight__c || 0);
+  const received = Number(item.Returned_weight__c || 0);
+
+  if (item.Status__c !== "Finished") {
+    return sum + (issued - received);
+  }
+
+  return sum;
+}, 0);
+
     // Calculate percentages
     const platingLossPercentage = totalIssuedWeight
       ? ((totalPlatingLoss / totalIssuedWeight) * 100).toFixed(2)
