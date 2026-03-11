@@ -12,14 +12,17 @@ interface Pouch {
   Name: string;
   Isssued_Weight_Grinding__c: number;
   Received_Weight_Grinding__c: number;
+  Received_Weight_Dull__c?: number;
   Issued_Pouch_weight__c?: number;
   Product__c?: string;
   Quantity__c?: number;
+  Order_Id__c?: string;
 }
 
 export default function AddPlatingDetails() {
   const searchParams = useSearchParams();
   const dullId = searchParams.get('dullId');
+   const  grindingId = searchParams.get('grindingId');
   const [loading, setLoading] = useState(true);
   const [formattedId, setFormattedId] = useState<string>('');
   const [pouches, setPouches] = useState<Pouch[]>([]);
@@ -41,16 +44,16 @@ const apiBaseUrl = "https://kalash.app";
 // const apiBaseUrl = "http://localhost:4001";  
 useEffect(() => {
     const initializePlating = async () => {
-      if (!dullId) {
-        console.log('[Add Plating] No dull ID provided');
-        toast.error('No dull ID provided');
-        // alert('No dull ID provided');
+      if (!dullId && !grindingId) {
+        console.log('[Add Plating] No dull ID or grinding ID provided');
+        toast.error('No dull ID or grinding ID provided');
+        // alert('No dull ID or grinding ID provided');
         setLoading(false);
         return;
       }
 
       try {
-        const [prefix, date, month, year, number, subnumber] = dullId.split('/');
+        const [prefix, date, month, year, number, subnumber] = (dullId?.split('/') || grindingId?.split('/') || []) as string[];
         console.log('[Add Plating] Dull ID parts:', { prefix, date, month, year, number, subnumber });
 
         // const newPid = Math.floor(Math.random() * 99) + 1;
@@ -63,8 +66,11 @@ useEffect(() => {
           url: `${apiBaseUrl}/api/dull/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`
         });
 
+
         const pouchResponse = await fetch(
-          `${apiBaseUrl}/api/dull/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`
+          grindingId
+            ? `${apiBaseUrl}/api/grinding/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`
+            : `${apiBaseUrl}/api/dull/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`
         );
 
         const pouchResult = await pouchResponse.json();
@@ -74,14 +80,24 @@ useEffect(() => {
           throw new Error(pouchResult.message || 'Failed to fetch pouches');
         }
 
+
+    //        const formattedPouches = pouchResult.data.pouches.map((pouch: Pouch) => ({
+    //       ...pouch,
+    //       Name: `${prefix}/${date}/${month}/${year}/${number}/POUCH${pouch.Name.split('POUCH')[1]}`,
+    //       Issued_Pouch_weight__c: 0,
+    //        Received_Weight_Grinding__c: MediaId
+    // ? pouch.Received_Weight_Media__c || 0
+    // : pouch.Received_Weight_Grinding__c || 0
+    //     }));
         const formattedPouches = pouchResult.data.pouches.map((pouch: Pouch) => ({
           ...pouch,
           Name: pouch.Name,
           Issued_Pouch_weight__c: pouch.Issued_Weight_Dull__c || 0,
-          Received_Weight_Grinding__c: pouch.Received_Weight_Dull__c || 0,
+
+          Received_Weight_Grinding__c: grindingId ?  pouch.Received_Weight_Grinding__c : pouch.Received_Weight_Dull__c || 0,
           Product__c: pouch.Product__c || '',
           Quantity__c: pouch.Quantity__c || 0
-        }));
+        }));  
 
         console.log('[Add Plating] Formatted pouches:', formattedPouches);
 

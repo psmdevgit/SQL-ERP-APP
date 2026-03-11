@@ -48,13 +48,17 @@ interface Department {
 
 const departments: Department[] = [
    { value: 'Media', label: 'Media', path: '/Departments/Media/add_media_details' },
-  { value: 'setting', label: 'Setting', path: '/Departments/Setting/add_setting_details' },
-  { value: 'polish', label: 'Polish', path: '/Departments/Polishing/add_polishing_details' },
-  { value: 'dull', label: 'Dull', path: '/Departments/Dull/add_dull_details' }
+   { value: 'Correction', label: 'Correction', path: '/Departments/Correction/add_correction_details'},
+   { value: 'setting', label: 'Setting', path: '/Departments/Setting/add_setting_details' },
+   { value: 'polish', label: 'Polish', path: '/Departments/Polishing/add_polishing_details' },
+   { value: 'dull', label: 'Dull', path: '/Departments/Dull/add_dull_details'},
+   { value: 'plating', label: 'Plating', path: '/Departments/Plating/add_plating_details'},
+   { value: 'Cutting', label: 'Cutting', path: '/Departments/Cutting/add_cutting_details'}
+    
 ];
 
 
-const apiBaseUrl = "https://kalash.app";
+ const apiBaseUrl = "https://kalash.app"; 
 
 
 // const apiBaseUrl = "http://localhost:4001";

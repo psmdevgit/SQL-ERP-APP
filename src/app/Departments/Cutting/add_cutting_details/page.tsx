@@ -20,6 +20,7 @@ interface Pouch {
 export default function AddCuttingDetails() {
   const searchParams = useSearchParams();
   const platingId = searchParams.get('platingId');
+    const grindingId = searchParams.get('grindingId');
   const [loading, setLoading] = useState(true);
   const [formattedId, setFormattedId] = useState<string>('');
   const [pouches, setPouches] = useState<Pouch[]>([]);
@@ -39,11 +40,11 @@ export default function AddCuttingDetails() {
 
 const apiBaseUrl = "https://kalash.app";
 
-// const apiBaseUrl = "http://localhost:4001";
+//const apiBaseUrl = "http://localhost:4001";
   
   useEffect(() => {
     const initializeCutting = async () => {
-      if (!platingId) {
+      if (!platingId && !grindingId) {
         console.log('[Add Cutting] No filing ID provided');
         // alert('No filing ID provided');
 
@@ -53,7 +54,7 @@ const apiBaseUrl = "https://kalash.app";
       }
 
       try {
-        const [prefix, date, month, year, number, subnumber] = platingId.split('/');
+        const [prefix, date, month, year, number, subnumber] = (platingId?.split('/')|| grindingId?.split('/') || []) as string[];
         console.log('[Add Cutting] Plating ID parts:', { prefix, date, month, year, number, subnumber });
 
         // const newCid = Math.floor(Math.random() * 99) + 1;
@@ -62,11 +63,15 @@ const apiBaseUrl = "https://kalash.app";
         setFormattedId(generatedCuttingId);
 
         console.log('[Add Cutting] Fetching pouches from:', {
-          url: `${apiBaseUrl}/api/plating/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`
+          url:   grindingId
+            ? `${apiBaseUrl}/api/grinding/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`:
+            `${apiBaseUrl}/api/plating/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`
         });
 
         const pouchResponse = await fetch(
-          `${apiBaseUrl}/api/plating/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`
+           grindingId
+            ? `${apiBaseUrl}/api/grinding/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`:
+             `${apiBaseUrl}/api/plating/${prefix}/${date}/${month}/${year}/${number}/${subnumber}/pouches`
         );
 
         const pouchResult = await pouchResponse.json();
@@ -80,7 +85,7 @@ const apiBaseUrl = "https://kalash.app";
           ...pouch,
           Name: pouch.Name,
           Issued_Pouch_weight__c: pouch.Issued_Weight_Plating__c || 0,
-          Received_Weight_Plating__c: pouch.Received_Weight_Plating__c || 0
+          Received_Weight_Plating__c:grindingId ?  pouch.Received_Weight_Grinding__c : pouch.Received_Weight_Plating__c || 0
         }));
 
         console.log('[Add Cutting] Formatted pouches:', formattedPouches);
