@@ -694,14 +694,14 @@ if (item.name) {
 
     if (!resp.ok) {
       console.warn("Image not found:", item.name);
-      return;
+      // return;
     }
 
     const arr = await resp.arrayBuffer();
 
     if (!arr || arr.byteLength < 1000) {
       console.warn("Invalid image:", item.name);
-      return;
+      // return;
     }
 
     const bytes = new Uint8Array(arr);
@@ -722,7 +722,7 @@ if (item.name) {
       pdfImage = await pdfDoc.embedPng(arr);
     } else {
       console.warn("Unsupported image format:", item.name);
-      return;
+      // return;
     }
 
     const maxWidth = columnWidths[0] - 10;
