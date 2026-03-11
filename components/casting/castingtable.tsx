@@ -982,7 +982,7 @@ const stoneWeight =
                                   </Link>
 
                                   {/* Edit button - disabled when status is Finished */}
-                                    {deal.status?.toLowerCase() !== 'Finished' ? (
+                                    {deal.status?.toLowerCase() !== 'finished' ? (
                                     <Link href={`/Departments/Casting/casting_received_details?castingId=${deal.id}`} passHref>
                                       <button
                                         type="button"

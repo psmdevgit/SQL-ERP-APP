@@ -11,9 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 // -----------------------------
 // Configuration
 // -----------------------------
-// const apiBaseUrl = "http://localhost:4001"; // change to 
+const apiBaseUrl = "http://localhost:4001"; // change to 
 
-const apiBaseUrl ="https://kalash.app"
+//const apiBaseUrl ="https://kalash.app"
 
 // -----------------------------
 // Types (partial, flexible to tolerate column name variations)
