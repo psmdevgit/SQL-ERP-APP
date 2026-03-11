@@ -104,7 +104,7 @@ useEffect(() => {
     console.log("Sending dates to backend:", start, end);
 
     const response = await fetch(
-      `${API_URL}/api/department-dust?startDate=${start}&endDate=${end}`
+      `${API_URL}/api/department-Dust?startDate=${start}&endDate=${end}`
     );
 
     if (!response.ok) throw new Error("Failed to fetch");
