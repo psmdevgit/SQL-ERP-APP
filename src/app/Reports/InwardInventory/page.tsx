@@ -111,10 +111,13 @@ useEffect(() => {
   const to = new Date(toDate);
 
   // ⏰ Adjust toDate to end of the selected day
+   from.setHours(0,0,0,0);
+
   to.setHours(23, 59, 59, 999);
 
   const filtered = reports.filter((report) => {
     const created = new Date(report.ReceivedDate);
+     created.setHours(0,0,0,0);
     const dateInRange = created >= from && created <= to;
     const nameMatch = selectedName === "All" || report.Name === selectedName;
     const orderMatch = selectedOrder === "All" || report.PartyCode === selectedOrder;
