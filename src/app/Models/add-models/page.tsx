@@ -269,7 +269,7 @@ const AddJewelryModel = () => {
 
       // Create the jewelry model data object
       const jewelryModelData = {
-        "Model-name": formData.modelName.toUpperCase() || '',
+        "Model-name": formData.modelName.toUpperCase().trim() || '',
         "item-group": formData.itemGroup || '',
         "design-source": formData.designSource || '',
         "category": formData.category || '',
