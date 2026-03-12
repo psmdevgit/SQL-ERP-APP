@@ -48,7 +48,7 @@ const RefinerySummary: React.FC = () => {
 
   const [cLoss, setCLoss] = useState<number>(0);
 
-  const [showRecovery, setShowRecovery] = useState(false);
+const [showRecovery, setShowRecovery] = useState(false);
 
   const [receivedDust, setReceivedDust] = useState({
     Casting_Loss: "",
@@ -284,7 +284,7 @@ const RefinerySummary: React.FC = () => {
       <div className="flex items-center gap-4 mb-6">
 
         <div>
-          <label className="text-sm text-gray-600">From Date</label>
+          <label className="text-sm text-gray-600 me-3" style={{fontWeight:'bold'}}>From Date</label>
           <DatePicker
             selected={customStartDate}
             onChange={(date) => setCustomStartDate(date)}
@@ -294,7 +294,7 @@ const RefinerySummary: React.FC = () => {
         </div>
 
         <div>
-          <label className="text-sm text-gray-600">To Date</label>
+          <label className="text-sm text-gray-600 me-3" style={{fontWeight:'bold'}}>To Date</label>
           <DatePicker
             selected={customEndDate}
             onChange={(date) => setCustomEndDate(date)}
@@ -321,14 +321,84 @@ const RefinerySummary: React.FC = () => {
 
       {/* RECOVERY BUTTON */}
 
-      <div className="mt-6">
+        <div className="mt-6">
+          <button
+            onClick={() => setShowRecovery((prev) => !prev)}
+            className="bg-primary text-white px-5 py-2 rounded"
+          >
+            {showRecovery ? "Hide Recover Dust" : "Recover Dust"}
+          </button>
+      </div>
+
+      {showRecovery && summaryData && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white rounded-lg p-6 max-w-3xl w-full relative shadow-lg">
+
+      <button
+        onClick={() => setShowRecovery(false)}
+        className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 font-bold text-xl"
+      >
+        &times;
+      </button>
+
+      <h3 className="text-md font-semibold mb-4">
+        Monthly Received Dust Entry
+      </h3>
+
+      <table className="w-full border text-sm bg-white">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="border p-2">Department</th>
+            <th className="border p-2">Issued (g)</th>
+            <th className="border p-2">Received (g)</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {[
+            ["Casting Loss", "Casting_Loss", cLoss],
+            ["Grinding Dust", "Grinding_dust", summaryData.summary.totalGrindingDust],
+            ["Media Dust", "Media_dust", summaryData.summary.totalMediaDust],
+            ["Correction Dust", "Correction_dust", summaryData.summary.totalCorrectionDust],
+            ["Polishing Dust", "Polishing_dust", summaryData.summary.totalPolishingDust],
+            ["Dull Dust", "Dull_dust", summaryData.summary.totalDullDust],
+            ["Cutting Dust", "Cutting_Dust", summaryData.summary.totalCuttingDust],
+          ].map(([label, key, issued]: any) => (
+            <tr key={key}>
+              <td className="border p-2">{label}</td>
+
+              <td className="border p-2 font-medium">
+                {issued.toFixed(3)}
+              </td>
+
+              <td className="border p-2">
+                <input
+                  type="number"
+                  step="0.001"
+                  name={key}
+                  value={(receivedDust as any)[key]}
+                  onChange={handleReceivedChange}
+                  className="w-full border px-2 py-1 rounded"
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="text-right mt-4">
         <button
-          onClick={() => setShowRecovery(true)}
+          onClick={submitMonthlyRecovery}
           className="bg-primary text-white px-5 py-2 rounded"
         >
-          Recover Dust
+          Submit Monthly Recovery
         </button>
       </div>
+
+    </div>
+  </div>
+)}
+
 
     </>
   );
