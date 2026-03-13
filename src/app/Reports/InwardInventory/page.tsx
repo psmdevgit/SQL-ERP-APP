@@ -131,19 +131,24 @@ useEffect(() => {
   setFilteredReports(filtered);
 }, [selectedName, selectedOrder, selectedScrapType, reports]);
 
-
-const formatDate24 = (dateStr: string) => {
+const formatDate12 = (dateStr: string) => {
   const date = new Date(dateStr);
 
-  return date.toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const year = date.getUTCFullYear();
+
+  let hours: number | string = date.getUTCHours();
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+  // const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+
+  const ampm = hours >= 12 ? "PM" : "AM";
+
+  hours = hours % 12;
+  hours = hours ? hours : 12; // 0 becomes 12
+  hours = String(hours).padStart(2, "0");
+
+  return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
 };
 
 
@@ -295,7 +300,7 @@ const formatDate24 = (dateStr: string) => {
                           </td> */}
 
                           <td className="px-4 py-2 text-sm text-gray-800">
-                            {report.ReceivedDate != null ? formatDate24(report.ReceivedDate) : "-"}
+                            {report.ReceivedDate != null ? formatDate12(report.ReceivedDate) : "-"}
                           </td>
 
                           <td className="px-4 py-2 text-sm text-gray-800">
