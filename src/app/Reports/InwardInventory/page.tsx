@@ -54,79 +54,82 @@ const InwardInventory: React.FC = () => {
   
   const API_URL = "https://kalash.app";
 
-  useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const response = await fetch(`${API_URL}/get-inventory-inward`);
-        if (!response.ok) throw new Error("Failed to fetch reports");
+useEffect(() => {
+  const fetchReports = async () => {
+    try {
+      setIsLoading(true);
 
-        const data = await response.json();
+      const response = await fetch(
+        `${API_URL}/get-inventory-inward?fromDate=${fromDate}&toDate=${toDate}`
+      );
 
-        console.log("data",data)
+      if (!response.ok) throw new Error("Failed to fetch reports");
 
-        let reportData: Report[] = [];
-        if (Array.isArray(data.data)) {
-          reportData = data.data.map((item: any) => ({
-            Id: item.id,
-            Name: item.name,
-            ReceivedDate: item.receivedDate,
-            Purity: item.purity,
-            PureMetalweight: item.pureMetalWeight,
-            AlloyWeight: item.alloyWeight,
-            ReceivedWeight: item.receivedWeight,
-            PartyCode: item.partyCode,
-            Remark: item.remark,            
-            Remarks: item.remarks
-          }));
-        }
+      const data = await response.json();
 
-        // build dropdown lists
-        const uniqueNames = Array.from(new Set(reportData.map((r) => r.Name))).filter(Boolean);
-        const uniqueOrders = Array.from(new Set(reportData.map((r) => r.PartyCode))).filter(Boolean);
-        const uniqueScrap = Array.from(new Set(reportData.map((r) => r.Remark))).filter(Boolean);
+      let reportData: Report[] = [];
 
-        setAllNames(["All", ...uniqueNames]);
-        setAllOrders(["All", ...uniqueOrders]);
-        setScrapType(["All", ...uniqueScrap]);
-
-        setReports(reportData);
-        setFilteredReports(reportData);
-
-        console.log(reportData);
-      } catch (err: any) {
-        console.error(err);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
+      if (Array.isArray(data.data)) {
+        reportData = data.data.map((item: any) => ({
+          Id: item.id,
+          Name: item.name,
+          ReceivedDate: item.receivedDate,
+          Purity: item.purity,
+          PureMetalweight: item.pureMetalWeight,
+          AlloyWeight: item.alloyWeight,
+          ReceivedWeight: item.receivedWeight,
+          PartyCode: item.partyCode,
+          Remark: item.remark,
+          Remarks: item.remarks,
+        }));
       }
-    };
 
-    fetchReports();
-  }, [API_URL]);
+      const uniqueNames = Array.from(
+        new Set(reportData.map((r) => r.Name))
+      ).filter(Boolean);
+
+      const uniqueOrders = Array.from(
+        new Set(reportData.map((r) => r.PartyCode))
+      ).filter(Boolean);
+
+      const uniqueScrap = Array.from(
+        new Set(reportData.map((r) => r.Remark))
+      ).filter(Boolean);
+
+      setAllNames(["All", ...uniqueNames]);
+      setAllOrders(["All", ...uniqueOrders]);
+      setScrapType(["All", ...uniqueScrap]);
+
+      setReports(reportData);
+      setFilteredReports(reportData);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchReports();
+}, [API_URL, fromDate, toDate]);
 
   // 🔁 Filter on date, name, order
 // 🔁 Filter on date, name, order
 useEffect(() => {
-  const from = new Date(fromDate);
-  const to = new Date(toDate);
-
-  // ⏰ Adjust toDate to end of the selected day
-   from.setHours(0,0,0,0);
-
-  to.setHours(23, 59, 59, 999);
-
   const filtered = reports.filter((report) => {
-    const created = new Date(report.ReceivedDate);
-     created.setHours(0,0,0,0);
-    const dateInRange = created >= from && created <= to;
-    const nameMatch = selectedName === "All" || report.Name === selectedName;
-    const orderMatch = selectedOrder === "All" || report.PartyCode === selectedOrder;
-    const scrapMatch = selectedScrapType === "All" || report.Remark === selectedScrapType;
-    return dateInRange && nameMatch && orderMatch && scrapMatch;
+    const nameMatch =
+      selectedName === "All" || report.Name === selectedName;
+
+    const orderMatch =
+      selectedOrder === "All" || report.PartyCode === selectedOrder;
+
+    const scrapMatch =
+      selectedScrapType === "All" || report.Remark === selectedScrapType;
+
+    return nameMatch && orderMatch && scrapMatch;
   });
 
   setFilteredReports(filtered);
-}, [fromDate, toDate, selectedName, selectedOrder,selectedScrapType, reports]);
+}, [selectedName, selectedOrder, selectedScrapType, reports]);
 
 
 const formatDate24 = (dateStr: string) => {
