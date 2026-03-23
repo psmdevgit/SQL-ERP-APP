@@ -139,7 +139,7 @@ useEffect(() => {
       }
 
       try {
-        const response = await fetch(`${apiBaseUrl}/api/filing/${encodeURIComponent(filingId)}`);
+        const response = await fetch(`${apiBaseUrl}/api/filing/${filingId}`);
         const result = await response.json();
         
         if (result.success) {
