@@ -64,6 +64,7 @@ const sidebarData: SidebarCategory[] = [
         subItems: [
           { label: "Waxing", link: "/Departments/Waxing/waxing_table", key: "waxing" },
           { label: "Casting Inventory", link: "/Departments/Casting/casting_table", key: "casting" },
+          { label: "Finding Inventory", link: "/Departments/Finding", key: "finding" },
           { label: "Assembly", link: "/Departments/Assembly", key: "assembly" },
           { label: "Filing", link: "/Departments/Filing/add_filing_details/Grinding_Table", key: "filing" },
           { label: "Grinding", link: "/Departments/Grinding/Grinding_Table", key: "grinding" },
