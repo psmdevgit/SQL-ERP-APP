@@ -115,10 +115,17 @@ export default function AddTagging() {
 //   };
 
 const handleSubmit = async () => {
+  
+     const pouchid = cuttingId || platingId;  
   if (!cutting) return;
 
+  const fromDepartment = cuttingId ? "Cutting" : "Plating";
+
+  console.log('Submitting tagging with details:',pouchid);
+
   const payload = {
-    cuttingId: cuttingId,
+    cuttingId: pouchid,
+    depart: fromDepartment,
     Name: taggingId,
     product: cutting.Product__c,
     Received_weight: receivedWeight,
@@ -152,6 +159,7 @@ const handleSubmit = async () => {
     console.error(error);
   }
 };
+
 
   if (loading) return <div className="p-4">Loading...</div>;
   if (!cutting)
