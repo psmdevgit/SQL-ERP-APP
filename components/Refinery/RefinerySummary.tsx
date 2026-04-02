@@ -356,7 +356,7 @@ const [showRecovery, setShowRecovery] = useState(false);
 
         <tbody>
           {[
-            ["Casting Loss", "Casting_Loss", cLoss],
+            ["Casting Dust", "Casting_Loss", cLoss],
             ["Grinding Dust", "Grinding_dust", summaryData.summary.totalGrindingDust],
             ["Media Dust", "Media_dust", summaryData.summary.totalMediaDust],
             ["Correction Dust", "Correction_dust", summaryData.summary.totalCorrectionDust],
