@@ -73,11 +73,12 @@ const InventoryItemSummary: React.FC = () => {
 
   const name = (report.name || "").toString().toLowerCase();
   const notAlloy = name !== "aloy";
+  const notCdust = name !== "casting dust";
 
   const matchesParty =
     selectedParty === "All" || report.partycode === selectedParty;
 
-  return isValidWeight && notAlloy && matchesParty;
+  return isValidWeight && notAlloy && matchesParty && notCdust;
 });
 
 
