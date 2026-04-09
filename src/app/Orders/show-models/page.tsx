@@ -671,10 +671,14 @@ page.drawText(newLine, {
   });
   y -= lineHeight;
 
+  console.log("orderitemd : ",orderItems)
+
   // --- Iterate Items ---
   for (const item of orderItems) {
     const quantity = parseInt(String(item.quantity ?? "0")) || 0;   
-    const weightValue =  parseInt(String(item.grossWeight ?? "0")) || 0;
+    // const weightValue =  parseInt(String(item.grossWeight ?? "0")) || 0;
+    const weightValue = parseFloat(String(item.grossWeight ?? "0")) || 0;
+    const modelSize = parseFloat(String(item.size ?? "0")) || 0;
     const itemTotalWeight = weightValue * quantity;
 
     totalQuantity += quantity;
@@ -753,8 +757,9 @@ if (item.name) {
     currentX += columnWidths[0];
     const values = [
       item.name ?? "-",
-      String(weightValue),
-      item.size ?? "-",
+      weightValue.toFixed(2),
+      // item.size ?? "-",
+      modelSize.toFixed(2),
       String(quantity),
       itemTotalWeight.toFixed(2),
       item.remarks ?? "-",

@@ -1418,6 +1418,7 @@ const handleSubmitOrder = async () => {
       })),
     };
 
+
     try {
       const res = await fetch(`${apiBaseUrl}/api/orderItemsTest`, {
         method: "POST",
