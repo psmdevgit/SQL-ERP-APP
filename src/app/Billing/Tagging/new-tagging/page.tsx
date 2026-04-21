@@ -98,8 +98,14 @@ const NewTagging = () => {
   const [isSubmittingModels, setIsSubmittingModels] = useState(false);
   const [isSubmittingTagging, setIsSubmittingTagging] = useState(false);
 
+  const [selectedImage, setSelectedImage] = useState(null);
   
   const [partyCode, setPartyCode] = useState<string>('');
+
+
+  const [selectedModel, setSelectedModel] = useState(null);
+
+
 
   
     const searchParams = useSearchParams();
@@ -316,6 +322,11 @@ const handlePreview = (model: TaggingModel) => {
 // };
 // alert("Tag Generated, Downloaded & Sent to Printer!");
 // };
+
+
+const getModelImage = (modelName) => {
+  return `${imageUrl}${modelName}.jpg`;
+};
 
     const handlePrint = async (model: TaggingModel, pcIndex: number) => {
   /* ================= ORDER NO ================= */
@@ -839,6 +850,7 @@ const handlePreviewPDFOne = async () => {
       // Find the model from current order's models only
       const selectedModel = orderModels.find((model) => model.id === modelCode);
       console.log("Selected model:", selectedModel);
+
 
       if (!selectedModel) {
         console.error("Selected model not found in current order models list");
@@ -1705,7 +1717,7 @@ const generateExcel = (
   return (
 <div className="flex justify-center gap-2">
   {/* Form container */}
-  <div className="max-w-6xl p-6 px-10 mx-auto bg-white rounded-lg shadow-md mt-[100px]">
+  <div className="w-full p-6 px-10 mx-auto bg-white rounded-lg shadow-md mt-[100px]">
     <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">New Tagging</h1>
 
     <form
@@ -1873,9 +1885,14 @@ const generateExcel = (
             <label className="block text-sm font-medium text-gray-700 mb-2">Select Model</label>
             <Select onValueChange={handleModelSelection} disabled={!selectedOrder || isLoadingModels}>
               <SelectTrigger className="w-full bg-white border border-gray-200">
-                <SelectValue placeholder={isLoadingModels ? 'Loading Models...' : 'Select Model'} />
+                {/* <SelectValue placeholder={isLoadingModels ? 'Loading Models...' : 'Select Model'} /> */}
+
+                <SelectValue>
+                  {selectedModel ? selectedModel.modelName : "Select Model"}
+                </SelectValue>
+
               </SelectTrigger>
-              <SelectContent className="bg-white max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100
+          {/*    <SelectContent className="bg-white max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100
              hover:scrollbar-thumb-gray-500 ">
                 {uniqueModels.length > 0 ? (
                   uniqueModels.map((model, index) => (
@@ -1888,7 +1905,47 @@ const generateExcel = (
                     {isLoadingModels ? 'Loading...' : 'No models available'}
                   </SelectItem>
                 )}
-              </SelectContent>
+              </SelectContent> */}
+
+              <SelectContent className="bg-white max-h-[300px] overflow-y-auto">
+  {uniqueModels.length > 0 ? (
+    <div className="grid grid-cols-6 gap-3 p-3">
+      {uniqueModels.map((model, index) => (
+        <SelectItem
+          key={`model-${model.id}-${index}`}
+          value={model.id}
+          textValue={model.modelName}
+          className="border border-blue-200 rounded-xl p-2 hover:bg-blue-50 focus:bg-blue-100"
+        >
+          <div className="flex flex-col items-center text-center">
+            
+            {/* Image Container */}
+            <div className="w-40 h-32 flex items-center justify-center bg-gray-50 rounded-lg mb-2 p-1">
+              <img
+                src={getModelImage(model.modelName)}
+                alt={model.modelName}
+                className="max-w-full max-h-full object-contain"
+                onError={(e) => {
+                  e.target.src = "/no-image.png";
+                }}
+              />
+            </div>
+
+            {/* Model Name */}
+                      <span className="text-xs font-medium text-gray-700">
+                        {model.modelName}
+                      </span>
+
+                    </div>
+                  </SelectItem>
+                ))}
+              </div>
+            ) : (
+              <SelectItem value="no-data" disabled>
+                {isLoadingModels ? "Loading..." : "No models available"}
+              </SelectItem>
+            )}
+          </SelectContent>
             </Select>
           </div>
         </div>
@@ -2214,6 +2271,9 @@ const generateExcel = (
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-4 py-2 border-b text-left text-xs font-medium text-gray-500 uppercase">Sr.No</th>
+                  <th className="px-4 py-2 border-b text-left text-xs font-medium text-gray-500 uppercase">
+                    Image
+                  </th>
                   <th className="px-4 py-2 border-b text-left text-xs font-medium text-gray-500 uppercase">Model Name</th>
                   <th className="px-4 py-2 border-b text-right text-xs font-medium text-gray-500 uppercase">Pcs</th>
                   <th className="px-4 py-2 border-b text-right text-xs font-medium text-gray-500 uppercase">Net Wt (g)</th>
@@ -2233,6 +2293,21 @@ const generateExcel = (
                   return (
                     <tr key={`${model.modelId}-${index}`} className="border-b hover:bg-gray-50">
                       <td className="px-4 py-2 text-sm text-gray-900">{index + 1}</td>
+
+                          <td className="px-4 py-2 text-sm text-gray-900">
+                            <img
+                              src={`${imageUrl}${model.modelName}.jpg`}
+                              alt={model.modelName}
+                              className="w-10 h-10 object-cover rounded border"
+                              onError={(e) => {
+                                e.target.src = userIcon; // fallback image
+                              }}
+                                onClick={() =>
+                                  setSelectedImage(`${imageUrl}${encodeURIComponent(model.modelName)}.jpg`)
+                                }
+                            />
+                          </td>
+
                       <td className="px-4 py-2 text-sm text-gray-900">{model.modelName}</td>
                       <td className="px-4 py-2 text-sm text-gray-900 text-right">{pcs.length}</td>
                       <td className="px-4 py-2 text-sm text-gray-900 text-right">{netTotal.toFixed(3)}</td>
@@ -2475,6 +2550,32 @@ const generateExcel = (
   
 )}
 
+
+
+        {selectedImage && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
+            
+            {/* Modal Box */}
+            <div className="relative bg-white p-5 rounded shadow-lg">
+              
+              {/* Close Button */}
+              <button
+                className="absolute top-1 right-2 text-danger text-xl font-bold"
+                onClick={() => setSelectedImage(null)}
+              >
+                ✕
+              </button>
+
+              {/* Image */}
+              <img
+                src={selectedImage}
+                alt="Preview"
+                className="max-w-[90vw] max-h-[90vh] object-cover p-3"
+              />
+            </div>
+
+          </div>
+        )}
 
 
 
