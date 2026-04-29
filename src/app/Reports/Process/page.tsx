@@ -221,6 +221,7 @@ const formatDate = (date: Date) => {
   "dust",
   "g machine dust",
   "p machine dust",
+  "casting scrap"
 ];
 
 const totalTagPurity = taggingRows.reduce(
