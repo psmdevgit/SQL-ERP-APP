@@ -77,6 +77,7 @@ const sidebarData: SidebarCategory[] = [
           { label: "Cutting", link: "/Departments/Cutting/Cutting_Table", key: "cutting" },
           { label: "Tagging", link: "/Departments/Tagging/Tagging_Table", key: "cutting" },
     { label: "HandMade", link: "/Departments/Handmade/CreateHandMade", key: "handmade" },
+          { label: "Stock Transfer", link: "/Departments/StockTransfer", key: "stocktransfer" },
           { label: "Recovery", link: "/Refinery", key: "refinery" },
         ],
       },
